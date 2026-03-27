@@ -69,3 +69,6 @@ vite.config.ts.timestamp-*
 
 # Google Apps Script local testing
 .clasp.json
+
+# Test files
+examples/test-api.sh
