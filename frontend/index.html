@@ -11,6 +11,15 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="PPDB Online" />
     <title>PPDB Online - Sistem Penerimaan Siswa Baru</title>
+    
+    <!-- Eruda - Mobile Debug Console (Development Only) -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>
+      // Initialize Eruda only in development mode
+      if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        eruda.init();
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

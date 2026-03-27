@@ -1,13 +1,9 @@
 /**
  * PPDB System - Google Apps Script Backend
  * Deploy as Web App with access: Anyone with the link
- * 
- * Google Sheet: https://docs.google.com/spreadsheets/d/1wKNxDoTTe4ZhRWHugHsVjUEO5hUDipQp8-gMuaquKvU/edit
  */
 
-// Get Sheet ID from Script Properties (sudah di-set di Apps Script Settings)
 const SHEET_ID = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
-const SHEET_NAME = 'PPDB_Students';
 
 function doGet(e) {
   return handleRequest(e);
@@ -44,10 +40,10 @@ function handleRequest(e) {
 
 function getSheet() {
   const ss = SpreadsheetApp.openById(SHEET_ID || getOrCreateSheetId());
-  let sheet = ss.getSheetByName(SHEET_NAME);
-
+  let sheet = ss.getSheetByName('PPDB_Students');
+  
   if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
+    sheet = ss.insertSheet('PPDB_Students');
     // Create headers
     sheet.appendRow([
       'id', 'nama_lengkap', 'nisn', 'tanggal_lahir', 'jenis_kelamin',
@@ -59,7 +55,7 @@ function getSheet() {
     sheet.getRange(1, 1, 1, 18).setFontWeight('bold').setBackground('#4F46E5');
     sheet.getRange(1, 1, 1, 18).setFontColor('#FFFFFF');
   }
-
+  
   return sheet;
 }
 
