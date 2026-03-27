@@ -8,7 +8,7 @@ import Status from '@/pages/Status';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen pb-8">
+      <div className="min-h-screen pb-8 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
         <Header />
         <Notification />
         <main className="container mx-auto px-4 py-6 md:py-8">
@@ -18,6 +18,11 @@ function App() {
             <Route path="/status" element={<Status />} />
           </Routes>
         </main>
+        
+        {/* Footer */}
+        <footer className="container mx-auto px-4 py-6 text-center text-white/80 text-sm">
+          <p>© {new Date().getFullYear()} PPDB Online. All rights reserved.</p>
+        </footer>
       </div>
     </Router>
   );
