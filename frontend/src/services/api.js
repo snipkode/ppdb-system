@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// GANTI URL INI dengan Google Apps Script Web App URL setelah deploy
-const API_BASE_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+// PPDB System Production - Google Apps Script Web App URL
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxEv_OduYOJVoHiWkmLeYUHJqJaeKPmDV2tULIJENPc4V6kgZqle6xegtqvASxrYzcFgA/exec';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
