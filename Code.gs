@@ -200,6 +200,11 @@ function getStats() {
   return { success: true, data: stats };
 }
 
+/**
+ * Helper function to return JSON response
+ * @param {Object} data - The data to return as JSON
+ * @return {GoogleAppsScript.Content.TextOutput} JSON response
+ */
 function jsonResponse(data) {
   return ContentService
     .createTextOutput(JSON.stringify(data))

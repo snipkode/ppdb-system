@@ -1,0 +1,4 @@
+# Ignore all files except Google Apps Script files
+**/*
+!Code.gs
+!appsscript.json

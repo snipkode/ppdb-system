@@ -36,28 +36,49 @@ ppdb-system/
 
 ## 🔧 Setup & Instalasi
 
-### 1. Setup Google Apps Script Backend
+### 1. Setup Google Apps Script Backend dengan CLASP
 
-1. Buka [Google Apps Script](https://script.google.com/)
-2. Buat project baru
-3. Copy paste kode dari `Code.gs` ke editor
-4. Buat Google Sheet baru (atau biarkan sistem membuat otomatis)
-5. Simpan Script ID dari Google Sheet yang dibuat
-6. Di Apps Script, klik **Project Settings** → **Script Properties**
-7. Tambahkan property `SHEET_ID` dengan nilai Script ID dari langkah 5
+```bash
+cd ppdb-system
 
-### 2. Deploy Google Apps Script
+# Login ke Google Account
+clasp login
 
-1. Klik **Deploy** → **New Deployment**
-2. Pilih type **Web App**
-3. Configure:
-   - Description: `PPDB API v1`
-   - Execute as: **Me**
-   - Who has access: **Anyone with the link**
-4. Klik **Deploy**
-5. Salin **Web App URL** yang dihasilkan
+# Buat project Google Apps Script baru
+clasp create --title "PPDB API" --type sheets
 
-### 3. Setup Frontend
+# Atau gunakan project yang sudah ada
+# clasp clone <SCRIPT_ID>
+
+# Push code ke Google Apps Script
+clasp push
+
+# Deploy sebagai Web App
+clasp deploy --title "PPDB API v1" --description "Production deployment"
+```
+
+**First time setup:**
+1. Jalankan `clasp login` untuk authenticate dengan Google
+2. Jalankan `clasp create --title "PPDB API" --type sheets`
+3. Copy Script ID yang dihasilkan
+4. Update `SHEET_ID` di Script Properties (lihat langkah berikut)
+
+**Setup Script Properties:**
+1. Buka https://script.google.com/
+2. Pilih project "PPDB API"
+3. Klik ⚙️ Project Settings → Script Properties
+4. Add property: `SHEET_ID` (kosongkan dulu, akan auto-create saat pertama run)
+
+**Update Web App URL:**
+Setelah deploy, update URL di `frontend/src/services/api.js`:
+```javascript
+const API_BASE_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+```
+
+**Re-deploy setelah update:**
+```bash
+clasp deploy --title "PPDB API v2"
+```
 
 ```bash
 cd frontend
