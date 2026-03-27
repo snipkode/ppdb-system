@@ -1,7 +1,7 @@
 /**
  * PPDB System - Google Apps Script Backend
  * Deploy as Web App with access: Anyone with the link
- * 
+ *
  * Google Sheet: https://docs.google.com/spreadsheets/d/1wKNxDoTTe4ZhRWHugHsVjUEO5hUDipQp8-gMuaquKvU/edit
  */
 
@@ -9,36 +9,99 @@
 const SHEET_ID = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
 const SHEET_NAME = 'PPDB_Students';
 
+/**
+ * Handle GET requests
+ * @param {Object} e - Event object from Apps Script
+ * @return {GoogleAppsScript.Content.TextOutput} JSON response
+ */
 function doGet(e) {
   return handleRequest(e);
 }
 
+/**
+ * Handle POST requests
+ * @param {Object} e - Event object from Apps Script
+ * @return {GoogleAppsScript.Content.TextOutput} JSON response
+ */
 function doPost(e) {
   return handleRequest(e);
 }
 
+/**
+ * Main request handler
+ * @param {Object} e - Event object from Apps Script
+ * @return {GoogleAppsScript.Content.TextOutput} JSON response
+ */
 function handleRequest(e) {
-  const action = e.parameter.action || (e.postData ? JSON.parse(e.postData.contents).action : null);
+  // Handle case when e is undefined (direct function call)
+  if (!e) {
+    return jsonResponse({
+      success: true,
+      message: 'PPDB API is running!',
+      timestamp: new Date().toISOString(),
+      endpoints: ['getStudents', 'getStudent', 'createStudent', 'updateStudent', 'deleteStudent', 'getStats']
+    });
+  }
   
+  // Get action from query parameter or POST body
+  var action = null;
+  
+  if (e.parameter && e.parameter.action) {
+    action = e.parameter.action;
+  } else if (e.postData && e.postData.contents) {
+    try {
+      var postData = JSON.parse(e.postData.contents);
+      action = postData.action;
+    } catch (err) {
+      // Ignore parse error
+    }
+  }
+
   try {
+    var result;
+    
     switch (action) {
       case 'getStudents':
-        return jsonResponse(getStudents());
+        result = getStudents();
+        break;
       case 'getStudent':
-        return jsonResponse(getStudent(e.parameter.id));
+        result = getStudent(e.parameter ? e.parameter.id : null);
+        break;
       case 'createStudent':
-        return jsonResponse(createStudent(JSON.parse(e.postData.contents)));
+        result = createStudent(JSON.parse(e.postData.contents));
+        break;
       case 'updateStudent':
-        return jsonResponse(updateStudent(JSON.parse(e.postData.contents)));
+        result = updateStudent(JSON.parse(e.postData.contents));
+        break;
       case 'deleteStudent':
-        return jsonResponse(deleteStudent(JSON.parse(e.postData.contents)));
+        result = deleteStudent(JSON.parse(e.postData.contents));
+        break;
       case 'getStats':
-        return jsonResponse(getStats());
+        result = getStats();
+        break;
+      case 'ping':
+        result = {
+          success: true,
+          message: 'API is running!',
+          timestamp: new Date().toISOString()
+        };
+        break;
       default:
-        return jsonResponse({ success: false, error: 'Invalid action' });
+        result = {
+          success: false,
+          error: 'Invalid action',
+          availableActions: ['getStudents', 'getStudent', 'createStudent', 'updateStudent', 'deleteStudent', 'getStats', 'ping']
+        };
     }
+    
+    return jsonResponse(result);
+    
   } catch (error) {
-    return jsonResponse({ success: false, error: error.message });
+    Logger.log('Error: ' + error.toString());
+    return jsonResponse({
+      success: false,
+      error: error.message
+    });
   }
 }
 
