@@ -1,30 +1,31 @@
 import { FiUser, FiPhone, FiMail, FiMapPin, FiLoader } from 'react-icons/fi';
 
+// Move these outside to prevent re-creation on every render
+const InputField = ({ formData, handleChange, errors, label, name, type = 'text', placeholder, maxLength, required = true, ...props }) => (
+  <div>
+    <label className="block text-xs font-medium text-gray-700 mb-1.5">
+      {label} {required && <span className="text-red-500">*</span>}
+    </label>
+    <input type={type} name={name} value={formData[name]} onChange={handleChange} maxLength={maxLength} placeholder={placeholder} className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${errors[name] ? 'border-red-500' : ''}`} {...props} />
+    {errors[name] && <p className="text-red-500 text-xs mt-1">{errors[name]}</p>}
+  </div>
+);
+
+const SelectField = ({ formData, handleChange, errors, label, name, options, required = true, disabled = false }) => (
+  <div>
+    <label className="block text-xs font-medium text-gray-700 mb-1.5">
+      {label} {required && <span className="text-red-500">*</span>}
+    </label>
+    <select name={name} value={formData[name]} onChange={handleChange} disabled={disabled} className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${errors[name] ? 'border-red-500' : ''}`}>
+      <option value="">Pilih {label.replace(' Tempat', '').replace(' Agama', '').replace(' Jenis Kelamin', '')}</option>
+      {options.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+    </select>
+    {errors[name] && <p className="text-red-500 text-xs mt-1">{errors[name]}</p>}
+  </div>
+);
+
 const StudentForm = ({ formData, handleChange, errors, wilayahData, loadingWilayah }) => {
   const { provinsiList, kabupatenList, kecamatanList, kelurahanList } = wilayahData;
-
-  const InputField = ({ label, name, type = 'text', placeholder, maxLength, required = true, ...props }) => (
-    <div>
-      <label className="block text-xs font-medium text-gray-700 mb-1.5">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <input type={type} name={name} value={formData[name]} onChange={handleChange} maxLength={maxLength} placeholder={placeholder} className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${errors[name] ? 'border-red-500' : ''}`} {...props} />
-      {errors[name] && <p className="text-red-500 text-xs mt-1">{errors[name]}</p>}
-    </div>
-  );
-
-  const SelectField = ({ label, name, options, required = true, disabled = false }) => (
-    <div>
-      <label className="block text-xs font-medium text-gray-700 mb-1.5">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
-      <select name={name} value={formData[name]} onChange={handleChange} disabled={disabled} className={`w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all ${errors[name] ? 'border-red-500' : ''}`}>
-        <option value="">Pilih {label.replace(' Tempat', '').replace(' Agama', '').replace(' Jenis Kelamin', '')}</option>
-        {options.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-      </select>
-      {errors[name] && <p className="text-red-500 text-xs mt-1">{errors[name]}</p>}
-    </div>
-  );
 
   const agamaOptions = [{ value: 'Islam', label: 'Islam' }, { value: 'Kristen', label: 'Kristen' }, { value: 'Katolik', label: 'Katolik' }, { value: 'Hindu', label: 'Hindu' }, { value: 'Buddha', label: 'Buddha' }, { value: 'Konghucu', label: 'Konghucu' }];
   const genderOptions = [{ value: 'L', label: 'Laki-laki' }, { value: 'P', label: 'Perempuan' }];
@@ -39,16 +40,16 @@ const StudentForm = ({ formData, handleChange, errors, wilayahData, loadingWilay
       {/* Nama & Identitas */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div className="md:col-span-2">
-          <InputField label="Nama Lengkap" name="nama_lengkap" placeholder="Sesuai ijazah" />
+          <InputField formData={formData} errors={errors} handleChange={handleChange} label="Nama Lengkap" name="nama_lengkap" placeholder="Sesuai ijazah" />
         </div>
-        <InputField label="NISN" name="nisn" placeholder="10 digit" maxLength={10} />
-        <InputField label="NIK" name="nik" placeholder="16 digit" maxLength={16} />
-        <InputField label="Tempat Lahir" name="tempat_lahir" />
-        <InputField label="Tanggal Lahir" name="tanggal_lahir" type="date" />
-        <SelectField label="Jenis Kelamin" name="jenis_kelamin" options={genderOptions} />
-        <SelectField label="Agama" name="agama" options={agamaOptions} />
-        <InputField label="No. Telepon" name="telepon" type="tel" placeholder="08xxxxxxxxxx" />
-        <InputField label="Email" name="email" type="email" placeholder="email@example.com" required={false} />
+        <InputField formData={formData} errors={errors} handleChange={handleChange} label="NISN" name="nisn" placeholder="10 digit" maxLength={10} />
+        <InputField formData={formData} errors={errors} handleChange={handleChange} label="NIK" name="nik" placeholder="16 digit" maxLength={16} />
+        <InputField formData={formData} errors={errors} handleChange={handleChange} label="Tempat Lahir" name="tempat_lahir" />
+        <InputField formData={formData} errors={errors} handleChange={handleChange} label="Tanggal Lahir" name="tanggal_lahir" type="date" />
+        <SelectField formData={formData} errors={errors} handleChange={handleChange} label="Jenis Kelamin" name="jenis_kelamin" options={genderOptions} />
+        <SelectField formData={formData} errors={errors} handleChange={handleChange} label="Agama" name="agama" options={agamaOptions} />
+        <InputField formData={formData} errors={errors} handleChange={handleChange} label="No. Telepon" name="telepon" type="tel" placeholder="08xxxxxxxxxx" />
+        <InputField formData={formData} errors={errors} handleChange={handleChange} label="Email" name="email" type="email" placeholder="email@example.com" required={false} />
       </div>
 
       {/* Alamat */}
