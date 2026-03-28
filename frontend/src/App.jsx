@@ -3,21 +3,25 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import LoadingPage from '@/components/ui/LoadingPage';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import PublicRoute from '@/components/auth/ProtectedRoute';
+import { ProtectedRoute, PublicRoute, AdminRoute } from '@/components/auth/ProtectedRoute';
 
 // Lazy load pages for code splitting
 const Home = lazy(() => import('@/pages/Home'));
 const PPDB = lazy(() => import('@/pages/PPDB'));
 const Login = lazy(() => import('@/pages/Login'));
+const AdminLogin = lazy(() => import('@/pages/admin/AdminLogin'));
+const ManageAdmins = lazy(() => import('@/pages/admin/ManageAdmins'));
 const Register = lazy(() => import('@/pages/Register'));
 const Status = lazy(() => import('@/pages/Status'));
 const Success = lazy(() => import('@/pages/Success'));
 const PaymentStatus = lazy(() => import('@/pages/PaymentStatus'));
 const StudentExam = lazy(() => import('@/pages/StudentExam'));
 const News = lazy(() => import('@/pages/News'));
+const NewsDetail = lazy(() => import('@/pages/NewsDetail'));
 const Majors = lazy(() => import('@/pages/Majors'));
 const About = lazy(() => import('@/pages/About'));
+const SchoolProfile = lazy(() => import('@/pages/SchoolProfile'));
+const WilayahTest = lazy(() => import('@/pages/WilayahTest'));
 
 // Admin pages - lazy loaded
 const AdminPayments = lazy(() => import('@/pages/admin/Payments'));
@@ -38,8 +42,11 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/ppdb" element={<PPDB />} />
               <Route path="/news" element={<News />} />
+              <Route path="/news/:id" element={<NewsDetail />} />
               <Route path="/majors" element={<Majors />} />
               <Route path="/about" element={<About />} />
+              <Route path="/profile-sekolah" element={<SchoolProfile />} />
+              <Route path="/test-wilayah" element={<WilayahTest />} />
               <Route path="/status" element={<Status />} />
               
               {/* Login Route - Redirect if already logged in */}
@@ -72,11 +79,41 @@ function App() {
               } />
 
               {/* Admin Routes */}
-              <Route path="/admin/payments" element={<AdminPayments />} />
-              <Route path="/admin/notifications" element={<AdminNotifications />} />
-              <Route path="/admin/exams" element={<AdminExamSchedule />} />
-              <Route path="/admin/exam-results" element={<AdminExamResults />} />
-              <Route path="/admin/reports" element={<AdminReports />} />
+              <Route path="/admin/login" element={
+                <PublicRoute redirect="/admin/payments">
+                  <AdminLogin />
+                </PublicRoute>
+              } />
+              <Route path="/admin/manage-admins" element={
+                <AdminRoute>
+                  <ManageAdmins />
+                </AdminRoute>
+              } />
+              <Route path="/admin/payments" element={
+                <AdminRoute>
+                  <AdminPayments />
+                </AdminRoute>
+              } />
+              <Route path="/admin/notifications" element={
+                <AdminRoute>
+                  <AdminNotifications />
+                </AdminRoute>
+              } />
+              <Route path="/admin/exams" element={
+                <AdminRoute>
+                  <AdminExamSchedule />
+                </AdminRoute>
+              } />
+              <Route path="/admin/exam-results" element={
+                <AdminRoute>
+                  <AdminExamResults />
+                </AdminRoute>
+              } />
+              <Route path="/admin/reports" element={
+                <AdminRoute>
+                  <AdminReports />
+                </AdminRoute>
+              } />
             </Routes>
           </Suspense>
         </main>

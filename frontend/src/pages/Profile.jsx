@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { FiUser, FiMail, FiPhone, FiMapPin, FiCalendar, FiEdit3, FiSave, FiX, FiCamera, FiShield, FiBell, FiLogOut, FiClock } from 'react-icons/fi';
 import { useAuthStore } from '@/stores/useAuthStore';
 
@@ -295,14 +295,14 @@ const Profile = () => {
   );
 };
 
-const FormField = ({ label, name, value, onChange, disabled, icon: Icon, type = 'text', required = false }) => (
+const FormField = ({ label, name, value, onChange, disabled, icon: IconComponent, type = 'text', required = false }) => ( // eslint-disable-line no-unused-vars
   <div>
     <label className="block text-sm font-medium text-gray-700 mb-2">
       {label} {required && <span className="text-red-500">*</span>}
     </label>
     <div className="relative">
       <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-        <Icon className="w-5 h-5" />
+        <IconComponent className="w-5 h-5" />
       </div>
       <input
         type={type}
@@ -509,11 +509,11 @@ const NotificationsTab = () => {
   );
 };
 
-const NotificationToggle = ({ icon: IconComp, title, description, checked, onChange, gradient }) => (
+const NotificationToggle = ({ icon: IconComponent, title, description, checked, onChange, gradient }) => ( // eslint-disable-line no-unused-vars
   <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
     <div className="flex items-center gap-4">
       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white shadow-lg`}>
-        <IconComp className="w-6 h-6" />
+        <IconComponent className="w-6 h-6" />
       </div>
       <div>
         <h3 className="font-semibold text-gray-800">{title}</h3>

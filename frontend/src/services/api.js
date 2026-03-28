@@ -158,6 +158,54 @@ export const paymentAPI = {
     }
   },
 
+  // Cicilan System - Upload bukti cicilan
+  uploadCicilan: async (studentId, bulan, file) => {
+    try {
+      const storageRef = ref(storage, `payments/${studentId}/cicilan_${bulan}_${Date.now()}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+
+      const studentRef = doc(db, COLLECTION_NAME, studentId);
+      const studentSnap = await getDoc(studentRef);
+      
+      if (!studentSnap.exists()) {
+        return { success: false, error: 'Student not found' };
+      }
+
+      const studentData = studentSnap.data();
+      
+      // Initialize cicilan array if not exists
+      let cicilanArray = studentData.pembayaran?.cicilan || [
+        { bulan: 1, jumlah: 500000, status: 'unpaid' },
+        { bulan: 2, jumlah: 500000, status: 'unpaid' },
+        { bulan: 3, jumlah: 500000, status: 'unpaid' }
+      ];
+
+      // Update specific cicilan
+      cicilanArray[bulan - 1] = {
+        ...cicilanArray[bulan - 1],
+        status: 'pending',
+        buktiUrl: downloadURL,
+        uploadedAt: serverTimestamp()
+      };
+
+      // Calculate total paid
+      const totalPaid = cicilanArray
+        .filter(c => c.status === 'paid')
+        .reduce((sum, c) => sum + c.jumlah, 0);
+
+      await updateDoc(studentRef, {
+        'pembayaran.cicilan': cicilanArray,
+        'pembayaran.totalPaid': totalPaid,
+        updated_at: serverTimestamp()
+      });
+
+      return { success: true, message: 'Bukti cicilan berhasil diupload' };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
+
   verifyPayment: async (studentId, status, rejected_reason = '') => {
     try {
       const studentRef = doc(db, COLLECTION_NAME, studentId);
@@ -174,6 +222,47 @@ export const paymentAPI = {
       await updateDoc(studentRef, updateData);
 
       return { success: true, message: 'Pembayaran berhasil diverifikasi' };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
+
+  // Verify cicilan (Admin)
+  verifyCicilan: async (studentId, bulan, status, rejectedReason = '') => {
+    try {
+      const studentRef = doc(db, COLLECTION_NAME, studentId);
+      const studentSnap = await getDoc(studentRef);
+      
+      if (!studentSnap.exists()) {
+        return { success: false, error: 'Student not found' };
+      }
+
+      const studentData = studentSnap.data();
+      let cicilanArray = studentData.pembayaran?.cicilan || [];
+
+      // Update cicilan status
+      if (cicilanArray[bulan - 1]) {
+        cicilanArray[bulan - 1] = {
+          ...cicilanArray[bulan - 1],
+          status: status,
+          verifiedAt: serverTimestamp(),
+          ...(status === 'rejected' && { rejectedReason }),
+          ...(status === 'paid' && { paidAt: serverTimestamp() })
+        };
+      }
+
+      // Calculate total paid
+      const totalPaid = cicilanArray
+        .filter(c => c.status === 'paid')
+        .reduce((sum, c) => sum + c.jumlah, 0);
+
+      await updateDoc(studentRef, {
+        'pembayaran.cicilan': cicilanArray,
+        'pembayaran.totalPaid': totalPaid,
+        updated_at: serverTimestamp()
+      });
+
+      return { success: true, message: 'Cicilan berhasil diverifikasi' };
     } catch (error) {
       return { success: false, error: error.message };
     }

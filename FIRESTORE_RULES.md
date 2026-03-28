@@ -8,21 +8,29 @@ Deploy rules ini ke Firebase Console → Firestore Database → Rules
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Helper function to check if user is admin
+
+    // Helper function to check if user is admin (any role)
     function isAdmin() {
-      return request.auth != null && 
-             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return request.auth != null &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['super_admin', 'admin', 'staff'] &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.active != false;
     }
-    
+
+    // Helper function to check if user is super admin
+    function isSuperAdmin() {
+      return request.auth != null &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super_admin' &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.active != false;
+    }
+
     // Students collection
     match /students/{studentId} {
-      
+
       // Allow read for owner or admin
-      allow read: if request.auth != null && 
-                     (isAdmin() || 
+      allow read: if request.auth != null &&
+                     (isAdmin() ||
                       request.auth.uid == resource.data.user_id);
-      
+
       // Allow create during PPDB period (public registration)
       allow create: if request.time >= Timestamp.date(2024, 1, 1) &&
                        request.time < Timestamp.date(2025, 1, 1) &&
@@ -30,50 +38,50 @@ service cloud.firestore {
                        request.resource.data.data_siswa.nama_lengkap is string &&
                        request.resource.data.data_siswa.nama_lengkap.size() > 3 &&
                        request.resource.data.data_siswa.nisn is string;
-      
+
       // Allow update only for admin
       allow update: if request.auth != null && isAdmin();
-      
+
       // Allow delete only for admin
       allow delete: if request.auth != null && isAdmin();
     }
-    
+
     // Settings collection - read public, write admin only
     match /settings/{settingId} {
       allow read: if true;
       allow write: if request.auth != null && isAdmin();
     }
-    
+
     // Announcements collection
     match /announcements/{announcementId} {
       // Allow read if published or user is admin
       allow read: if resource.data.published == true ||
                      (request.auth != null && isAdmin());
-      
+
       // Write: Admin only
       allow write: if request.auth != null && isAdmin();
     }
-    
+
     // Gallery collection
     match /gallery/{galleryId} {
       // Allow read if published
       allow read: if resource.data.published == true;
-      
+
       // Write: Admin only
       allow write: if request.auth != null && isAdmin();
     }
-    
+
     // Exams collection
     match /exams/{examId} {
       // Allow read for owner or admin
-      allow read: if request.auth != null && 
-                     (isAdmin() || 
+      allow read: if request.auth != null &&
+                     (isAdmin() ||
                       request.auth.uid == resource.data.student_id);
-      
+
       // Write: Admin only
       allow write: if request.auth != null && isAdmin();
     }
-    
+
     // Contacts collection
     match /contacts/{contactId} {
       // Allow create for anyone (contact form)
@@ -82,23 +90,28 @@ service cloud.firestore {
                        request.resource.data.email is string &&
                        request.resource.data.message is string &&
                        request.resource.data.message.size() > 10;
-      
+
       // Read/Update/Delete: Admin only
       allow read, update, delete: if request.auth != null && isAdmin();
     }
-    
-    // Users collection (admin data)
+
+    // Users collection (unified user & admin data)
     match /users/{userId} {
       // Allow read for authenticated users
       allow read: if request.auth != null;
-      
+
+      // Allow create during registration (own profile)
+      allow create: if request.auth != null &&
+                       request.auth.uid == userId &&
+                       request.resource.data.keys().hasAll(['email', 'name']);
+
       // Allow update only self or super admin
-      allow update: if request.auth != null && 
-                       (request.auth.uid == resource.data.id || 
-                        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super_admin');
-      
-      // No one can create/delete users from client
-      allow create, delete: if false;
+      allow update: if request.auth != null &&
+                       (request.auth.uid == resource.data.id ||
+                        isSuperAdmin());
+
+      // Allow delete only super admin
+      allow delete: if request.auth != null && isSuperAdmin();
     }
   }
 }

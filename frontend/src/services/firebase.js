@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, enableMultiTabIndexedDbPersistence } from 'firebase/firestore';
+import { getFirestore, enableMultiTabIndexedDbPersistence, setLogLevel } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence } from 'firebase/auth';
 
@@ -27,9 +27,8 @@ if (DEBUG_MODE) {
     projectId: firebaseConfig.projectId,
     authDomain: firebaseConfig.authDomain
   });
-  
+
   // Enable Firebase debug logging
-  const { setLogLevel } = require('firebase/firestore');
   setLogLevel('debug');
 }
 

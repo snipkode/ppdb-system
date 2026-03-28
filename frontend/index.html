@@ -4,12 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- Eruda DevTools (Mobile Debug) -->
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-
-    <!-- Eruda DevTools (Mobile Debug) -->
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-
     <!-- Primary Meta Tags -->
     <title>PPDB Online - Pendaftaran Siswa Baru</title>
     <meta name="title" content="PPDB Online - Pendaftaran Siswa Baru" />
@@ -64,7 +58,22 @@
   </head>
   <body>
     <div id="root"></div>
-    
+
+    <!-- Eruda DevTools (Mobile Debug) -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>
+      // Initialize Eruda immediately
+      if (window.eruda) {
+        eruda.init({
+          defaults: {
+            displaySize: 40,
+            theme: 'Material'
+          }
+        });
+        console.log('[Eruda] DevTools initialized');
+      }
+    </script>
+
     <!-- Vite Entry Point -->
     <script type="module" src="/src/main.jsx"></script>
 

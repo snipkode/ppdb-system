@@ -175,33 +175,33 @@ const Majors = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-20 overflow-hidden">
+      {/* Hero Section - Compact */}
+      <section className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-10 md:py-14 overflow-hidden">
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-80 h-80 bg-yellow-300 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-56 h-56 bg-yellow-300 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-5xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-xl px-5 py-2.5 rounded-full mb-6 animate-fade-in-up">
-              <FiBook className="w-5 h-5" />
-              <span className="text-sm font-bold">8 PROGRAM KEAHLIAN TERSEDIA</span>
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-xl px-4 py-2 rounded-full mb-4">
+              <FiBook className="w-4 h-4" />
+              <span className="text-xs font-bold">8 PROGRAM KEAHLIAN</span>
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-black mb-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+            <h1 className="text-3xl md:text-5xl font-black mb-4">
               Program Keahlian
             </h1>
 
-            <p className="text-xl text-white/90 mb-10 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
-              Pilih jurusan sesuai minat, bakat, dan rencana karirmu di masa depan
+            <p className="text-base md:text-lg text-white/90 mb-6 max-w-xl mx-auto">
+              Pilih jurusan sesuai minat dan rencana karirmu
             </p>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+            {/* Stats - Compact */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <HeroStat icon={<FiBook />} number="8" label="Jurusan" />
               <HeroStat icon={<FiUsers />} number="600+" label="Kuota" />
-              <HeroStat icon={<FiAward />} number="95%" label="Lulusan Bekerja" />
+              <HeroStat icon={<FiAward />} number="95%" label="Bekerja" />
               <HeroStat icon={<FiStar />} number="A" label="Akreditasi" />
             </div>
           </div>
@@ -209,7 +209,7 @@ const Majors = () => {
 
         {/* Wave Divider */}
         <div className="absolute bottom-0 left-0 right-0 leading-none">
-          <svg viewBox="0 0 1440 120" fill="none" className="w-full h-12 md:h-20">
+          <svg viewBox="0 0 1440 120" fill="none" className="w-full h-8 md:h-12">
             <path d="M0 0L60 10C120 20 240 40 360 53.3C480 67 600 73 720 73.3C840 73 960 67 1080 53.3C1200 40 1320 20 1380 10L1440 0V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z" fill="url(#gradient)" fillOpacity="0.15"/>
             <defs>
               <linearGradient id="gradient" x1="0" y1="0" x2="1440" y2="0">
@@ -222,19 +222,19 @@ const Majors = () => {
         </div>
       </section>
 
-      {/* Majors Grid */}
-      <section className="py-12 md:py-20">
+      {/* Majors Grid - Compact */}
+      <section className="py-8 md:py-12">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
               Pilih Jurusanmu
             </h2>
-            <p className="text-gray-600 text-base md:text-lg max-w-2xl mx-auto">
-              Semua program keahlian dilengkapi dengan fasilitas modern dan kurikulum standar industri
+            <p className="text-gray-600 text-sm max-w-2xl mx-auto">
+              Semua jurusan dilengkapi fasilitas modern & kurikulum standar industri
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
             {majors.map((major) => (
               <MajorCard key={major.id} major={major} />
             ))}
@@ -242,102 +242,102 @@ const Majors = () => {
         </div>
       </section>
 
-      {/* Why Choose Section */}
-      <section className="py-12 md:py-20 bg-white/50 backdrop-blur-sm">
+      {/* Why Choose Section - Compact */}
+      <section className="py-8 md:py-12 bg-white/50 backdrop-blur-sm">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-800 via-purple-800 to-pink-800 bg-clip-text text-transparent mb-4">
-              Kenapa Belajar di SMK Nusantara?
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-800 via-purple-800 to-pink-800 bg-clip-text text-transparent mb-2">
+              Kenapa SMK Nusantara?
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
             <FeatureCard
               icon={<FiMonitor />}
               title="Fasilitas Modern"
-              description="Lab komputer, workshop, dan peralatan standar industri"
+              description="Lab komputer & workshop standar industri"
               color="from-blue-500 to-cyan-500"
             />
             <FeatureCard
               icon={<FiAward />}
               title="Guru Bersertifikat"
-              description="Pengajar profesional dan berpengalaman di bidangnya"
+              description="Pengajar profesional berpengalaman"
               color="from-purple-500 to-pink-500"
             />
             <FeatureCard
               icon={<FiBriefcase />}
               title="Link Industri"
-              description="Kerjasama dengan 100+ perusahaan untuk PKL & penyaluran kerja"
+              description="100+ perusahaan untuk PKL & kerja"
               color="from-green-500 to-emerald-500"
             />
             <FeatureCard
               icon={<FiGlobe />}
-              title="Sertifikasi Internasional"
-              description="Lulusan mendapat sertifikat kompetensi yang diakui global"
+              title="Sertifikasi Global"
+              description="Sertifikat kompetensi diakui internasional"
               color="from-orange-500 to-red-500"
             />
           </div>
         </div>
       </section>
 
-      {/* Comparison Table */}
-      <section className="py-12 md:py-20">
+      {/* Comparison Table - Compact */}
+      <section className="py-8 md:py-12">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
               Perbandingan Jurusan
             </h2>
-            <p className="text-gray-600">Informasi lengkap untuk membantumu memilih</p>
+            <p className="text-gray-600 text-sm">Informasi lengkap untuk membantumu memilih</p>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full bg-white rounded-3xl shadow-xl overflow-hidden">
+            <table className="w-full bg-white rounded-2xl shadow-lg overflow-hidden">
               <thead className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white">
                 <tr>
-                  <th className="py-4 px-6 text-left font-bold">Jurusan</th>
-                  <th className="py-4 px-6 text-center font-bold">Kuota</th>
-                  <th className="py-4 px-6 text-center font-bold">Durasi</th>
-                  <th className="py-4 px-6 text-center font-bold">Gaji Awal</th>
-                  <th className="py-4 px-6 text-center font-bold">Aksi</th>
+                  <th className="py-3 px-4 text-left font-bold text-sm">Jurusan</th>
+                  <th className="py-3 px-4 text-center font-bold text-sm">Kuota</th>
+                  <th className="py-3 px-4 text-center font-bold text-sm">Durasi</th>
+                  <th className="py-3 px-4 text-center font-bold text-sm">Gaji</th>
+                  <th className="py-3 px-4 text-center font-bold text-sm">Aksi</th>
                 </tr>
               </thead>
               <tbody>
                 {majors.map((major, index) => (
                   <tr key={major.id} className={index % 2 === 0 ? 'bg-slate-50' : 'bg-white'}>
-                    <td className="py-4 px-6">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{major.emoji}</span>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{major.emoji}</span>
                         <div>
-                          <div className="font-bold text-slate-800">{major.name}</div>
+                          <div className="font-bold text-slate-800 text-sm">{major.name}</div>
                           <div className="text-xs text-gray-500">{major.fullCode}</div>
                         </div>
                       </div>
                     </td>
-                    <td className="py-4 px-6 text-center">
-                      <span className="inline-flex items-center gap-1 text-blue-600 font-semibold">
-                        <FiUsers className="w-4 h-4" />
+                    <td className="py-3 px-4 text-center">
+                      <span className="inline-flex items-center gap-1 text-blue-600 font-semibold text-sm">
+                        <FiUsers className="w-3 h-3" />
                         {major.quota}
                       </span>
                     </td>
-                    <td className="py-4 px-6 text-center">
-                      <span className="inline-flex items-center gap-1 text-purple-600 font-semibold">
-                        <FiClock className="w-4 h-4" />
+                    <td className="py-3 px-4 text-center">
+                      <span className="inline-flex items-center gap-1 text-purple-600 font-semibold text-sm">
+                        <FiClock className="w-3 h-3" />
                         {major.duration}
                       </span>
                     </td>
-                    <td className="py-4 px-6 text-center">
-                      <span className="inline-flex items-center gap-1 text-green-600 font-bold">
-                        <FiDollarSign className="w-4 h-4" />
+                    <td className="py-3 px-4 text-center">
+                      <span className="inline-flex items-center gap-1 text-green-600 font-bold text-sm">
+                        <FiDollarSign className="w-3 h-3" />
                         {major.salary}
                       </span>
                     </td>
-                    <td className="py-4 px-6 text-center">
+                    <td className="py-3 px-4 text-center">
                       <Link
                         to={`/register?major=${major.code}`}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-105"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold text-sm hover:shadow-lg hover:shadow-purple-500/30 transition-all hover:scale-105"
                       >
                         <span>Daftar</span>
-                        <FiArrowRight className="w-4 h-4" />
+                        <FiArrowRight className="w-3 h-3" />
                       </Link>
                     </td>
                   </tr>
@@ -348,34 +348,34 @@ const Majors = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 md:py-24 relative overflow-hidden">
+      {/* CTA Section - Compact */}
+      <section className="py-10 md:py-16 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600"></div>
         <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-60 h-60 bg-yellow-300 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-48 h-48 bg-yellow-300 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
         </div>
 
         <div className="container mx-auto px-4 relative z-10 text-center">
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
             Sudah Menentukan Pilihan?
           </h2>
-          <p className="text-white/90 text-lg mb-10 max-w-2xl mx-auto">
-            Segera daftarkan diri Anda dan mulai perjalanan menuju masa depan gemilang
+          <p className="text-white/90 text-sm md:text-base mb-6 max-w-xl mx-auto">
+            Segera daftarkan diri dan mulai perjalanan menuju masa depan gemilang
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               to="/register"
-              className="group inline-flex items-center justify-center gap-3 bg-white text-purple-600 hover:bg-gray-50 font-bold px-10 py-5 rounded-2xl transition-all duration-300 hover:shadow-2xl hover:shadow-white/30 hover:scale-105 active:scale-95"
+              className="group inline-flex items-center justify-center gap-2 bg-white text-purple-600 hover:bg-gray-50 font-bold px-6 py-3 rounded-xl transition-all hover:shadow-2xl hover:shadow-white/30 hover:scale-105 active:scale-95"
             >
               <span>Daftar Sekarang</span>
-              <FiChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <FiChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
               to="/ppdb"
-              className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl text-white border-2 border-white/40 hover:bg-white/20 font-semibold px-10 py-5 rounded-2xl transition-all duration-300 hover:scale-105 active:scale-95"
+              className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl text-white border-2 border-white/40 hover:bg-white/20 font-semibold px-6 py-3 rounded-xl transition-all hover:scale-105 active:scale-95"
             >
-              <FiBook className="w-5 h-5" />
+              <FiBook className="w-4 h-4" />
               <span>Info PPDB</span>
             </Link>
           </div>
@@ -386,79 +386,79 @@ const Majors = () => {
 };
 
 const HeroStat = ({ icon, number, label }) => (
-  <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-4 hover:bg-white/15 transition-all duration-300 hover:scale-105">
-    <div className="text-white/80 mb-2 flex justify-center">{icon}</div>
-    <div className="text-2xl md:text-3xl font-bold text-white">{number}</div>
+  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-3 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+    <div className="text-white/80 mb-1 flex justify-center">{icon}</div>
+    <div className="text-xl md:text-2xl font-bold text-white">{number}</div>
     <div className="text-xs text-white/70">{label}</div>
   </div>
 );
 
 const MajorCard = ({ major }) => (
   <Link to={`/register?major=${major.code}`} className="group">
-    <div className={`relative bg-white rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 ${major.popular ? 'ring-2 ring-green-500' : ''}`}>
+    <div className={`relative bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 ${major.popular ? 'ring-2 ring-green-500' : ''}`}>
       {/* Popular Badge */}
       {major.popular && (
-        <div className="absolute top-4 right-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full z-10 shadow-lg">
+        <div className="absolute top-2 right-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10 shadow">
           ⭐ POPULER
         </div>
       )}
 
-      {/* Header with Gradient */}
-      <div className={`h-32 bg-gradient-to-br ${major.color} flex items-center justify-center relative overflow-hidden`}>
-        <span className="text-8xl group-hover:scale-110 transition-transform duration-500">{major.emoji}</span>
-        <div className="absolute bottom-0 left-0 right-0 bg-white/20 backdrop-blur-sm px-4 py-2">
+      {/* Header with Gradient - Compact */}
+      <div className={`h-24 bg-gradient-to-br ${major.color} flex items-center justify-center relative overflow-hidden`}>
+        <span className="text-6xl group-hover:scale-110 transition-transform duration-300">{major.emoji}</span>
+        <div className="absolute bottom-0 left-0 right-0 bg-white/20 backdrop-blur-sm px-3 py-1.5">
           <div className="text-white text-xs font-bold">{major.fullCode}</div>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xl font-bold text-slate-800 group-hover:text-purple-600 transition-colors">
+      {/* Content - Compact */}
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="text-base font-bold text-slate-800 group-hover:text-purple-600 transition-colors">
             {major.name}
           </h3>
-          <span className={`px-3 py-1 bg-gradient-to-r ${major.color} text-white text-xs font-bold rounded-full`}>
+          <span className={`px-2 py-0.5 bg-gradient-to-r ${major.color} text-white text-xs font-bold rounded-full`}>
             {major.code}
           </span>
         </div>
 
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+        <p className="text-gray-600 text-xs mb-3 line-clamp-2">
           {major.description}
         </p>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        {/* Quick Stats - Compact */}
+        <div className="grid grid-cols-3 gap-1.5 mb-3">
           <StatBox icon={<FiUsers />} value={major.quota} label="Kuota" color={major.color} />
           <StatBox icon={<FiClock />} value={major.duration} label="Durasi" color={major.color} />
           <StatBox icon={<FiDollarSign />} value={major.salary} label="Gaji" color={major.color} />
         </div>
 
-        {/* Features Preview */}
-        <div className="space-y-2 mb-4">
+        {/* Features Preview - Compact */}
+        <div className="space-y-1.5 mb-3">
           {major.features.slice(0, 3).map((feature, idx) => (
-            <div key={idx} className="flex items-center gap-2 text-sm">
-              <FiCheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+            <div key={idx} className="flex items-center gap-1.5 text-xs">
+              <FiCheckCircle className="w-3 h-3 text-green-500 flex-shrink-0" />
               <span className="text-gray-700">{feature}</span>
             </div>
           ))}
           {major.features.length > 3 && (
-            <div className="text-xs text-purple-600 font-semibold pl-6">
+            <div className="text-xs text-purple-600 font-semibold pl-5">
               +{major.features.length - 3} lainnya
             </div>
           )}
         </div>
 
-        {/* Careers */}
-        <div className="pt-4 border-t">
-          <div className="text-xs text-gray-500 mb-2">Prospek Karir:</div>
+        {/* Careers - Compact */}
+        <div className="pt-3 border-t">
+          <div className="text-xs text-gray-500 mb-1.5">Prospek Karir:</div>
           <div className="flex flex-wrap gap-1">
             {major.careers.slice(0, 3).map((career, idx) => (
-              <span key={idx} className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded-lg">
+              <span key={idx} className="px-1.5 py-1 bg-slate-100 text-slate-700 text-xs rounded">
                 {career}
               </span>
             ))}
             {major.careers.length > 3 && (
-              <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-lg">
+              <span className="px-1.5 py-1 bg-purple-100 text-purple-700 text-xs rounded">
                 +{major.careers.length - 3}
               </span>
             )}
@@ -470,8 +470,8 @@ const MajorCard = ({ major }) => (
 );
 
 const StatBox = ({ icon, value, label, color }) => (
-  <div className="text-center p-2 bg-slate-50 rounded-xl">
-    <div className={`text-lg mb-1 bg-gradient-to-r ${color} bg-clip-text text-transparent`}>
+  <div className="text-center p-1.5 bg-slate-50 rounded-lg">
+    <div className={`text-base mb-0.5 bg-gradient-to-r ${color} bg-clip-text text-transparent`}>
       {icon}
     </div>
     <div className="text-xs font-bold text-slate-800">{value}</div>
@@ -480,13 +480,13 @@ const StatBox = ({ icon, value, label, color }) => (
 );
 
 const FeatureCard = ({ icon, title, description, color }) => (
-  <div className="group p-6 rounded-3xl bg-white/80 backdrop-blur-xl border border-white/60 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden">
-    <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10 blur-xl`}></div>
-    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center text-white mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg`}>
+  <div className="group p-4 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/60 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+    <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 blur-xl`}></div>
+    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-white mb-3 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 shadow-lg`}>
       {icon}
     </div>
-    <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-white transition-colors">{title}</h3>
-    <p className="text-gray-600 group-hover:text-white/90 transition-colors">{description}</p>
+    <h3 className="text-base font-bold text-slate-800 mb-1.5 group-hover:text-white transition-colors">{title}</h3>
+    <p className="text-gray-600 text-sm group-hover:text-white/90 transition-colors">{description}</p>
   </div>
 );
 

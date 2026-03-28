@@ -1,10 +1,58 @@
 import { useState } from 'react';
-import { FiX, FiCheck, FiAlertCircle, FiDownload, FiZoomIn } from 'react-icons/fi';
+import { FiX, FiCheckCircle, FiAlertCircle, FiClock, FiDollarSign, FiCreditCard } from 'react-icons/fi';
 
 const PaymentDetailModal = ({ payment, onClose, onVerify }) => {
-  const [showRejectForm, setShowRejectForm] = useState(false);
-  const [rejectNotes, setRejectNotes] = useState('');
-  const [verifyNotes, setVerifyNotes] = useState('');
+  const [showRejectInput, setShowRejectInput] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [selectedCicilan, setSelectedCicilan] = useState(null);
+
+  const cicilan = payment.pembayaran?.cicilan || [
+    { bulan: 1, jumlah: 500000, status: 'unpaid' },
+    { bulan: 2, jumlah: 500000, status: 'unpaid' },
+    { bulan: 3, jumlah: 500000, status: 'unpaid' }
+  ];
+
+  const totalPaid = payment.pembayaran?.totalPaid || 0;
+  const totalBiaya = payment.pembayaran?.totalBiaya || 1500000;
+  const remaining = totalBiaya - totalPaid;
+
+  const getStatusBadge = (status) => {
+    const badges = {
+      unpaid: {
+        color: 'bg-yellow-100 text-yellow-800',
+        icon: <FiAlertCircle className="w-4 h-4" />,
+        label: 'Belum Bayar'
+      },
+      pending: {
+        color: 'bg-blue-100 text-blue-800',
+        icon: <FiClock className="w-4 h-4" />,
+        label: 'Menunggu Verifikasi'
+      },
+      paid: {
+        color: 'bg-green-100 text-green-800',
+        icon: <FiCheckCircle className="w-4 h-4" />,
+        label: 'Lunas'
+      },
+      rejected: {
+        color: 'bg-red-100 text-red-800',
+        icon: <FiAlertCircle className="w-4 h-4" />,
+        label: 'Ditolak'
+      }
+    };
+    return badges[status] || badges.unpaid;
+  };
+
+  const formatDate = (timestamp) => {
+    if (!timestamp) return '-';
+    const date = timestamp?.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleDateString('id-ID', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('id-ID', {
@@ -14,292 +62,235 @@ const PaymentDetailModal = ({ payment, onClose, onVerify }) => {
     }).format(amount);
   };
 
-  const formatDate = (timestamp) => {
-    if (!timestamp) return '-';
-    const date = new Date(timestamp);
-    return date.toLocaleDateString('id-ID', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const handleApprove = () => {
-    onVerify(payment.id, true, verifyNotes);
-  };
-
-  const handleReject = () => {
-    if (!rejectNotes.trim()) {
-      alert('Harap isi alasan penolakan');
-      return;
+  const handleVerify = (approved) => {
+    if (!approved) {
+      setShowRejectInput(true);
+    } else {
+      onVerify(payment.id, selectedCicilan, 'paid');
     }
-    onVerify(payment.id, false, rejectNotes);
   };
 
-  const getStatusBadge = (status) => {
-    const badges = {
-      unpaid: { color: 'bg-yellow-100 text-yellow-800', label: 'Belum Bayar' },
-      pending: { color: 'bg-blue-100 text-blue-800', label: 'Menunggu Verifikasi' },
-      paid: { color: 'bg-green-100 text-green-800', label: 'Lunas' },
-      rejected: { color: 'bg-red-100 text-red-800', label: 'Ditolak' }
-    };
-    return badges[status] || badges.unpaid;
+  const handleConfirmReject = () => {
+    onVerify(payment.id, selectedCicilan, 'rejected', rejectReason);
+    setShowRejectInput(false);
+    setRejectReason('');
   };
 
-  const statusBadge = getStatusBadge(payment.pembayaran.status);
+  const handleViewCicilan = (cicilanItem, index) => {
+    setSelectedCicilan(index + 1);
+  };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full my-8">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-800">Detail Pembayaran</h2>
+        <div className="sticky top-0 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+          <div>
+            <h2 className="text-xl font-bold text-white">Detail Cicilan</h2>
+            <p className="text-sm text-white/80">{payment.nomor_pendaftaran}</p>
+          </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors text-white"
           >
-            <FiX className="w-6 h-6" />
+            <FiX className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 max-h-[calc(100vh-200px)] overflow-y-auto">
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Left Column - Student Info */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-800 border-b pb-2">Informasi Pendaftar</h3>
-              
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-gray-600">No. Pendaftaran</p>
-                  <p className="font-medium text-gray-800">{payment.nomor_pendaftaran}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Nama Lengkap</p>
-                  <p className="font-medium text-gray-800">{payment.nama_siswa}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Email</p>
-                  <p className="font-medium text-gray-800">{payment.email || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Telepon</p>
-                  <p className="font-medium text-gray-800">{payment.telepon || '-'}</p>
-                </div>
-              </div>
+        <div className="p-6 space-y-6">
+          {/* Student Info */}
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-gray-50 rounded-xl p-4">
+              <p className="text-sm text-gray-600 mb-1">Nama Siswa</p>
+              <p className="font-semibold text-gray-800">{payment.nama_siswa || '-'}</p>
             </div>
-
-            {/* Right Column - Payment Status */}
-            <div className="space-y-4">
-              <h3 className="font-semibold text-gray-800 border-b pb-2">Status Pembayaran</h3>
-              
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-gray-600">Status</p>
-                  <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${statusBadge.color}`}>
-                    <span>{statusBadge.label}</span>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Nominal Transfer</p>
-                  <p className="font-medium text-gray-800">
-                    {formatCurrency(payment.pembayaran.amount || 0)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Bank</p>
-                  <p className="font-medium text-gray-800">{payment.pembayaran.bank_name || '-'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Tanggal Transfer</p>
-                  <p className="font-medium text-gray-800">
-                    {payment.pembayaran.transfer_date
-                      ? new Date(payment.pembayaran.transfer_date).toLocaleDateString('id-ID', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })
-                      : '-'}
-                  </p>
-                </div>
-                {payment.pembayaran.verified_at && (
-                  <div>
-                    <p className="text-sm text-gray-600">Tanggal Verifikasi</p>
-                    <p className="font-medium text-gray-800">{formatDate(payment.pembayaran.verified_at)}</p>
-                  </div>
-                )}
-              </div>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <p className="text-sm text-gray-600 mb-1">Email</p>
+              <p className="font-medium text-gray-800">{payment.email || '-'}</p>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <p className="text-sm text-gray-600 mb-1">Telepon</p>
+              <p className="font-medium text-gray-800">{payment.telepon || '-'}</p>
+            </div>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <p className="text-sm text-gray-600 mb-1">Tanggal Daftar</p>
+              <p className="font-medium text-gray-800">{formatDate(payment.created_at)}</p>
             </div>
           </div>
 
-          {/* Bukti Transfer */}
-          <div className="mt-6 space-y-4">
-            <h3 className="font-semibold text-gray-800 border-b pb-2">Bukti Transfer</h3>
-            
-            {payment.pembayaran.bukti_transfer ? (
-              <div className="space-y-3">
-                {payment.pembayaran.bukti_transfer.endsWith('.pdf') ? (
-                  <div className="bg-gray-50 rounded-lg p-6 text-center">
-                    <p className="text-4xl mb-3">📄</p>
-                    <p className="text-gray-600 mb-4">File PDF</p>
-                    <a
-                      href={payment.pembayaran.bukti_transfer}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
-                    >
-                      <FiDownload className="w-4 h-4" />
-                      Download PDF
-                    </a>
-                  </div>
-                ) : (
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <img
-                      src={payment.pembayaran.bukti_transfer}
-                      alt="Bukti Transfer"
-                      className="w-full h-auto max-h-96 object-contain border rounded-lg cursor-pointer hover:opacity-90"
-                      onClick={() => window.open(payment.pembayaran.bukti_transfer, '_blank')}
-                    />
-                    <div className="mt-3 flex gap-2">
-                      <a
-                        href={payment.pembayaran.bukti_transfer}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
-                      >
-                        <FiZoomIn className="w-4 h-4" />
-                        Buka gambar penuh
-                      </a>
-                      <a
-                        href={payment.pembayaran.bukti_transfer}
-                        download
-                        className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm"
-                      >
-                        <FiDownload className="w-4 h-4" />
-                        Download
-                      </a>
-                    </div>
-                  </div>
-                )}
+          {/* Payment Summary */}
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-5 text-white">
+              <p className="text-blue-100 text-sm mb-1">Total Biaya</p>
+              <p className="text-2xl font-bold">{formatCurrency(totalBiaya)}</p>
+              <p className="text-xs text-blue-100 mt-2">3x cicilan</p>
+            </div>
+            <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-5 text-white">
+              <p className="text-green-100 text-sm mb-1">Sudah Dibayar</p>
+              <p className="text-2xl font-bold">{formatCurrency(totalPaid)}</p>
+              <p className="text-xs text-green-100 mt-2">
+                {cicilan.filter(c => c.status === 'paid').length}/3 cicilan lunas
+              </p>
+            </div>
+            <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-5 text-white">
+              <p className="text-orange-100 text-sm mb-1">Sisa Pembayaran</p>
+              <p className="text-2xl font-bold">{formatCurrency(remaining)}</p>
+              <p className="text-xs text-orange-100 mt-2">
+                {cicilan.filter(c => c.status === 'unpaid').length} cicilan lagi
+              </p>
+            </div>
+          </div>
 
-                {/* Upload Info */}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div className="flex items-start gap-3">
-                    <FiAlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-                    <div className="text-sm text-blue-800">
-                      <p className="font-semibold mb-1">Informasi Upload</p>
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                        <span>Diupload:</span>
-                        <span>{formatDate(payment.pembayaran.uploaded_at)}</span>
-                        {payment.pembayaran.notes && (
-                          <>
-                            <span>Catatan:</span>
-                            <span>{payment.pembayaran.notes}</span>
-                          </>
-                        )}
+          {/* Cicilan Details */}
+          <div>
+            <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <FiCreditCard className="w-5 h-5 text-purple-600" />
+              Detail Cicilan per Bulan
+            </h3>
+            <div className="space-y-3">
+              {cicilan.map((cicilanItem, index) => {
+                const statusBadge = getStatusBadge(cicilanItem.status);
+                return (
+                  <div
+                    key={index}
+                    className={`border-2 rounded-xl p-4 transition-all cursor-pointer ${
+                      selectedCicilan === index + 1
+                        ? 'border-purple-500 bg-purple-50'
+                        : cicilanItem.status === 'paid'
+                        ? 'border-green-200 bg-green-50 hover:border-green-300'
+                        : cicilanItem.status === 'pending'
+                        ? 'border-blue-200 bg-blue-50 hover:border-blue-300'
+                        : cicilanItem.status === 'rejected'
+                        ? 'border-red-200 bg-red-50 hover:border-red-300'
+                        : 'border-gray-200 bg-white hover:border-gray-300'
+                    }`}
+                    onClick={() => handleViewCicilan(cicilanItem, index)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
+                          cicilanItem.status === 'paid'
+                            ? 'bg-green-500 text-white'
+                            : cicilanItem.status === 'pending'
+                            ? 'bg-blue-500 text-white'
+                            : cicilanItem.status === 'rejected'
+                            ? 'bg-red-500 text-white'
+                            : 'bg-gray-200 text-gray-600'
+                        }`}>
+                          {cicilanItem.bulan || index + 1}
+                        </div>
+                        <div>
+                          <p className="font-bold text-gray-800">
+                            Cicilan Bulan {cicilanItem.bulan || index + 1}
+                          </p>
+                          <p className="text-sm text-gray-600">
+                            {formatCurrency(cicilanItem.jumlah)} - Jatuh tempo: 30 hari
+                          </p>
+                          {cicilanItem.paidAt && (
+                            <p className="text-xs text-green-600 mt-1">
+                              Lunas pada: {formatDate(cicilanItem.paidAt)}
+                            </p>
+                          )}
+                          {cicilanItem.uploadedAt && (
+                            <p className="text-xs text-blue-600 mt-1">
+                              Upload: {formatDate(cicilanItem.uploadedAt)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-lg font-bold text-gray-800">
+                          {formatCurrency(cicilanItem.jumlah)}
+                        </p>
+                        <div className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium mt-1 ${statusBadge.color}`}>
+                          {statusBadge.icon}
+                          {statusBadge.label}
+                        </div>
                       </div>
                     </div>
+
+                    {/* Action Buttons for Pending Cicilan */}
+                    {cicilanItem.status === 'pending' && selectedCicilan === index + 1 && (
+                      <div className="mt-4 pt-4 border-t border-gray-200 flex gap-3">
+                        <button
+                          onClick={() => handleVerify(true)}
+                          className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                        >
+                          <FiCheckCircle className="w-4 h-4" />
+                          Verifikasi
+                        </button>
+                        <button
+                          onClick={() => handleVerify(false)}
+                          className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                        >
+                          <FiAlertCircle className="w-4 h-4" />
+                          Tolak
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Reject Reason */}
+                    {cicilanItem.status === 'rejected' && cicilanItem.rejectedReason && (
+                      <div className="mt-4 pt-4 border-t border-red-200">
+                        <p className="text-sm text-red-800">
+                          <span className="font-semibold">Alasan penolakan:</span> {cicilanItem.rejectedReason}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Bukti Transfer Link */}
+                    {cicilanItem.buktiUrl && (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <a
+                          href={cicilanItem.buktiUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 hover:underline flex items-center gap-1"
+                        >
+                          <FiDollarSign className="w-4 h-4" />
+                          Lihat Bukti Transfer
+                        </a>
+                      </div>
+                    )}
                   </div>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-gray-50 rounded-lg p-8 text-center">
-                <FiAlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <p className="text-gray-600">Belum ada bukti transfer yang diupload</p>
-              </div>
-            )}
+                );
+              })}
+            </div>
           </div>
 
-          {/* Rejection Notes */}
-          {payment.pembayaran.rejected_reason && (
-            <div className="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
-              <h3 className="font-semibold text-red-800 mb-2">Alasan Penolakan</h3>
-              <p className="text-red-700">{payment.pembayaran.rejected_reason}</p>
-            </div>
-          )}
-        </div>
-
-        {/* Footer Actions */}
-        {payment.pembayaran.status === 'pending' && (
-          <div className="sticky bottom-0 bg-white border-t px-6 py-4 flex gap-3">
-            {!showRejectForm ? (
-              <>
+          {/* Reject Input Modal */}
+          {showRejectInput && (
+            <div className="bg-red-50 border-2 border-red-200 rounded-xl p-4">
+              <h4 className="font-bold text-red-800 mb-2">Alasan Penolakan</h4>
+              <textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                className="w-full p-3 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none"
+                rows="3"
+                placeholder="Jelaskan alasan penolakan..."
+              />
+              <div className="flex gap-3 mt-4">
                 <button
-                  onClick={onClose}
-                  className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  onClick={handleConfirmReject}
+                  disabled={!rejectReason.trim()}
+                  className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
                 >
-                  Tutup
+                  Konfirmasi Penolakan
                 </button>
-                <button
-                  onClick={() => setShowRejectForm(true)}
-                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium"
-                >
-                  Tolak Pembayaran
-                </button>
-                <button
-                  onClick={handleApprove}
-                  className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors font-medium flex items-center justify-center gap-2"
-                >
-                  <FiCheck className="w-5 h-5" />
-                  Verifikasi Pembayaran
-                </button>
-              </>
-            ) : (
-              <>
                 <button
                   onClick={() => {
-                    setShowRejectForm(false);
-                    setRejectNotes('');
+                    setShowRejectInput(false);
+                    setRejectReason('');
                   }}
-                  className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors"
                 >
                   Batal
                 </button>
-                <div className="flex-[2]">
-                  <textarea
-                    value={rejectNotes}
-                    onChange={(e) => setRejectNotes(e.target.value)}
-                    placeholder="Tulis alasan penolakan..."
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                    rows={2}
-                  />
-                </div>
-                <button
-                  onClick={handleReject}
-                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors font-medium"
-                >
-                  Konfirmasi Tolak
-                </button>
-              </>
-            )}
-          </div>
-        )}
-
-        {payment.pembayaran.status === 'paid' && (
-          <div className="sticky bottom-0 bg-white border-t px-6 py-4">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-              <FiCheck className="w-6 h-6 text-green-600 mx-auto mb-2" />
-              <p className="text-green-800 font-semibold">Pembayaran Telah Terverifikasi</p>
-              <p className="text-sm text-green-600 mt-1">
-                Pembayaran ini sudah diverifikasi pada {formatDate(payment.pembayaran.verified_at)}
-              </p>
+              </div>
             </div>
-          </div>
-        )}
-
-        {payment.pembayaran.status === 'rejected' && (
-          <div className="sticky bottom-0 bg-white border-t px-6 py-4">
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
-              <FiX className="w-6 h-6 text-red-600 mx-auto mb-2" />
-              <p className="text-red-800 font-semibold">Pembayaran Ditolak</p>
-              <p className="text-sm text-red-600 mt-1">
-                Ditolak pada {formatDate(payment.pembayaran.verified_at)}
-              </p>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

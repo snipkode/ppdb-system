@@ -120,29 +120,29 @@ const Status = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 py-8 md:py-12">
-      <div className="container mx-auto px-4 max-w-5xl">
-        {/* Header - Compact */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl px-4 py-2 rounded-full mb-4 shadow-lg">
-            <FiSearch className="w-4 h-4 text-blue-600" />
-            <span className="text-sm font-semibold text-gray-700">Cek Status Pendaftaran</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 py-6 md:py-8">
+      <div className="container mx-auto px-3 max-w-4xl">
+        {/* Header - Ultra Compact */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-1.5 bg-white/80 backdrop-blur-xl px-3 py-1.5 rounded-full mb-3 shadow-lg">
+            <FiSearch className="w-3.5 h-3.5 text-blue-600" />
+            <span className="text-xs font-semibold text-gray-700">Cek Status</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-1.5">
             Lacak Progress Pendaftaran
           </h1>
-          <p className="text-gray-600 text-sm md:text-base">
-            Masukkan nomor pendaftaran atau NISN untuk melihat status
+          <p className="text-gray-600 text-xs md:text-sm">
+            Masukkan nomor pendaftaran atau NISN
           </p>
         </div>
 
-        {/* Search Form - Modern Glassmorphism */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl mb-8">
+        {/* Search Form - Compact Glassmorphism */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 md:p-5 border border-white/60 shadow-xl mb-5">
           {/* Tab Switcher */}
-          <div className="flex gap-2 mb-6 p-1 bg-gray-100 rounded-2xl">
+          <div className="flex gap-1.5 mb-4 p-1 bg-gray-100 rounded-xl">
             <button
               onClick={() => setSearchType('nomor')}
-              className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${
+              className={`flex-1 py-2.5 px-3 rounded-lg font-semibold text-xs transition-all duration-300 ${
                 searchType === 'nomor'
                   ? 'bg-white text-blue-600 shadow-md'
                   : 'text-gray-600 hover:bg-white/50'
@@ -152,7 +152,7 @@ const Status = () => {
             </button>
             <button
               onClick={() => setSearchType('nisn')}
-              className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${
+              className={`flex-1 py-2.5 px-3 rounded-lg font-semibold text-xs transition-all duration-300 ${
                 searchType === 'nisn'
                   ? 'bg-white text-blue-600 shadow-md'
                   : 'text-gray-600 hover:bg-white/50'
@@ -163,32 +163,32 @@ const Status = () => {
           </div>
 
           {/* Search Input */}
-          <form onSubmit={handleSearch} className="space-y-4">
+          <form onSubmit={handleSearch} className="space-y-3">
             <div className="relative">
               <input
                 type="text"
                 value={searchType === 'nomor' ? nomorPendaftaran : nisn}
                 onChange={(e) => searchType === 'nomor' ? setNomorPendaftaran(e.target.value) : setNisn(e.target.value)}
-                className="w-full pl-12 pr-32 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                className="w-full pl-10 pr-24 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm"
                 placeholder={searchType === 'nomor' ? 'PPDB-xxxxxxxxxx' : '10 digit NISN'}
               />
-              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <button
                 type="submit"
                 disabled={loading}
-                className={`absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
+                className={`absolute right-1.5 top-1/2 -translate-y-1/2 px-4 py-2 rounded-lg font-semibold text-xs transition-all duration-300 ${
                   loading
                     ? 'bg-gray-300 cursor-not-allowed'
                     : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
                 }`}
               >
-                {loading ? 'Mencari...' : 'Cari'}
+                {loading ? '...' : 'Cari'}
               </button>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-2">
-                <FiX className="w-5 h-5 flex-shrink-0" />
+              <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2.5 rounded-lg flex items-center gap-2 text-sm">
+                <FiX className="w-4 h-4 flex-shrink-0" />
                 <span>{error}</span>
               </div>
             )}
@@ -197,12 +197,12 @@ const Status = () => {
 
         {/* Result */}
         {student && (
-          <div className="space-y-6 animate-fade-in-up">
-            {/* Status Card - Hero */}
+          <div className="space-y-4 animate-fade-in-up">
+            {/* Status Card - Compact */}
             <StatusHero student={student} getConfig={getStatusConfig} />
 
-            {/* Info Grid - Compact */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Info Grid - Ultra Compact */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <InfoCard
                 icon={<FiUser />}
                 label="Nama"
@@ -211,7 +211,7 @@ const Status = () => {
               />
               <InfoCard
                 icon={<FiClipboard />}
-                label="No. Pendaftaran"
+                label="No. Daftar"
                 value={student.nomor_pendaftaran}
               />
               <InfoCard
@@ -222,12 +222,12 @@ const Status = () => {
               />
               <InfoCard
                 icon={<FiCalendar />}
-                label="Tanggal Daftar"
+                label="Tanggal"
                 value={formatDate(student.created_at)}
               />
             </div>
 
-            {/* Timeline - Compact Vertical */}
+            {/* Timeline - Compact */}
             <Timeline steps={timelineSteps} currentStep={getCurrentStep(student.status)} status={student.status} />
 
             {/* Payment Info */}
@@ -242,13 +242,13 @@ const Status = () => {
 
         {/* Empty State */}
         {!student && !error && (
-          <div className="text-center py-16 bg-white/50 backdrop-blur-xl rounded-3xl border border-white/60">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
-              <FiSearch className="w-10 h-10 text-white" />
+          <div className="text-center py-10 bg-white/50 backdrop-blur-xl rounded-2xl border border-white/60">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FiSearch className="w-8 h-8 text-white" />
             </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">Belum Ada Hasil</h3>
-            <p className="text-gray-600">
-              Masukkan nomor pendaftaran atau NISN untuk melihat status
+            <h3 className="text-lg font-bold text-gray-800 mb-1">Belum Ada Hasil</h3>
+            <p className="text-gray-600 text-sm">
+              Masukkan nomor pendaftaran atau NISN
             </p>
           </div>
         )}
@@ -259,31 +259,31 @@ const Status = () => {
 
 const StatusHero = ({ student, getConfig }) => {
   const config = getConfig(student.status);
-  
+
   return (
-    <div className={`relative overflow-hidden rounded-3xl p-8 ${config.bg} border-2 ${config.border} shadow-xl`}>
+    <div className={`relative overflow-hidden rounded-2xl p-5 ${config.bg} border-2 ${config.border} shadow-xl`}>
       {/* Background Decoration */}
-      <div className={`absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-br ${config.gradient} opacity-10 rounded-full blur-3xl`}></div>
-      
+      <div className={`absolute -top-16 -right-16 w-40 h-40 bg-gradient-to-br ${config.gradient} opacity-10 rounded-full blur-2xl`}></div>
+
       <div className="relative z-10">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-800 mb-1">
+            <h2 className="text-lg md:text-xl font-bold text-slate-800 mb-0.5">
               {student.data_siswa?.nama_lengkap}
             </h2>
-            <p className="text-gray-600">{student.nomor_pendaftaran}</p>
+            <p className="text-xs text-gray-600">{student.nomor_pendaftaran}</p>
           </div>
-          
-          <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-white bg-gradient-to-r ${config.gradient} shadow-lg`}>
-            <span className="text-2xl">{config.icon}</span>
+
+          <div className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-white bg-gradient-to-r ${config.gradient} shadow-lg`}>
+            <span className="text-xl">{config.icon}</span>
             <div className="text-left">
-              <div className="text-xs opacity-80">Status</div>
-              <div className="text-lg">{config.label}</div>
+              <div className="text-[10px] opacity-80 leading-3">Status</div>
+              <div className="text-sm leading-4">{config.label}</div>
             </div>
           </div>
         </div>
-        
-        <p className={`text-sm ${config.text} bg-white/60 backdrop-blur-sm rounded-xl px-4 py-3 inline-block`}>
+
+        <p className={`text-xs ${config.text} bg-white/60 backdrop-blur-sm rounded-lg px-3 py-2 inline-block`}>
           {config.message}
         </p>
       </div>
@@ -292,25 +292,25 @@ const StatusHero = ({ student, getConfig }) => {
 };
 
 const InfoCard = ({ icon, label, value, truncate }) => (
-  <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 border border-white/60 shadow-md hover:shadow-lg transition-all duration-300">
-    <div className="flex items-center gap-2 text-gray-400 mb-2">
+  <div className="bg-white/80 backdrop-blur-xl rounded-xl p-3 border border-white/60 shadow-md hover:shadow-lg transition-all duration-300">
+    <div className="flex items-center gap-1.5 text-gray-400 mb-1.5">
       {icon}
-      <span className="text-xs font-medium">{label}</span>
+      <span className="text-[10px] font-medium">{label}</span>
     </div>
-    <p className={`font-bold text-slate-800 ${truncate ? 'truncate' : ''}`}>{value}</p>
+    <p className={`font-bold text-slate-800 text-sm ${truncate ? 'truncate' : ''}`}>{value}</p>
   </div>
 );
 
 const Timeline = ({ steps, currentStep, status }) => (
-  <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl">
-    <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-      <FiClock className="w-5 h-5 text-blue-600" />
+  <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 md:p-5 border border-white/60 shadow-xl">
+    <h3 className="text-base md:text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+      <FiClock className="w-4 h-4 text-blue-600" />
       Timeline Pendaftaran
     </h3>
 
     <div className="relative">
       {/* Progress Line */}
-      <div className="absolute left-6 md:left-8 top-6 bottom-6 w-0.5 bg-gray-200">
+      <div className="absolute left-5 md:left-6 top-5 bottom-4 w-0.5 bg-gray-200">
         <div
           className="w-full bg-gradient-to-b from-blue-500 to-purple-500 rounded-full transition-all duration-500"
           style={{ height: `${((currentStep + 1) / (steps.length - 1)) * 100}%` }}
@@ -318,37 +318,37 @@ const Timeline = ({ steps, currentStep, status }) => (
       </div>
 
       {/* Steps */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         {steps.map((step, index) => {
           const isCompleted = index <= currentStep;
           const isCurrent = index === currentStep;
           const Icon = step.icon;
 
           return (
-            <div key={step.status} className="relative flex items-start gap-4">
+            <div key={step.status} className="relative flex items-start gap-3">
               {/* Icon */}
               <div
-                className={`relative z-10 w-12 h-12 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 ${
+                className={`relative z-10 w-10 h-10 rounded-xl flex items-center justify-center border-2 transition-all duration-300 ${
                   isCompleted
                     ? 'bg-gradient-to-br from-blue-500 to-purple-500 border-transparent text-white shadow-lg'
                     : 'bg-white border-gray-200 text-gray-400'
                 } ${isCurrent ? 'ring-4 ring-blue-200 scale-110' : ''}`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4" />
               </div>
 
               {/* Content */}
-              <div className="flex-1 pt-2">
-                <div className="flex items-center gap-2">
-                  <h4 className={`font-bold ${isCurrent ? 'text-blue-600' : 'text-gray-800'}`}>
+              <div className="flex-1 pt-1">
+                <div className="flex items-center gap-1.5">
+                  <h4 className={`font-bold text-sm ${isCurrent ? 'text-blue-600' : 'text-gray-800'}`}>
                     {step.label}
                   </h4>
-                  {isCompleted && <FiCheck className="w-4 h-4 text-green-500" />}
+                  {isCompleted && <FiCheck className="w-3.5 h-3.5 text-green-500" />}
                 </div>
-                <p className="text-sm text-gray-500">{step.desc}</p>
-                
+                <p className="text-xs text-gray-500">{step.desc}</p>
+
                 {isCurrent && status === 'accepted' && (
-                  <div className="mt-2 text-green-600 text-sm font-semibold flex items-center gap-1">
+                  <div className="mt-1.5 text-green-600 text-xs font-semibold flex items-center gap-1">
                     🎉 Selamat! Anda telah diterima
                   </div>
                 )}
@@ -362,39 +362,39 @@ const Timeline = ({ steps, currentStep, status }) => (
 );
 
 const PaymentInfo = ({ pembayaran }) => (
-  <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl">
-    <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-      <FiFileText className="w-5 h-5 text-green-600" />
+  <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 md:p-5 border border-white/60 shadow-xl">
+    <h3 className="text-base md:text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+      <FiFileText className="w-4 h-4 text-green-600" />
       Status Pembayaran
     </h3>
-    
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div className="flex items-center gap-4">
-        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div className="flex items-center gap-3">
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
           pembayaran.status === 'paid' ? 'bg-green-100 text-green-600' :
           pembayaran.status === 'pending' ? 'bg-yellow-100 text-yellow-600' :
           'bg-red-100 text-red-600'
         }`}>
-          {pembayaran.status === 'paid' ? <FiCheck className="w-6 h-6" /> :
-           pembayaran.status === 'pending' ? <FiClock className="w-6 h-6" /> :
-           <FiX className="w-6 h-6" />}
+          {pembayaran.status === 'paid' ? <FiCheck className="w-5 h-5" /> :
+           pembayaran.status === 'pending' ? <FiClock className="w-5 h-5" /> :
+           <FiX className="w-5 h-5" />}
         </div>
         <div>
-          <p className="font-bold text-slate-800 capitalize">{pembayaran.status}</p>
-          <p className="text-sm text-gray-500">
+          <p className="font-bold text-slate-800 text-sm capitalize">{pembayaran.status}</p>
+          <p className="text-xs text-gray-500">
             {pembayaran.uploaded_at ? formatDate(pembayaran.uploaded_at) : 'Belum upload bukti'}
           </p>
         </div>
       </div>
-      
+
       {pembayaran.bukti_url && (
         <a
           href={pembayaran.bukti_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl font-semibold hover:bg-blue-100 transition-all"
+          className="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg font-semibold text-xs hover:bg-blue-100 transition-all"
         >
-          <FiFileText className="w-4 h-4" />
+          <FiFileText className="w-3.5 h-3.5" />
           Lihat Bukti
         </a>
       )}
@@ -432,18 +432,18 @@ const NextSteps = ({ status }) => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-3xl p-6 md:p-8">
-      <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
-        <FiChevronRight className="w-5 h-5 text-blue-600" />
+    <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-2xl p-4 md:p-5">
+      <h4 className="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
+        <FiChevronRight className="w-4 h-4 text-blue-600" />
         Langkah Selanjutnya
       </h4>
-      <ul className="space-y-3">
+      <ul className="space-y-2">
         {steps[status]?.map((step, idx) => (
-          <li key={idx} className="flex items-start gap-3">
-            <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-xs font-bold text-blue-600">{idx + 1}</span>
+          <li key={idx} className="flex items-start gap-2">
+            <div className="w-5 h-5 bg-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-[10px] font-bold text-blue-600">{idx + 1}</span>
             </div>
-            <span className="text-gray-700">{step}</span>
+            <span className="text-gray-700 text-sm">{step}</span>
           </li>
         ))}
       </ul>
