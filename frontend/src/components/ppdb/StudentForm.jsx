@@ -93,7 +93,23 @@ const StudentForm = ({ formData, handleChange, errors, wilayahData, loadingWilay
         </div>
         <div>
           <label className="block text-xs font-medium text-gray-700 mb-1.5">Kode Pos <span className="text-red-500">*</span></label>
-          <input type="text" name="kode_pos" value={formData.kode_pos} onChange={handleChange} readOnly className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50" placeholder="Auto-filled" />
+          <input 
+            type="text" 
+            name="kode_pos" 
+            value={formData.kode_pos} 
+            readOnly 
+            className={`w-full px-3 py-2 border rounded-lg text-sm ${
+              formData.kode_pos 
+                ? 'bg-green-50 border-green-300 text-green-700 font-semibold' 
+                : 'bg-gray-100 border-gray-300 text-gray-500'
+            }`} 
+            placeholder="Auto-filled setelah pilih kelurahan" 
+          />
+          {formData.kode_pos && (
+            <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+              ✓ Terisi otomatis
+            </p>
+          )}
         </div>
       </div>
     </div>

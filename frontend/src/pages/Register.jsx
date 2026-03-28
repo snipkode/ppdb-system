@@ -91,15 +91,30 @@ const Register = () => {
     setFormData(prev => ({ ...prev, kecamatan: kecamatanId, kelurahan: '', kode_pos: '' }));
     if (kecamatanId) {
       setLoadingWilayah(true);
-      try { const data = await wilayahApi.getKelurahan(kecamatanId); setKelurahanList(data); }
-      catch (err) { console.error(err); } finally { setLoadingWilayah(false); }
+      try { 
+        const data = await wilayahApi.getKelurahan(kecamatanId); 
+        console.log('🏘️ Kelurahan loaded:', data.length, 'items');
+        setKelurahanList(data); 
+      }
+      catch (err) { 
+        console.error('❌ Failed to load kelurahan:', err);
+        setKelurahanList([]); 
+      } finally { setLoadingWilayah(false); }
     } else { setKelurahanList([]); }
   };
 
   const handleKelurahanChange = (e) => {
-    const kelurahan = e.target.value;
-    const selectedKelurahan = kelurahanList.find(k => k.id === kelurahan);
-    setFormData(prev => ({ ...prev, kelurahan, kode_pos: selectedKelurahan?.postal_code || '' }));
+    const kelurahanId = e.target.value;
+    const selectedKelurahan = kelurahanList.find(k => k.id === kelurahanId);
+    const postalCode = selectedKelurahan?.postal_code || '';
+    
+    console.log('🏘️ Kelurahan selected:', selectedKelurahan?.name, '| Kode Pos:', postalCode);
+    
+    setFormData(prev => ({ 
+      ...prev, 
+      kelurahan: kelurahanId, 
+      kode_pos: postalCode 
+    }));
   };
 
   const handleChange = (e) => {
