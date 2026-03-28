@@ -1,13 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiUser, FiUsers, FiBook, FiMapPin, FiUpload, FiCheck, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiUser, FiUsers, FiBook, FiMapPin, FiUpload, FiCheck, FiChevronLeft, FiChevronRight, FiLoader } from 'react-icons/fi';
 import { studentApi } from '@/services/api';
+import { wilayahApi } from '@/services/wilayah';
 
 const Register = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  
+  // Wilayah state
+  const [provinsiList, setProvinsiList] = useState([]);
+  const [kabupatenList, setKabupatenList] = useState([]);
+  const [kecamatanList, setKecamatanList] = useState([]);
+  const [kelurahanList, setKelurahanList] = useState([]);
+  const [loadingWilayah, setLoadingWilayah] = useState(false);
 
   const [formData, setFormData] = useState({
     // Data Siswa
@@ -50,6 +58,73 @@ const Register = () => {
     pilihan_1: '',
     pilihan_2: '',
   });
+
+  // Load provinces on mount
+  useEffect(() => {
+    loadProvinsi();
+  }, []);
+
+  const loadProvinsi = async () => {
+    setLoadingWilayah(true);
+    const data = await wilayahApi.getProvinsi();
+    setProvinsiList(data);
+    setLoadingWilayah(false);
+  };
+
+  const handleProvinsiChange = async (e) => {
+    const provinsiId = e.target.value;
+    setFormData(prev => ({ ...prev, provinsi: provinsiId, kota: '', kecamatan: '', kelurahan: '', kode_pos: '' }));
+    
+    if (provinsiId) {
+      setLoadingWilayah(true);
+      const data = await wilayahApi.getKabupaten(provinsiId);
+      setKabupatenList(data);
+      setLoadingWilayah(false);
+    } else {
+      setKabupatenList([]);
+      setKecamatanList([]);
+      setKelurahanList([]);
+    }
+  };
+
+  const handleKabupatenChange = async (e) => {
+    const kabupatenId = e.target.value;
+    setFormData(prev => ({ ...prev, kota: kabupatenId, kecamatan: '', kelurahan: '', kode_pos: '' }));
+    
+    if (kabupatenId) {
+      setLoadingWilayah(true);
+      const data = await wilayahApi.getKecamatan(kabupatenId);
+      setKecamatanList(data);
+      setLoadingWilayah(false);
+    } else {
+      setKecamatanList([]);
+      setKelurahanList([]);
+    }
+  };
+
+  const handleKecamatanChange = async (e) => {
+    const kecamatanId = e.target.value;
+    setFormData(prev => ({ ...prev, kecamatan: kecamatanId, kelurahan: '', kode_pos: '' }));
+    
+    if (kecamatanId) {
+      setLoadingWilayah(true);
+      const data = await wilayahApi.getKelurahan(kecamatanId);
+      setKelurahanList(data);
+      setLoadingWilayah(false);
+    } else {
+      setKelurahanList([]);
+    }
+  };
+
+  const handleKelurahanChange = (e) => {
+    const kelurahan = e.target.value;
+    const selectedKelurahan = kelurahanList.find(k => k.id === kelurahan);
+    setFormData(prev => ({ 
+      ...prev, 
+      kelurahan, 
+      kode_pos: selectedKelurahan?.postal_code || '' 
+    }));
+  };
 
   const steps = [
     { number: 1, title: 'Data Siswa', icon: FiUser },
@@ -302,58 +377,101 @@ const Register = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Kelurahan <span className="text-red-500">*</span>
+            Provinsi <span className="text-red-500">*</span>
           </label>
-          <input
-            type="text"
-            name="kelurahan"
-            value={formData.kelurahan}
-            onChange={handleChange}
+          <select
+            name="provinsi"
+            value={formData.provinsi}
+            onChange={handleProvinsiChange}
             className="input-field"
             required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Kecamatan <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            name="kecamatan"
-            value={formData.kecamatan}
-            onChange={handleChange}
-            className="input-field"
-            required
-          />
+            disabled={loadingWilayah}
+          >
+            <option value="">Pilih Provinsi</option>
+            {provinsiList.map((prov) => (
+              <option key={prov.id} value={prov.id}>
+                {prov.name}
+              </option>
+            ))}
+          </select>
+          {loadingWilayah && formData.provinsi && (
+            <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+              <FiLoader className="animate-spin w-3 h-3" /> Loading kabupaten...
+            </p>
+          )}
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Kota/Kabupaten <span className="text-red-500">*</span>
           </label>
-          <input
-            type="text"
+          <select
             name="kota"
             value={formData.kota}
-            onChange={handleChange}
+            onChange={handleKabupatenChange}
             className="input-field"
             required
-          />
+            disabled={loadingWilayah || !formData.provinsi}
+          >
+            <option value="">Pilih Kota/Kabupaten</option>
+            {kabupatenList.map((kab) => (
+              <option key={kab.id} value={kab.id}>
+                {kab.name}
+              </option>
+            ))}
+          </select>
+          {loadingWilayah && formData.kota && (
+            <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+              <FiLoader className="animate-spin w-3 h-3" /> Loading kecamatan...
+            </p>
+          )}
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Provinsi <span className="text-red-500">*</span>
+            Kecamatan <span className="text-red-500">*</span>
           </label>
-          <input
-            type="text"
-            name="provinsi"
-            value={formData.provinsi}
-            onChange={handleChange}
+          <select
+            name="kecamatan"
+            value={formData.kecamatan}
+            onChange={handleKecamatanChange}
             className="input-field"
             required
-          />
+            disabled={loadingWilayah || !formData.kota}
+          >
+            <option value="">Pilih Kecamatan</option>
+            {kecamatanList.map((kec) => (
+              <option key={kec.id} value={kec.id}>
+                {kec.name}
+              </option>
+            ))}
+          </select>
+          {loadingWilayah && formData.kecamatan && (
+            <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+              <FiLoader className="animate-spin w-3 h-3" /> Loading kelurahan...
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Kelurahan <span className="text-red-500">*</span>
+          </label>
+          <select
+            name="kelurahan"
+            value={formData.kelurahan}
+            onChange={handleKelurahanChange}
+            className="input-field"
+            required
+            disabled={loadingWilayah || !formData.kecamatan}
+          >
+            <option value="">Pilih Kelurahan</option>
+            {kelurahanList.map((kel) => (
+              <option key={kel.id} value={kel.id}>
+                {kel.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>
@@ -366,8 +484,8 @@ const Register = () => {
             value={formData.kode_pos}
             onChange={handleChange}
             className="input-field"
-            placeholder="5 digit"
-            maxLength="5"
+            placeholder="Auto-filled"
+            readOnly
             required
           />
         </div>
