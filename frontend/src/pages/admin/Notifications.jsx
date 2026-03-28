@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
-import { FiMail, FiBell, FiSend, FiCheck, FiX, FiSettings, FiAlertCircle, FiChevronRight } from 'react-icons/fi';
-import { notificationAPI } from '@services/api';
+import { FiBell, FiSend, FiCheck, FiX, FiSettings, FiAlertCircle, FiChevronRight, FiMail } from 'react-icons/fi';
+import { notificationAPI } from '@/services/api';
+import AdminLayout from '@/components/layout/AdminLayout';
+import StatCard from '@/components/ui/StatCard';
+import Modal from '@/components/ui/Modal';
+import StatusBadge from '@/components/ui/StatusBadge';
+import Breadcrumb from '@/components/ui/Breadcrumb';
 
 const AdminNotifications = () => {
   const [testEmail, setTestEmail] = useState('');
@@ -219,19 +224,11 @@ Panitia PPDB SMK Nusantara`
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 py-6">
-      {/* Compact Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b sticky top-16 z-40">
-        <div className="max-w-5xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center text-white shadow-lg">
-              <FiBell className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-lg font-bold text-gray-800">Notifikasi</h1>
-              <p className="text-xs text-gray-600">Pengaturan email & notifikasi sistem</p>
-            </div>
-          </div>
+    <AdminLayout title="Notifikasi" subtitle="Pengaturan email & notifikasi sistem">
+      {/* Breadcrumb */}
+      <div className="bg-white border-b sticky top-14 z-30">
+        <div className="container mx-auto px-4 py-2">
+          <Breadcrumb showHome={false} items={[{ label: 'Notifikasi', href: '/admin/notifications' }]} />
         </div>
       </div>
 
@@ -240,8 +237,8 @@ Panitia PPDB SMK Nusantara`
         {/* Result Toast */}
         {result && (
           <div className={`p-4 rounded-xl border flex items-center gap-3 ${
-            result.success 
-              ? 'bg-green-50 border-green-200 text-green-700' 
+            result.success
+              ? 'bg-green-50 border-green-200 text-green-700'
               : 'bg-red-50 border-red-200 text-red-700'
           }`}>
             {result.success ? <FiCheck className="w-5 h-5 flex-shrink-0" /> : <FiX className="w-5 h-5 flex-shrink-0" />}
@@ -254,25 +251,29 @@ Panitia PPDB SMK Nusantara`
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <StatBox 
-            label="Email Aktif" 
-            value={settings.emailEnabled ? 'Ya' : 'Tidak'} 
+          <StatCard
+            label="Email Aktif"
+            value={settings.emailEnabled ? 'Ya' : 'Tidak'}
             color={settings.emailEnabled ? 'from-green-500 to-emerald-500' : 'from-gray-500'}
+            size="md"
           />
-          <StatBox 
-            label="Notifikasi" 
-            value={settings.notificationsEnabled ? 'Aktif' : 'Nonaktif'} 
+          <StatCard
+            label="Notifikasi"
+            value={settings.notificationsEnabled ? 'Aktif' : 'Nonaktif'}
             color={settings.notificationsEnabled ? 'from-blue-500 to-cyan-500' : 'from-gray-500'}
+            size="md"
           />
-          <StatBox 
-            label="Total Triggers" 
-            value={Object.values(settings).filter(v => v === true).length - 2} 
+          <StatCard
+            label="Total Triggers"
+            value={Object.values(settings).filter(v => v === true).length - 2}
             color="from-purple-500 to-pink-500"
+            size="md"
           />
-          <StatBox 
-            label="Status" 
-            value="Ready" 
+          <StatCard
+            label="Status"
+            value="Ready"
             color="from-orange-500 to-red-500"
+            size="md"
           />
         </div>
 
@@ -332,7 +333,7 @@ Panitia PPDB SMK Nusantara`
           <div className="mt-5">
             <button
               onClick={handleSaveSettings}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl transition-all font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-xl transition-all font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2"
             >
               <FiCheck className="w-5 h-5" />
               Simpan Pengaturan
@@ -367,7 +368,7 @@ Panitia PPDB SMK Nusantara`
             <button
               type="submit"
               disabled={sending || !testEmail}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-xl transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-2 rounded-xl transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
             >
               {sending ? (
                 <>
@@ -416,80 +417,59 @@ Panitia PPDB SMK Nusantara`
 
         {/* Preview Modal */}
         {showPreview && selectedTemplate && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowPreview(false)}>
-            <div 
-              className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {/* Modal Header */}
-              <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-5 text-white">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                      <FiMail className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-black">Preview Email Template</h3>
-                      <p className="text-xs text-white/80">Preview tampilan email</p>
-                    </div>
-                  </div>
-                  <button 
-                    onClick={() => setShowPreview(false)}
-                    className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center hover:bg-white/30 transition-all"
-                  >
-                    <FiX className="w-5 h-5" />
-                  </button>
+          <Modal
+            isOpen={showPreview}
+            onClose={() => setShowPreview(false)}
+            title="Preview Email Template"
+            subtitle="Preview tampilan email"
+            size="lg"
+            headerClassName="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600"
+          >
+            <div className="space-y-3">
+              {/* Subject */}
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Subject Email</label>
+                <div className="p-2.5 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border-2 border-blue-200">
+                  <p className="text-sm font-bold text-gray-800">{selectedTemplate.subject}</p>
                 </div>
               </div>
 
-              {/* Modal Content */}
-              <div className="p-5 overflow-y-auto max-h-[60vh]">
-                {/* Subject */}
-                <div className="mb-4">
-                  <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Subject Email</label>
-                  <div className="p-3 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border-2 border-blue-200">
-                    <p className="text-sm font-bold text-gray-800">{selectedTemplate.subject}</p>
-                  </div>
-                </div>
-
-                {/* Email Body */}
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Isi Email</label>
-                  <div className="p-4 bg-white rounded-xl border-2 border-gray-200">
-                    <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans leading-relaxed">
-                      {selectedTemplate.body}
-                    </pre>
-                  </div>
-                </div>
-
-                {/* Note */}
-                <div className="mt-4 p-3 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
-                  <p className="text-xs text-yellow-800 font-medium">
-                    ℹ️ <strong>Catatan:</strong> Teks dalam kurung siku [ ] akan diganti dengan data otomatis saat email dikirim.
-                  </p>
+              {/* Email Body */}
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Isi Email</label>
+                <div className="p-3 bg-white rounded-lg border-2 border-gray-200 max-h-64 overflow-y-auto">
+                  <pre className="text-xs text-gray-700 whitespace-pre-wrap font-sans leading-relaxed">
+                    {selectedTemplate.body}
+                  </pre>
                 </div>
               </div>
 
-              {/* Modal Footer */}
-              <div className="p-5 border-t bg-gray-50">
-                <button
-                  onClick={() => setShowPreview(false)}
-                  className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-xl transition-all font-bold shadow-lg hover:shadow-xl"
-                >
-                  Tutup Preview
-                </button>
+              {/* Note */}
+              <div className="p-2.5 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-xs text-yellow-800">
+                  ℹ️ <strong>Catatan:</strong> Teks dalam kurung siku [ ] akan diganti dengan data otomatis.
+                </p>
               </div>
             </div>
-          </div>
+
+            <div className="flex gap-2 mt-4 pt-3 border-t">
+              <button
+                onClick={() => setShowPreview(false)}
+                className="flex-1 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-lg transition-all font-semibold text-sm shadow-md"
+              >
+                Tutup Preview
+              </button>
+            </div>
+          </Modal>
         )}
 
         {/* Setup Instructions */}
-        <div className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-2xl p-5">
-          <h3 className="font-bold text-blue-900 mb-3 flex items-center gap-2 text-sm">
+        <div className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-xl p-4">
+          <h3 className="font-bold text-blue-900 mb-2 flex items-center gap-2 text-sm">
             <span className="text-base">📝</span>
             Setup Firebase Cloud Functions
           </h3>
-          <ol className="space-y-2 text-xs text-blue-800">
+          <ol className="space-y-1.5 text-xs text-blue-800">
             {[
               { step: 1, text: 'Install Firebase CLI:', code: 'npm install -g firebase-tools' },
               { step: 2, text: 'Login:', code: 'firebase login' },
@@ -512,23 +492,13 @@ Panitia PPDB SMK Nusantara`
           </ol>
         </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 };
 
 // Compact Components
-const StatBox = ({ label, value, color }) => (
-  <div className="bg-white rounded-xl shadow-md p-3 border border-white/50">
-    <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${color} flex items-center justify-center text-white mb-2`}>
-      <FiCheck className="w-4 h-4" />
-    </div>
-    <p className="text-xs text-gray-500 mb-0.5">{label}</p>
-    <p className="text-sm font-bold text-gray-800">{value}</p>
-  </div>
-);
-
 const ToggleRow = ({ label, desc, checked, onChange }) => (
-  <div className="flex items-center justify-between py-3 border-b last:border-0">
+  <div className="flex items-center justify-between py-2 border-b last:border-0">
     <div>
       <p className="text-sm font-semibold text-gray-800">{label}</p>
       <p className="text-xs text-gray-500 mt-0.5">{desc}</p>

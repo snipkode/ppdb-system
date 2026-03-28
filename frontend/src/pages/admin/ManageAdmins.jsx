@@ -1,7 +1,15 @@
 import { useState, useEffect } from 'react';
-import { FiPlus, FiCheck, FiX, FiShield, FiUsers, FiEdit2 } from 'react-icons/fi';
+import { FiPlus, FiCheck, FiX, FiShield, FiUsers, FiEdit2, FiSearch, FiMoreVertical } from 'react-icons/fi';
 import { getAllAdmins, updateAdminStatus, updateUserRole, getAllUsers } from '@/services/adminService';
 import { useAuth } from '@/contexts/AuthContext';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { LoadingState } from '@/components/ui';
+import AdminLayout from '@/components/layout/AdminLayout';
+import StatCard from '@/components/ui/StatCard';
+import Modal from '@/components/ui/Modal';
+import StatusBadge from '@/components/ui/StatusBadge';
+import Breadcrumb from '@/components/ui/Breadcrumb';
+import SearchFilter from '@/components/ui/SearchFilter';
 
 const ManageAdmins = () => {
   const { user, isAdmin: isCurrentUserAdmin } = useAuth();
@@ -11,13 +19,11 @@ const ManageAdmins = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showUserModal, setShowUserModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [newAdmin, setNewAdmin] = useState({
-    email: '',
-    role: 'admin',
-    permissions: ['read', 'write']
-  });
+  const [newAdmin, setNewAdmin] = useState({ email: '', role: 'admin' });
   const [message, setMessage] = useState({ type: '', text: '' });
-  const [activeTab, setActiveTab] = useState('admins'); // 'admins' or 'all-users'
+  const [activeTab, setActiveTab] = useState('admins');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showMenuId, setShowMenuId] = useState(null);
 
   useEffect(() => {
     loadAdmins();
@@ -38,527 +44,401 @@ const ManageAdmins = () => {
 
   const handleAddAdmin = async (e) => {
     e.preventDefault();
-    setMessage({ type: '', text: '' });
-
-    // Cari user dengan email yang sesuai
     const targetUser = allUsers.find(u => u.email?.toLowerCase() === newAdmin.email.toLowerCase());
 
     if (!targetUser) {
-      setMessage({
-        type: 'error',
-        text: '❌ User dengan email tersebut tidak ditemukan. User harus login terlebih dahulu.'
-      });
+      setMessage({ type: 'error', text: 'User tidak ditemukan. User harus login dulu.' });
       return;
     }
 
-    // Update role user tersebut
     const result = await updateUserRole(targetUser.id, newAdmin.role);
-
     if (result.success) {
-      setMessage({
-        type: 'success',
-        text: '✅ User berhasil dijadikan admin!'
-      });
+      setMessage({ type: 'success', text: '✅ User jadi admin!' });
       setShowAddModal(false);
-      setNewAdmin({ email: '', role: 'admin', permissions: ['read', 'write'] });
+      setNewAdmin({ email: '', role: 'admin' });
       loadAdmins();
       loadAllUsers();
     } else {
-      setMessage({
-        type: 'error',
-        text: '❌ Gagal menambahkan admin: ' + result.error
-      });
+      setMessage({ type: 'error', text: 'Gagal: ' + result.error });
     }
   };
 
   const handleToggleStatus = async (adminId, currentStatus) => {
-    const newStatus = !currentStatus;
-    const result = await updateAdminStatus(adminId, newStatus);
-
+    const result = await updateAdminStatus(adminId, !currentStatus);
     if (result.success) {
-      setMessage({
-        type: 'success',
-        text: newStatus ? '✅ Admin diaktifkan!' : '⏸️ Admin dinonaktifkan!'
-      });
+      setMessage({ type: 'success', text: currentStatus ? 'Dinonaktifkan' : 'Diaktifkan' });
       loadAdmins();
       loadAllUsers();
-    } else {
-      setMessage({
-        type: 'error',
-        text: '❌ Gagal update status'
-      });
     }
   };
 
   const handleUpdateRole = async (userId, newRole) => {
     const result = await updateUserRole(userId, newRole);
-
     if (result.success) {
-      setMessage({
-        type: 'success',
-        text: '✅ Role berhasil diupdate!'
-      });
+      setMessage({ type: 'success', text: 'Role updated!' });
+      setShowUserModal(false);
       loadAdmins();
       loadAllUsers();
-      setShowUserModal(false);
-    } else {
-      setMessage({
-        type: 'error',
-        text: '❌ Gagal update role: ' + result.error
-      });
     }
   };
 
-  const openUserModal = (user) => {
-    setSelectedUser(user);
-    setShowUserModal(true);
+  const filteredAdmins = admins.filter(admin =>
+    admin.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    admin.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredUsers = allUsers.filter(u =>
+    u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.name?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const stats = {
+    total: admins.length,
+    active: admins.filter(a => a.active).length,
+    superAdmin: admins.filter(a => a.role === 'super_admin').length,
+    admin: admins.filter(a => a.role === 'admin').length
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-6xl">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
-              <FiShield className="w-6 h-6 text-white" />
-            </div>
+    <AdminLayout title="Kelola Admin" subtitle="Manage users & permissions">
+      {/* Breadcrumb */}
+      <div className="bg-white border-b sticky top-14 z-30">
+        <div className="container mx-auto px-4 py-2">
+          <Breadcrumb showHome={false} items={[{ label: 'Kelola Admin', href: '/admin/manage-admins' }]} />
+        </div>
+      </div>
+
+      {/* Hero */}
+      <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 py-6">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">Manage Admins</h1>
-              <p className="text-sm text-slate-500">Kelola akses admin sistem PPDB</p>
+              <h1 className="text-xl md:text-2xl font-bold text-white">Kelola Admin</h1>
+              <p className="text-xs md:text-sm text-white/90">Manage users & permissions</p>
+            </div>
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-white/20 rounded-xl flex items-center justify-center">
+              <FiShield className="w-5 h-5 md:w-6 md:h-6 text-white" />
             </div>
           </div>
-
-          {/* Current User Info */}
-          {user && (
-            <div className="bg-white rounded-xl p-4 shadow-md border border-slate-200">
-              <div className="flex items-center gap-3">
-                <img src={user.photoURL} alt={user.displayName} className="w-10 h-10 rounded-full" />
-                <div>
-                  <p className="font-semibold text-slate-800">{user.displayName}</p>
-                  <p className="text-sm text-slate-500">{user.email}</p>
-                </div>
-                {user.role && (
-                  <span className={`ml-auto px-3 py-1 text-xs font-semibold rounded-full ${
-                    user.role === 'super_admin' 
-                      ? 'bg-purple-100 text-purple-700'
-                      : user.role === 'admin'
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'bg-gray-100 text-gray-700'
-                  }`}>
-                    {user.role}
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
         </div>
+      </div>
 
-        {/* Message */}
-        {message.text && (
-          <div className={`mb-6 p-4 rounded-xl border ${
-            message.type === 'success'
-              ? 'bg-green-50 border-green-200 text-green-700'
-              : 'bg-red-50 border-red-200 text-red-700'
+      {/* Stats Cards */}
+      <div className="container mx-auto px-4 -mt-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <StatCard label="Total" value={stats.total} color="from-blue-500 to-cyan-500" icon={<FiUsers />} size="md" />
+          <StatCard label="Aktif" value={stats.active} color="from-green-500 to-emerald-500" icon={<FiCheck />} size="md" />
+          <StatCard label="Super" value={stats.superAdmin} color="from-purple-500 to-pink-500" icon={<FiShield />} size="md" />
+          <StatCard label="Admin" value={stats.admin} color="from-orange-500 to-red-500" icon={<FiUsers />} size="md" />
+        </div>
+      </div>
+
+      {/* Tabs & Search */}
+      <div className="container mx-auto px-4 mt-4">
+        <div className="bg-white rounded-xl shadow-sm p-3">
+          <div className="flex gap-2 mb-3">
+            <button
+              onClick={() => setActiveTab('admins')}
+              className={`flex-1 py-2 px-3 rounded-lg text-sm font-semibold transition-all ${
+                activeTab === 'admins'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              Admins ({stats.total})
+            </button>
+            <button
+              onClick={() => setActiveTab('all-users')}
+              className={`flex-1 py-2 px-3 rounded-lg text-sm font-semibold transition-all ${
+                activeTab === 'all-users'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              All Users ({allUsers.length})
+            </button>
+          </div>
+
+          <div className="relative">
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Cari email atau nama..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Message */}
+      {message.text && (
+        <div className="container mx-auto px-4 mt-4">
+          <div className={`p-3 rounded-lg text-sm font-medium ${
+            message.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'
           }`}>
             {message.text}
           </div>
-        )}
-
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6">
-          <button
-            onClick={() => setActiveTab('admins')}
-            className={`px-4 py-2 rounded-xl font-medium transition-colors ${
-              activeTab === 'admins'
-                ? 'bg-purple-600 text-white'
-                : 'bg-white text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            <FiShield className="inline w-4 h-4 mr-2" />
-            Admins ({admins.length})
-          </button>
-          <button
-            onClick={() => setActiveTab('all-users')}
-            className={`px-4 py-2 rounded-xl font-medium transition-colors ${
-              activeTab === 'all-users'
-                ? 'bg-purple-600 text-white'
-                : 'bg-white text-slate-600 hover:bg-slate-100'
-            }`}
-          >
-            <FiUsers className="inline w-4 h-4 mr-2" />
-            All Users ({allUsers.length})
-          </button>
         </div>
+      )}
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <StatCard
-            icon={<FiUsers />}
-            label="Total Admin"
-            value={admins.length}
-            color="from-blue-500 to-cyan-500"
-          />
-          <StatCard
-            icon={<FiCheck />}
-            label="Aktif"
-            value={admins.filter(a => a.active !== false).length}
-            color="from-green-500 to-emerald-500"
-          />
-          <StatCard
-            icon={<FiShield />}
-            label="Super Admin"
-            value={admins.filter(a => a.role === 'super_admin').length}
-            color="from-purple-500 to-pink-500"
-          />
-          <StatCard
-            icon={<FiUsers />}
-            label="Total Users"
-            value={allUsers.length}
-            color="from-orange-500 to-amber-500"
-          />
-        </div>
-
-        {/* Add Admin Button */}
-        <div className="mb-6">
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold px-6 py-3 rounded-xl hover:shadow-lg hover:shadow-purple-500/30 hover:scale-105 transition-all duration-200"
-          >
-            <FiPlus className="w-5 h-5" />
-            Jadikan User Sebagai Admin
-          </button>
-        </div>
-
-        {/* Content based on active tab */}
-        {activeTab === 'admins' ? (
-          /* Admin List */
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gradient-to-r from-slate-50 to-slate-100">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                      Admin
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                      Role
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                      Permissions
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {loading ? (
-                    <tr>
-                      <td colSpan="5" className="px-6 py-8 text-center">
-                        <div className="flex items-center justify-center gap-3">
-                          <div className="w-6 h-6 border-4 border-purple-600 border-t-transparent rounded-full animate-spin" />
-                          <span className="text-slate-600">Loading...</span>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : admins.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" className="px-6 py-8 text-center text-slate-500">
-                        Belum ada admin. Klik "Jadikan User Sebagai Admin" untuk memulai.
-                      </td>
-                    </tr>
-                  ) : (
-                    admins.map((admin) => (
-                      <tr key={admin.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
-                              {admin.name?.charAt(0) || admin.email?.charAt(0) || 'A'}
-                            </div>
-                            <div>
-                              <p className="font-semibold text-slate-800">{admin.name || 'N/A'}</p>
-                              <p className="text-sm text-slate-500">{admin.email}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            admin.role === 'super_admin'
-                              ? 'bg-purple-100 text-purple-700'
-                              : admin.role === 'admin'
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-gray-100 text-gray-700'
-                          }`}>
-                            {admin.role}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex flex-wrap gap-1">
-                            {admin.permissions?.map((perm, idx) => (
-                              <span key={idx} className="px-2 py-1 bg-slate-100 text-slate-600 text-xs rounded">
-                                {perm}
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            admin.active !== false
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-red-100 text-red-700'
-                          }`}>
-                            {admin.active !== false ? '✓ Aktif' : '✗ Nonaktif'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => handleToggleStatus(admin.id, admin.active !== false)}
-                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                                admin.active !== false
-                                  ? 'bg-red-100 text-red-600 hover:bg-red-200'
-                                  : 'bg-green-100 text-green-600 hover:bg-green-200'
-                              }`}
-                            >
-                              {admin.active !== false ? 'Nonaktifkan' : 'Aktifkan'}
-                            </button>
-                            <button
-                              onClick={() => openUserModal(admin)}
-                              className="px-3 py-1.5 bg-blue-100 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-200 transition-colors"
-                            >
-                              <FiEdit2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+      {/* Content List */}
+      <div className="container mx-auto px-4 mt-4 mb-8">
+        {loading ? (
+          <LoadingState message="Memuat data..." />
+        ) : activeTab === 'admins' ? (
+          <div className="space-y-2">
+            {filteredAdmins.length === 0 ? (
+              <EmptyState 
+                type="noAdmins"
+                title={searchTerm ? 'Admin Tidak Ditemukan' : 'Belum Ada Admin'}
+                message={searchTerm 
+                  ? `Tidak ada admin yang cocok dengan "${searchTerm}"`
+                  : 'Tambahkan admin pertama Anda untuk mengelola sistem PPDB'
+                }
+                actionLabel={!searchTerm ? 'Tambah Admin' : null}
+                onAction={!searchTerm ? () => setShowAddModal(true) : () => setSearchTerm('')}
+              />
+            ) : (
+              filteredAdmins.map((admin) => (
+                <AdminCard
+                  key={admin.id}
+                  admin={admin}
+                  onToggleStatus={handleToggleStatus}
+                  onEdit={() => {
+                    setSelectedUser(admin);
+                    setShowUserModal(true);
+                  }}
+                  showMenu={showMenuId === admin.id}
+                  onToggleMenu={() => setShowMenuId(showMenuId === admin.id ? null : admin.id)}
+                />
+              ))
+            )}
           </div>
         ) : (
-          /* All Users List */
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gradient-to-r from-slate-50 to-slate-100">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                      User
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                      Role
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {allUsers.length === 0 ? (
-                    <tr>
-                      <td colSpan="4" className="px-6 py-8 text-center text-slate-500">
-                        Belum ada user
-                      </td>
-                    </tr>
-                  ) : (
-                    allUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <img src={user.photoURL} alt={user.name} className="w-10 h-10 rounded-full" />
-                            <div>
-                              <p className="font-semibold text-slate-800">{user.name || 'N/A'}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                            user.role === 'super_admin'
-                              ? 'bg-purple-100 text-purple-700'
-                              : user.role === 'admin'
-                              ? 'bg-blue-100 text-blue-700'
-                              : user.role === 'staff'
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-gray-100 text-gray-700'
-                          }`}>
-                            {user.role || 'user'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <p className="text-sm text-slate-600">{user.email}</p>
-                        </td>
-                        <td className="px-6 py-4">
-                          <button
-                            onClick={() => openUserModal(user)}
-                            className="px-3 py-1.5 bg-purple-100 text-purple-600 rounded-lg text-sm font-medium hover:bg-purple-200 transition-colors"
-                          >
-                            <FiEdit2 className="inline w-4 h-4 mr-1" />
-                            Edit Role
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Add Admin Modal */}
-        {showAddModal && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-slate-800">Jadikan User Sebagai Admin</h2>
-                <button
-                  onClick={() => setShowAddModal(false)}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-                >
-                  <FiX className="w-5 h-5 text-slate-600" />
-                </button>
-              </div>
-
-              <form onSubmit={handleAddAdmin} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Email User
-                  </label>
-                  <input
-                    type="email"
-                    value={newAdmin.email}
-                    onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-                    placeholder="user@smk.sch.id"
-                    required
-                  />
-                  <p className="mt-2 text-xs text-slate-500">
-                    💡 User harus sudah pernah login agar terdaftar di database
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Role
-                  </label>
-                  <select
-                    value={newAdmin.role}
-                    onChange={(e) => setNewAdmin({ ...newAdmin, role: e.target.value })}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-                  >
-                    <option value="admin">Admin</option>
-                    <option value="super_admin">Super Admin</option>
-                    <option value="staff">Staff</option>
-                  </select>
-                </div>
-
-                <div className="flex gap-3 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddModal(false)}
-                    className="flex-1 px-4 py-2.5 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors"
-                  >
-                    Batal
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:shadow-lg transition-all"
-                  >
-                    Jadikan Admin
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Edit User Role Modal */}
-        {showUserModal && selectedUser && (
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-slate-800">Edit Role User</h2>
-                <button
-                  onClick={() => setShowUserModal(false)}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
-                >
-                  <FiX className="w-5 h-5 text-slate-600" />
-                </button>
-              </div>
-
-              <div className="mb-4">
-                <div className="flex items-center gap-3 mb-4">
-                  <img src={selectedUser.photoURL} alt={selectedUser.name} className="w-12 h-12 rounded-full" />
-                  <div>
-                    <p className="font-semibold text-slate-800">{selectedUser.name || 'N/A'}</p>
-                    <p className="text-sm text-slate-500">{selectedUser.email}</p>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Role
-                  </label>
-                  <select
-                    value={selectedUser.role || 'user'}
-                    onChange={(e) => handleUpdateRole(selectedUser.id, e.target.value)}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none"
-                  >
-                    <option value="user">User (Tidak ada akses admin)</option>
-                    <option value="staff">Staff</option>
-                    <option value="admin">Admin</option>
-                    <option value="super_admin">Super Admin</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleToggleStatus(selectedUser.id, selectedUser.active !== false);
+          <div className="space-y-2">
+            {filteredUsers.length === 0 ? (
+              <EmptyState 
+                type="noStudents"
+                title={searchTerm ? 'User Tidak Ditemukan' : 'Belum Ada User'}
+                message={searchTerm 
+                  ? `Tidak ada user yang cocok dengan "${searchTerm}"`
+                  : 'User akan muncul ketika sudah ada yang login ke sistem'
+                }
+                actionLabel={searchTerm ? 'Reset Pencarian' : null}
+                onAction={searchTerm ? () => setSearchTerm('') : null}
+              />
+            ) : (
+              filteredUsers.map((userItem) => (
+                <UserCard
+                  key={userItem.id}
+                  user={userItem}
+                  onMakeAdmin={() => {
+                    setSelectedUser(userItem);
+                    setNewAdmin({ ...newAdmin, email: userItem.email });
+                    setShowAddModal(true);
                   }}
-                  className={`flex-1 px-4 py-2.5 rounded-xl font-medium transition-colors ${
-                    selectedUser.active !== false
-                      ? 'bg-red-100 text-red-600 hover:bg-red-200'
-                      : 'bg-green-100 text-green-600 hover:bg-green-200'
-                  }`}
-                >
-                  {selectedUser.active !== false ? 'Nonaktifkan' : 'Aktifkan'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowUserModal(false)}
-                  className="flex-1 px-4 py-2.5 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors"
-                >
-                  Tutup
-                </button>
-              </div>
-            </div>
+                />
+              ))
+            )}
           </div>
         )}
       </div>
-    </div>
+
+      {/* Add Admin Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-gray-800">Jadikan Admin</h2>
+              <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                <FiX className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddAdmin} className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email User</label>
+                <input
+                  type="email"
+                  value={newAdmin.email}
+                  onChange={(e) => setNewAdmin({ ...newAdmin, email: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none text-sm"
+                  placeholder="user@example.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                <select
+                  value={newAdmin.role}
+                  onChange={(e) => setNewAdmin({ ...newAdmin, role: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none text-sm"
+                >
+                  <option value="admin">Admin</option>
+                  <option value="super_admin">Super Admin</option>
+                  <option value="staff">Staff</option>
+                </select>
+              </div>
+
+              <div className="flex gap-2 pt-3">
+                <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium">
+                  Batal
+                </button>
+                <button type="submit" className="flex-1 px-3 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg text-sm font-medium">
+                  Set Admin
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {showUserModal && selectedUser && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-gray-800">Edit Admin</h2>
+              <button onClick={() => setShowUserModal(false)} className="p-2 hover:bg-gray-100 rounded-lg">
+                <FiX className="w-5 h-5 text-gray-600" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white font-bold">
+                  {selectedUser.name?.charAt(0) || selectedUser.email?.charAt(0) || 'U'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-gray-800 text-sm truncate">{selectedUser.name || 'User'}</p>
+                  <p className="text-xs text-gray-500 truncate">{selectedUser.email}</p>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Update Role</label>
+                <select
+                  defaultValue={selectedUser.role}
+                  onChange={(e) => handleUpdateRole(selectedUser.id, e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none text-sm"
+                >
+                  <option value="staff">Staff</option>
+                  <option value="admin">Admin</option>
+                  <option value="super_admin">Super Admin</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <span className="text-sm font-medium text-gray-700">Status</span>
+                <button
+                  onClick={() => handleToggleStatus(selectedUser.id, selectedUser.active)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    selectedUser.active
+                      ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                      : 'bg-red-100 text-red-700 hover:bg-red-200'
+                  }`}
+                >
+                  {selectedUser.active ? '✓ Aktif' : '✗ Nonaktif'}
+                </button>
+              </div>
+
+              <button onClick={() => setShowUserModal(false)} className="w-full px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium mt-2">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </AdminLayout>
   );
 };
 
-// Stat Card Component
-const StatCard = ({ icon, label, value, color }) => (
-  <div className="bg-white rounded-xl p-4 shadow-md">
-    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-white mb-2`}>
-      {icon}
+// Compact Admin Card
+const AdminCard = ({ admin, onToggleStatus, onEdit, showMenu, onToggleMenu }) => (
+  <div className={`bg-white rounded-xl shadow-sm border-2 transition-all ${
+    admin.active ? 'border-transparent hover:border-purple-200' : 'border-red-200 bg-red-50'
+  }`}>
+    <div className="p-3">
+      <div className="flex items-center gap-3">
+        {/* Avatar */}
+        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center font-bold text-base md:text-lg flex-shrink-0 ${
+          admin.role === 'super_admin' ? 'bg-gradient-to-br from-purple-500 to-pink-500 text-white'
+          : admin.role === 'admin' ? 'bg-gradient-to-br from-blue-500 to-cyan-500 text-white'
+          : 'bg-gradient-to-br from-gray-400 to-gray-600 text-white'
+        }`}>
+          {admin.name?.charAt(0) || admin.email?.charAt(0) || 'A'}
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-0.5">
+            <p className="font-semibold text-gray-800 text-sm md:text-base truncate">{admin.name || 'User'}</p>
+            {admin.role === 'super_admin' && (
+              <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-semibold">Super</span>
+            )}
+          </div>
+          <p className="text-xs text-gray-500 truncate">{admin.email}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+              admin.active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+            }`}>
+              {admin.active ? '✓ Aktif' : '✗ Nonaktif'}
+            </span>
+            <span className="text-xs text-gray-500">{admin.role}</span>
+          </div>
+        </div>
+
+        {/* Menu Button */}
+        <button onClick={onToggleMenu} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <FiMoreVertical className="w-5 h-5 text-gray-600" />
+        </button>
+      </div>
+
+      {/* Dropdown Menu */}
+      {showMenu && (
+        <div className="mt-3 pt-3 border-t border-gray-100 flex gap-2">
+          <button
+            onClick={onToggleStatus}
+            className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all ${
+              admin.active
+                ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                : 'bg-green-100 text-green-700 hover:bg-green-200'
+            }`}
+          >
+            {admin.active ? 'Nonaktifkan' : 'Aktifkan'}
+          </button>
+          <button
+            onClick={onEdit}
+            className="flex-1 py-2 px-3 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 text-xs font-semibold"
+          >
+            Edit Role
+          </button>
+        </div>
+      )}
     </div>
-    <p className="text-2xl font-bold text-slate-800">{value}</p>
-    <p className="text-xs text-slate-500">{label}</p>
+  </div>
+);
+
+// Compact User Card
+const UserCard = ({ user, onMakeAdmin }) => (
+  <div className="bg-white rounded-xl shadow-sm p-3 flex items-center gap-3">
+    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center font-bold text-base md:text-lg flex-shrink-0">
+      {user.name?.charAt(0) || user.email?.charAt(0) || 'U'}
+    </div>
+    <div className="flex-1 min-w-0">
+      <p className="font-semibold text-gray-800 text-sm md:text-base truncate">{user.name || 'User'}</p>
+      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+      <p className="text-xs text-gray-400 mt-0.5">Role: {user.role || 'user'}</p>
+    </div>
+    <button
+      onClick={onMakeAdmin}
+      className="px-3 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg text-xs font-semibold"
+    >
+      Set Admin
+    </button>
   </div>
 );
 

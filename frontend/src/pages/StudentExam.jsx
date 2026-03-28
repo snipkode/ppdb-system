@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiCalendar, FiClock, FiMapPin, FiDownload, FiCheck, FiX, FiAward, FiUser, FiBook, FiTrophy } from 'react-icons/fi';
+import { FiCalendar, FiClock, FiMapPin, FiDownload, FiCheck, FiX, FiAward, FiUser, FiBook } from 'react-icons/fi';
 import examApi from '@/services/examApi';
 import ExamCardGenerator from '@/components/admin/ExamCardGenerator';
 

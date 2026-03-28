@@ -1,106 +1,52 @@
-import { FiInbox, FiSearch, FiFile, FiHelpCircle, FiCheckCircle } from 'react-icons/fi';
-import Button from './Button';
+import { FiClipboard } from 'react-icons/fi';
+import { FiPlus } from 'react-icons/fi';
 
-/**
- * Empty State Component
- * Used when there's no data to display
- */
-const EmptyState = ({
-  icon: Icon,
-  title,
-  message,
-  actionLabel,
-  onAction,
-  className = ''
-}) => {
-  const defaultIcons = {
-    inbox: FiInbox,
-    search: FiSearch,
-    file: FiFile,
-    help: FiHelpCircle,
-    success: FiCheckCircle
-  };
-
-  const DisplayIcon = Icon || defaultIcons.inbox;
-
-  return (
-    <div className={`text-center py-12 px-4 ${className}`}>
-      <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-        <DisplayIcon className="w-8 h-8 text-gray-400" />
-      </div>
-      <h3 className="text-lg font-semibold text-gray-800 mb-2">
-        {title}
-      </h3>
-      <p className="text-gray-600 mb-6 max-w-md mx-auto">
-        {message}
-      </p>
-      {actionLabel && onAction && (
-        <Button onClick={onAction}>
-          {actionLabel}
-        </Button>
-      )}
+export const EmptyState = ({ filter, hasSearch, onAdd, availableStudents }) => (
+  <div className="py-16 px-4 text-center">
+    <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+      <FiClipboard className="w-12 h-12 text-blue-600" />
     </div>
-  );
-};
-
-/**
- * No Data Empty State
- */
-const NoDataEmpty = ({ onRefresh, loading }) => (
-  <EmptyState
-    icon={FiInbox}
-    title="Belum Ada Data"
-    message="Belum ada data yang tersedia. Silakan refresh atau coba lagi nanti."
-    actionLabel={loading ? 'Memuat...' : 'Refresh'}
-    onAction={onRefresh}
-  />
+    <h3 className="text-lg font-bold text-gray-800 mb-2">
+      {hasSearch ? 'Tidak Ada Hasil Pencarian' : 
+       filter === 'scheduled' ? 'Belum Ada Jadwal Terjadwal' :
+       filter === 'completed' ? 'Belum Ada Ujian Selesai' :
+       'Belum Ada Jadwal Ujian'}
+    </h3>
+    <p className="text-gray-500 text-sm max-w-md mx-auto mb-4">
+      {hasSearch ? 'Coba kata kunci lain atau ubah filter' : 
+       filter === 'scheduled' ? 'Semua jadwal sudah selesai dilaksanakan' :
+       filter === 'completed' ? 'Belum ada ujian yang selesai dilaksanakan' :
+       availableStudents > 0 
+         ? `Ada ${availableStudents} siswa yang belum dijadwalkan ujian. Yuk buat jadwal!`
+         : 'Semua siswa sudah dijadwalkan atau sudah ujian'}
+    </p>
+    {!hasSearch && filter !== 'completed' && availableStudents > 0 && (
+      <button onClick={onAdd} className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:shadow-lg font-semibold text-sm">
+        <FiPlus className="w-4 h-4" /> Buat Jadwal Pertama
+      </button>
+    )}
+    {hasSearch && (
+      <button onClick={() => window.location.reload()} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">Reset Pencarian</button>
+    )}
+  </div>
 );
 
-/**
- * No Search Results Empty State
- */
-const NoResultsEmpty = ({ searchTerm, onClear }) => (
-  <EmptyState
-    icon={FiSearch}
-    title="Tidak Ditemukan"
-    message={`Tidak ada hasil yang cocok untuk "${searchTerm}". Coba kata kunci lain atau hapus filter.`}
-    actionLabel="Hapus Pencarian"
-    onAction={onClear}
-  />
+export const EmptyStateExamResults = ({ filter, hasSearch }) => (
+  <div className="py-16 px-4 text-center">
+    <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gradient-to-br from-slate-100 to-gray-200 flex items-center justify-center">
+      <FiClipboard className="w-12 h-12 text-gray-400" />
+    </div>
+    <h3 className="text-lg font-bold text-gray-800 mb-2">
+      {hasSearch ? 'Tidak Ada Hasil' : filter === 'scheduled' ? 'Belum Ada Ujian Terjadwal' : filter === 'completed' ? 'Belum Ada Ujian Selesai' : 'Belum Ada Data'}
+    </h3>
+    <p className="text-gray-500 text-sm max-w-md mx-auto">
+      {hasSearch ? 'Coba kata kunci lain atau ubah filter' : 
+       filter === 'scheduled' ? 'Semua peserta sudah dinilai. Bagus!' :
+       filter === 'completed' ? 'Belum ada ujian yang selesai dinilai' :
+       'Data ujian akan muncul setelah jadwal dibuat'}
+    </p>
+    {hasSearch && (
+      <button onClick={() => window.location.reload()} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium">Reset Pencarian</button>
+    )}
+  </div>
 );
-
-/**
- * No Access Empty State
- */
-const NoAccessEmpty = ({ onBack }) => (
-  <EmptyState
-    icon={FiHelpCircle}
-    title="Akses Ditolak"
-    message="Anda tidak memiliki akses untuk melihat halaman ini. Silakan hubungi administrator."
-    actionLabel="Kembali"
-    onAction={onBack}
-  />
-);
-
-/**
- * Success Empty State
- */
-const SuccessEmpty = ({ title, message, actionLabel, onAction }) => (
-  <EmptyState
-    icon={FiCheckCircle}
-    title={title || 'Berhasil!'}
-    message={message}
-    actionLabel={actionLabel}
-    onAction={onAction}
-  />
-);
-
-export {
-  EmptyState,
-  NoDataEmpty,
-  NoResultsEmpty,
-  NoAccessEmpty,
-  SuccessEmpty
-};
-
-export default EmptyState;

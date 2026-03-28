@@ -49,20 +49,20 @@ const PaymentTable = ({ payments, loading, onViewDetail }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
       <div className="overflow-x-auto">
         <table className="min-w-full">
-          <thead className="bg-gradient-to-r from-slate-50 to-slate-100">
+          <thead className="bg-gradient-to-r from-slate-100 to-slate-200 border-b-2 border-gray-300">
             <tr>
-              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase">No. Daftar</th>
-              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase">Siswa</th>
-              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase">Progress</th>
-              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase">Dibayar</th>
-              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
-              <th className="px-3 py-2 text-left text-xs font-semibold text-gray-600 uppercase">Aksi</th>
+              <th className="px-3 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">No. Daftar</th>
+              <th className="px-3 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Siswa</th>
+              <th className="px-3 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Progress</th>
+              <th className="px-3 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Dibayar</th>
+              <th className="px-3 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Status</th>
+              <th className="px-3 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Aksi</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-200">
             {payments.map((payment) => {
               const progress = getCicilanProgress(payment);
               const statusBadge = getStatusBadge(payment.pembayaran?.cicilan || []);
@@ -70,40 +70,40 @@ const PaymentTable = ({ payments, loading, onViewDetail }) => {
               const totalBiaya = payment.pembayaran?.totalBiaya || 1500000;
 
               return (
-                <tr key={payment.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-3 py-2.5">
-                    <div className="text-xs font-mono font-medium text-gray-900">{payment.nomor_pendaftaran || '-'}</div>
+                <tr key={payment.id} className="hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-colors">
+                  <td className="px-3 py-3">
+                    <div className="text-sm font-mono font-bold text-gray-900">{payment.nomor_pendaftaran || '-'}</div>
                   </td>
-                  <td className="px-3 py-2.5">
-                    <div className="text-sm font-medium text-gray-900 truncate max-w-[150px]">{payment.nama_siswa || '-'}</div>
-                    {payment.email && <div className="text-xs text-gray-500 truncate max-w-[150px]">{payment.email}</div>}
+                  <td className="px-3 py-3">
+                    <div className="text-sm font-bold text-gray-900 truncate max-w-[150px]">{payment.nama_siswa || '-'}</div>
+                    {payment.email && <div className="text-xs text-gray-600 font-medium truncate max-w-[150px]">{payment.email}</div>}
                   </td>
-                  <td className="px-3 py-2.5">
+                  <td className="px-3 py-3">
                     <div className="flex items-center gap-2">
                       <div className="flex-1">
-                        <div className="bg-gray-200 rounded-full h-2">
-                          <div className={`h-2 rounded-full transition-all ${progress.percentage === 100 ? 'bg-green-500' : 'bg-blue-500'}`} style={{ width: `${progress.percentage}%` }} />
+                        <div className="bg-gray-300 rounded-full h-2.5 shadow-inner">
+                          <div className={`h-2.5 rounded-full transition-all shadow-sm ${progress.percentage === 100 ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-blue-500 to-cyan-500'}`} style={{ width: `${progress.percentage}%` }} />
                         </div>
-                        <p className="text-xs text-gray-600 mt-0.5">{progress.paid}/{progress.total} cicilan</p>
+                        <p className="text-xs font-semibold text-gray-700 mt-1">{progress.paid}/{progress.total} cicilan</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-3 py-2.5">
-                    <div className="text-xs font-bold text-gray-900">{formatCurrency(totalPaid)}</div>
-                    <div className="text-xs text-gray-500">dari {formatCurrency(totalBiaya)}</div>
+                  <td className="px-3 py-3">
+                    <div className="text-sm font-bold text-gray-900">{formatCurrency(totalPaid)}</div>
+                    <div className="text-xs text-gray-600 font-medium">dari {formatCurrency(totalBiaya)}</div>
                   </td>
-                  <td className="px-3 py-2.5">
-                    <div className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusBadge.color}`}>
+                  <td className="px-3 py-3">
+                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-bold shadow-sm ${statusBadge.color}`}>
                       {statusBadge.icon}
                       <div>
-                        <div className="font-medium leading-tight">{statusBadge.label}</div>
-                        {statusBadge.sub && <div className="text-xs opacity-75 leading-tight">{statusBadge.sub}</div>}
+                        <div className="font-bold leading-tight">{statusBadge.label}</div>
+                        {statusBadge.sub && <div className="text-xs opacity-80 font-medium leading-tight">{statusBadge.sub}</div>}
                       </div>
                     </div>
                   </td>
-                  <td className="px-3 py-2.5">
-                    <button onClick={() => onViewDetail(payment)} className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium">
-                      <FiEye className="w-3.5 h-3.5" />
+                  <td className="px-3 py-3">
+                    <button onClick={() => onViewDetail(payment)} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-md hover:shadow-lg text-sm font-bold">
+                      <FiEye className="w-4 h-4" />
                       Detail
                     </button>
                   </td>
@@ -115,12 +115,12 @@ const PaymentTable = ({ payments, loading, onViewDetail }) => {
       </div>
 
       {/* Footer Summary */}
-      <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-3 py-2 border-t border-gray-200">
-        <div className="flex items-center justify-between text-xs text-gray-600">
+      <div className="bg-gradient-to-r from-slate-100 to-slate-200 px-4 py-3 border-t-2 border-gray-300">
+        <div className="flex items-center justify-between text-xs font-semibold text-gray-700">
           <span>Menampilkan {payments.length} data</span>
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-green-500" /> Lunas: {payments.filter(p => (p.pembayaran?.cicilan || []).filter(c => c.status === 'paid').length === 3).length}</span>
-            <span className="flex items-center gap-1"><div className="w-1.5 h-1.5 rounded-full bg-blue-500" /> Pending: {payments.filter(p => (p.pembayaran?.cicilan || []).some(c => c.status === 'pending')).length}</span>
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-green-500 shadow-sm" /> Lunas: {payments.filter(p => (p.pembayaran?.cicilan || []).filter(c => c.status === 'paid').length === 3).length}</span>
+            <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500 shadow-sm" /> Pending: {payments.filter(p => (p.pembayaran?.cicilan || []).some(c => c.status === 'pending')).length}</span>
           </div>
         </div>
       </div>

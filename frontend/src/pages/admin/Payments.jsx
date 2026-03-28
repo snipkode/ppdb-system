@@ -1,8 +1,16 @@
 import { useState, useEffect } from 'react';
-import { FiDollarSign, FiCheck, FiX, FiClock, FiAlertCircle, FiSearch, FiFilter } from 'react-icons/fi';
+import { FiDollarSign, FiCheck, FiX, FiClock } from 'react-icons/fi';
 import { paymentAPI, studentAPI } from '@/services/api';
 import PaymentTable from '@/components/admin/PaymentTable';
 import PaymentDetailModal from '@/components/admin/PaymentDetailModal';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { LoadingState } from '@/components/ui';
+import StatCard from '@/components/ui/StatCard';
+import SearchFilter from '@/components/ui/SearchFilter';
+import Modal from '@/components/ui/Modal';
+import StatusBadge from '@/components/ui/StatusBadge';
+import AdminLayout from '@/components/layout/AdminLayout';
+import Breadcrumb from '@/components/ui/Breadcrumb';
 
 const AdminPayments = () => {
   const [payments, setPayments] = useState([]);
@@ -68,19 +76,33 @@ const AdminPayments = () => {
     return true;
   });
 
+  const filters = [
+    { value: 'all', label: 'Semua Status' },
+    { value: 'pending', label: 'Pending' },
+    { value: 'paid', label: 'Lunas' },
+    { value: 'rejected', label: 'Ditolak' }
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero Header - Larger Height */}
-      <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 py-8 md:py-12">
+    <AdminLayout title="Dashboard Pembayaran" subtitle="Kelola cicilan pendaftaran PPDB">
+      {/* Breadcrumb */}
+      <div className="bg-white border-b sticky top-14 z-30">
+        <div className="container mx-auto px-4 py-2">
+          <Breadcrumb showHome={false} items={[{ label: 'Pembayaran', href: '/admin/payments' }]} />
+        </div>
+      </div>
+
+      {/* Hero Header */}
+      <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 py-6">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-center md:text-left">
-              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Dashboard Pembayaran</h1>
-              <p className="text-sm md:text-base text-white/90">Kelola cicilan pendaftaran PPDB dengan mudah dan efisien</p>
+              <h1 className="text-xl md:text-2xl font-bold text-white">Dashboard Pembayaran</h1>
+              <p className="text-xs md:text-sm text-white/90">Kelola cicilan pendaftaran PPDB dengan mudah dan efisien</p>
             </div>
-            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-5 py-3 rounded-xl">
-              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                <FiDollarSign className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-3 bg-white/10 backdrop-blur-sm px-4 py-2.5 rounded-xl">
+              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                <FiDollarSign className="w-5 h-5 text-white" />
               </div>
               <div>
                 <p className="text-xs text-white/80">Admin Panel</p>
@@ -91,53 +113,42 @@ const AdminPayments = () => {
         </div>
       </div>
 
-      {/* Compact Stats */}
+      {/* Stats */}
       <div className="container mx-auto px-4 -mt-3">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <StatCard label="Total" value={stats.total} color="from-blue-500 to-cyan-500" icon={<FiDollarSign />} />
-          <StatCard label="Pending" value={stats.pending} color="from-yellow-500 to-orange-500" icon={<FiClock />} />
-          <StatCard label="Lunas" value={stats.paid} color="from-green-500 to-emerald-500" icon={<FiCheck />} />
-          <StatCard label="Ditolak" value={stats.rejected} color="from-red-500 to-rose-500" icon={<FiX />} />
+          <StatCard label="Total" value={stats.total} color="from-blue-500 to-cyan-500" icon={<FiDollarSign />} size="md" />
+          <StatCard label="Pending" value={stats.pending} color="from-yellow-500 to-orange-500" icon={<FiClock />} size="md" />
+          <StatCard label="Lunas" value={stats.paid} color="from-green-500 to-emerald-500" icon={<FiCheck />} size="md" />
+          <StatCard label="Ditolak" value={stats.rejected} color="from-red-500 to-rose-500" icon={<FiX />} size="md" />
         </div>
       </div>
 
-      {/* Filters & Search */}
+      {/* Search & Filter */}
       <div className="container mx-auto px-4 mt-4">
-        <div className="bg-white rounded-lg shadow-sm p-3 flex flex-col md:flex-row gap-3 items-center justify-between">
-          <div className="flex items-center gap-2 w-full md:w-auto">
-            <FiFilter className="w-4 h-4 text-gray-500" />
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="flex-1 md:w-40 text-sm border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
-            >
-              <option value="all">Semua Status</option>
-              <option value="pending">Pending</option>
-              <option value="paid">Lunas</option>
-              <option value="rejected">Ditolak</option>
-            </select>
-          </div>
-
-          <div className="relative w-full md:w-80">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Cari no. pendaftaran, nama, atau email..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
-            />
-          </div>
-        </div>
+        <SearchFilter
+          onSearch={setSearchTerm}
+          onFilterChange={setFilter}
+          filters={filters}
+          defaultFilter="all"
+          placeholder="Cari no. pendaftaran, nama, atau email..."
+        />
       </div>
 
       {/* Payment Table */}
       <div className="container mx-auto px-4 mt-4 mb-8">
         {loading ? (
-          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
-            <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-            <p className="text-sm text-gray-600">Memuat data...</p>
-          </div>
+          <LoadingState message="Memuat data cicilan..." />
+        ) : filteredPayments.length === 0 ? (
+          <EmptyState
+            type={searchTerm ? 'noResults' : 'noPayments'}
+            title={searchTerm ? 'Pembayaran Tidak Ditemukan' : 'Belum Ada Pembayaran'}
+            message={searchTerm
+              ? `Tidak ada pembayaran yang cocok dengan "${searchTerm}"`
+              : 'Pembayaran akan muncul ketika siswa sudah melakukan pembayaran cicilan'
+            }
+            actionLabel={searchTerm ? 'Reset Pencarian' : null}
+            onAction={searchTerm ? () => setSearchTerm('') : null}
+          />
         ) : (
           <PaymentTable
             payments={filteredPayments}
@@ -152,32 +163,28 @@ const AdminPayments = () => {
 
       {/* Detail Modal */}
       {showDetailModal && selectedPayment && (
-        <PaymentDetailModal
-          payment={selectedPayment}
+        <Modal
+          isOpen={showDetailModal}
           onClose={() => {
             setShowDetailModal(false);
             setSelectedPayment(null);
           }}
-          onVerify={handleVerifyPayment}
-        />
+          title="Detail Pembayaran"
+          subtitle={`No. Pendaftaran: ${selectedPayment.nomor_pendaftaran}`}
+          size="lg"
+        >
+          <PaymentDetailModal
+            payment={selectedPayment}
+            onClose={() => {
+              setShowDetailModal(false);
+              setSelectedPayment(null);
+            }}
+            onVerify={handleVerifyPayment}
+          />
+        </Modal>
       )}
-    </div>
+    </AdminLayout>
   );
 };
-
-// Compact Stat Card
-const StatCard = ({ label, value, color, icon }) => (
-  <div className={`bg-gradient-to-br ${color} rounded-lg p-3 text-white shadow-md`}>
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-xs opacity-90">{label}</p>
-        <p className="text-2xl font-bold">{value}</p>
-      </div>
-      <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-        {icon}
-      </div>
-    </div>
-  </div>
-);
 
 export default AdminPayments;
