@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, enableMultiTabIndexedDbPersistence } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, setPersistence, browserLocalPersistence } from 'firebase/auth';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -14,8 +14,24 @@ const firebaseConfig = {
   measurementId: "G-2811PD4BD6"
 };
 
+// Debug mode - set to true untuk enable debug logging
+const DEBUG_MODE = import.meta.env.DEV;
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Enable debug logging if in development mode
+if (DEBUG_MODE) {
+  console.log('🔥 Firebase initialized');
+  console.log('📝 Config:', {
+    projectId: firebaseConfig.projectId,
+    authDomain: firebaseConfig.authDomain
+  });
+  
+  // Enable Firebase debug logging
+  const { setLogLevel } = require('firebase/firestore');
+  setLogLevel('debug');
+}
 
 // Initialize Firestore
 export const db = getFirestore(app);
@@ -31,5 +47,36 @@ export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
   prompt: 'select_account'
 });
+
+// Set auth persistence to LOCAL (default)
+if (typeof window !== 'undefined') {
+  setPersistence(auth, browserLocalPersistence)
+    .then(() => {
+      if (DEBUG_MODE) {
+        console.log('✅ Auth persistence enabled (LOCAL)');
+      }
+    })
+    .catch((error) => {
+      console.error('❌ Auth persistence error:', error);
+    });
+}
+
+// Enable Firestore multi-tab persistence (for development)
+if (DEBUG_MODE && typeof window !== 'undefined') {
+  enableMultiTabIndexedDbPersistence(db)
+    .then(() => {
+      console.log('✅ Firestore multi-tab persistence enabled');
+    })
+    .catch((err) => {
+      if (err.code === 'failed-precondition') {
+        // Multiple tabs open, persistence can only be enabled in one tab at a time
+        console.warn('⚠️ Firestore persistence: Multiple tabs open');
+      } else if (err.code === 'unimplemented') {
+        console.warn('⚠️ Firestore persistence: Browser doesn\'t support');
+      } else {
+        console.error('❌ Firestore persistence error:', err);
+      }
+    });
+}
 
 export default app;

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { FiUser, FiMail, FiPhone, FiMapPin, FiCalendar, FiEdit3, FiSave, FiX, FiCamera, FiShield, FiBell, FiLogOut } from 'react-icons/fi';
+import { useState, useEffect, useCallback } from 'react';
+import { FiUser, FiMail, FiPhone, FiMapPin, FiCalendar, FiEdit3, FiSave, FiX, FiCamera, FiShield, FiBell, FiLogOut, FiClock } from 'react-icons/fi';
 import { useAuthStore } from '@/stores/useAuthStore';
 
 const Profile = () => {
@@ -21,7 +21,7 @@ const Profile = () => {
   useEffect(() => {
     // Load user data
     if (user) {
-      setFormData({
+      const newFormData = {
         nama_lengkap: user.data_siswa?.nama_lengkap || user.displayName || '',
         email: user.data_siswa?.email || user.email || '',
         telepon: user.data_siswa?.telepon || '',
@@ -30,7 +30,9 @@ const Profile = () => {
         tempat_lahir: user.data_siswa?.tempat_lahir || '',
         jenis_kelamin: user.data_siswa?.jenis_kelamin || 'L',
         foto_profile: user.data_siswa?.foto_profile || ''
-      });
+      };
+      // Use setTimeout to avoid setState in effect
+      setTimeout(() => setFormData(newFormData), 0);
     }
   }, [user]);
 
@@ -507,11 +509,11 @@ const NotificationsTab = () => {
   );
 };
 
-const NotificationToggle = ({ icon: Icon, title, description, checked, onChange, gradient }) => (
+const NotificationToggle = ({ icon: IconComp, title, description, checked, onChange, gradient }) => (
   <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
     <div className="flex items-center gap-4">
       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white shadow-lg`}>
-        <Icon className="w-6 h-6" />
+        <IconComp className="w-6 h-6" />
       </div>
       <div>
         <h3 className="font-semibold text-gray-800">{title}</h3>

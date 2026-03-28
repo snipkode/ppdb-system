@@ -1,4 +1,4 @@
-import { FiUsers, FiAward, FiMapPin, FiPhone, FiMail, FiGlobe, FiFacebook, FiInstagram, FiTwitter, FiYoutube, FiCheckCircle, FiStar, FiBookOpen, FiHeart } from 'react-icons/fi';
+import { FiUsers, FiAward, FiMapPin, FiPhone, FiMail, FiGlobe, FiFacebook, FiInstagram, FiTwitter, FiYoutube, FiCheckCircle, FiStar, FiBookOpen, FiHeart, FiBook, FiInfo } from 'react-icons/fi';
 
 const About = () => {
   const vision = {
@@ -32,7 +32,7 @@ const About = () => {
 
   const stats = [
     { icon: <FiUsers />, number: '1,200+', label: 'Siswa Aktif' },
-    { icon: <FiAward />, number: '85+' label: 'Guru & Staff' },
+    { icon: <FiAward />, number: '85+', label: 'Guru & Staff' },
     { icon: <FiBookOpen />, number: '8', label: 'Program Keahlian' },
     { icon: <FiStar />, number: '15+', label: 'Tahun Eksistensi' },
     { icon: <FiCheckCircle />, number: '95%', label: 'Lulusan Bekerja' },

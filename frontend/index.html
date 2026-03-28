@@ -3,7 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+
+    <!-- Eruda DevTools (Mobile Debug) -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+
+    <!-- Eruda DevTools (Mobile Debug) -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+
     <!-- Primary Meta Tags -->
     <title>PPDB Online - Pendaftaran Siswa Baru</title>
     <meta name="title" content="PPDB Online - Pendaftaran Siswa Baru" />
@@ -58,8 +64,19 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
     
+    <!-- Vite Entry Point -->
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Firebase SDK (CDN - Optional, for direct browser usage) -->
+    <!-- Note: Firebase is imported via npm in src/services/firebase.js -->
+    <!-- 
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    -->
+
     <!-- Register Service Worker -->
     <script>
       if ('serviceWorker' in navigator) {

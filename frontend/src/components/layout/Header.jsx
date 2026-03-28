@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { 
+import {
   FiMenu, FiX, FiChevronRight, FiUser, FiLogIn, FiLogOut,
-  FiHome, FiFileText, FiInfo, FiBookOpen, FiMail, FiPhone
+  FiHome, FiFileText, FiInfo, FiBookOpen, FiMail, FiPhone, FiBook
 } from 'react-icons/fi';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -23,8 +23,12 @@ const Header = () => {
   }, []);
 
   // Close mobile menu on route change
-  useEffect(() => {
+  const handleRouteChange = () => {
     setIsMobileMenuOpen(false);
+  };
+
+  useEffect(() => {
+    handleRouteChange();
   }, [location]);
 
   const navLinks = [
