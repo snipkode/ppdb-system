@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiEdit, FiCheck, FiX, FiAward, FiClipboard, FiTrendingUp } from 'react-icons/fi';
+import { FiEdit, FiCheck, FiX, FiAward, FiClipboard, FiTrendingUp, FiSearch } from 'react-icons/fi';
 import examApi from '@/services/examApi';
 import { studentApi } from '@/services/api';
 import { EmptyStateExamResults as EmptyState } from '@/components/ui/EmptyState';
@@ -126,41 +126,48 @@ const AdminExamResults = () => {
         </div>
 
         {/* Tabs & Search */}
-        <div className="bg-white rounded-xl shadow-lg p-3">
-          <div className="flex flex-col md:flex-row gap-3">
-            <div className="flex gap-1.5 flex-1">
-              {[
-                { id: 'all', label: 'Semua', count: stats.total },
-                { id: 'scheduled', label: 'Belum Dinilai', count: stats.scheduled },
-                { id: 'completed', label: 'Sudah Dinilai', count: stats.completed }
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setFilter(tab.id)}
-                  className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-all ${
-                    filter === tab.id
-                      ? tab.id === 'scheduled' ? 'bg-yellow-500 text-white' :
-                        tab.id === 'completed' ? 'bg-green-500 text-white' :
-                        'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {tab.label} ({tab.count})
-                </button>
-              ))}
-            </div>
-            <div className="relative md:w-64">
-              <input
-                type="text"
-                placeholder="Cari peserta..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-              <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
+        <div className="space-y-3">
+          {/* Filter Tabs */}
+          <div className="flex gap-1.5">
+            {[
+              { id: 'all', label: 'Semua', count: stats.total },
+              { id: 'scheduled', label: 'Belum Dinilai', count: stats.scheduled },
+              { id: 'completed', label: 'Sudah Dinilai', count: stats.completed }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setFilter(tab.id)}
+                className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-all ${
+                  filter === tab.id
+                    ? tab.id === 'scheduled' ? 'bg-yellow-500 text-white' :
+                      tab.id === 'completed' ? 'bg-green-500 text-white' :
+                      'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {tab.label} ({tab.count})
+              </button>
+            ))}
+          </div>
+
+          {/* Search Input */}
+          <div className="relative">
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Cari no. peserta, nama..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-10 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+              >
+                <FiX className="w-3.5 h-3.5" />
+              </button>
+            )}
           </div>
         </div>
 

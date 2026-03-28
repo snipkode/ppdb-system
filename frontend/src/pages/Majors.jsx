@@ -175,55 +175,77 @@ const Majors = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
-      {/* Hero Section - Compact */}
-      <section className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-10 md:py-14 overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-10 left-10 w-40 h-40 bg-white rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-56 h-56 bg-yellow-300 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      {/* Hero Section - Compact Redesigned */}
+      <section className="relative bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white overflow-hidden">
+        {/* Background Elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-10 left-10 w-40 h-40 bg-white/10 rounded-full blur-2xl"></div>
+          <div className="absolute bottom-5 right-10 w-56 h-56 bg-yellow-300/10 rounded-full blur-2xl"></div>
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-xl px-4 py-2 rounded-full mb-4">
-              <FiBook className="w-4 h-4" />
-              <span className="text-xs font-bold">8 PROGRAM KEAHLIAN</span>
+        <div className="container mx-auto px-4 py-10 md:py-16 relative z-10">
+          <div className="max-w-4xl mx-auto">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-1.5 bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full mb-4">
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <span className="text-[10px] md:text-xs font-bold">PPDB 2024/2025</span>
             </div>
 
-            <h1 className="text-3xl md:text-5xl font-black mb-4">
-              Program Keahlian
+            {/* Main Heading */}
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black mb-3 md:mb-4 leading-tight">
+              Pilih Jurusanmu,
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-pink-300 to-cyan-300">
+                Wujudkan Mimpimu
+              </span>
             </h1>
 
-            <p className="text-base md:text-lg text-white/90 mb-6 max-w-xl mx-auto">
-              Pilih jurusan sesuai minat dan rencana karirmu
+            {/* Description */}
+            <p className="text-sm md:text-base text-white/85 mb-6 max-w-xl">
+              8 Program keahlian dengan fasilitas modern & kurikulum standar industri
             </p>
 
-            {/* Stats - Compact */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <HeroStat icon={<FiBook />} number="8" label="Jurusan" />
-              <HeroStat icon={<FiUsers />} number="600+" label="Kuota" />
-              <HeroStat icon={<FiAward />} number="95%" label="Bekerja" />
-              <HeroStat icon={<FiStar />} number="A" label="Akreditasi" />
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              <a
+                href="#jurusan"
+                className="inline-flex items-center gap-1.5 bg-white text-purple-600 hover:bg-gray-50 font-bold px-4 py-2 rounded-lg transition-all hover:shadow-lg hover:shadow-white/30 hover:scale-105 text-sm"
+              >
+                <FiBook className="w-4 h-4" />
+                <span>Lihat Jurusan</span>
+              </a>
+              <a
+                href="/register"
+                className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm text-white border border-white/40 hover:bg-white/20 font-semibold px-4 py-2 rounded-lg transition-all hover:scale-105 text-sm"
+              >
+                <FiArrowRight className="w-4 h-4" />
+                <span>Daftar</span>
+              </a>
+            </div>
+
+            {/* Stats Grid */}
+            <div className="grid grid-cols-4 gap-2">
+              <HeroStat icon={<FiBook className="w-4 h-4" />} number="8" label="Jurusan" />
+              <HeroStat icon={<FiUsers className="w-4 h-4" />} number="600+" label="Kuota" />
+              <HeroStat icon={<FiAward className="w-4 h-4" />} number="95%" label="Bekerja" />
+              <HeroStat icon={<FiStar className="w-4 h-4" />} number="A" label="Akreditasi" />
             </div>
           </div>
         </div>
 
         {/* Wave Divider */}
         <div className="absolute bottom-0 left-0 right-0 leading-none">
-          <svg viewBox="0 0 1440 120" fill="none" className="w-full h-8 md:h-12">
-            <path d="M0 0L60 10C120 20 240 40 360 53.3C480 67 600 73 720 73.3C840 73 960 67 1080 53.3C1200 40 1320 20 1380 10L1440 0V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0V0Z" fill="url(#gradient)" fillOpacity="0.15"/>
-            <defs>
-              <linearGradient id="gradient" x1="0" y1="0" x2="1440" y2="0">
-                <stop stopColor="#3B82F6"/>
-                <stop offset="0.5" stopColor="#9333EA"/>
-                <stop offset="1" stopColor="#EC4899"/>
-              </linearGradient>
-            </defs>
+          <svg viewBox="0 0 1440 120" fill="none" className="w-full h-8 md:h-12" preserveAspectRatio="none">
+            <path d="M0,64 C144,106.67 288,128 432,128 C576,128 720,106.67 864,64 C1008,21.33 1152,0 1296,0 L1440,0 L1440,120 L0,120 Z" fill="white"/>
           </svg>
         </div>
       </section>
 
-      {/* Majors Grid - Compact */}
-      <section className="py-8 md:py-12">
+      {/* Majors Grid */}
+      <section id="jurusan" className="py-8 md:py-12">
         <div className="container mx-auto px-4">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
@@ -386,10 +408,10 @@ const Majors = () => {
 };
 
 const HeroStat = ({ icon, number, label }) => (
-  <div className="bg-white/10 backdrop-blur-xl rounded-xl p-3 hover:bg-white/15 transition-all duration-300 hover:scale-105">
+  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-2 md:p-3 hover:bg-white/15 transition-all hover:scale-105">
     <div className="text-white/80 mb-1 flex justify-center">{icon}</div>
-    <div className="text-xl md:text-2xl font-bold text-white">{number}</div>
-    <div className="text-xs text-white/70">{label}</div>
+    <div className="text-lg md:text-xl font-bold text-white text-center">{number}</div>
+    <div className="text-[10px] md:text-xs text-white/70 text-center">{label}</div>
   </div>
 );
 

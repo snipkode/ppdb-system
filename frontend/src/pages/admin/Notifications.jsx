@@ -278,15 +278,15 @@ Panitia PPDB SMK Nusantara`
         </div>
 
         {/* Email Settings */}
-        <div className="bg-white rounded-2xl shadow-lg p-5 border border-white/50">
-          <div className="flex items-center gap-2 mb-4">
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center text-white">
               <FiMail className="w-4 h-4" />
             </div>
-            <h2 className="text-base font-bold text-gray-800">Pengaturan Email</h2>
+            <h2 className="text-sm font-bold text-gray-800">Pengaturan Email</h2>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2 divide-y divide-gray-100">
             <ToggleRow
               label="Aktifkan Email"
               desc="Kirim email otomatis untuk setiap event"
@@ -303,15 +303,15 @@ Panitia PPDB SMK Nusantara`
         </div>
 
         {/* Email Triggers */}
-        <div className="bg-white rounded-2xl shadow-lg p-5 border border-white/50">
-          <div className="flex items-center gap-2 mb-4">
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white">
               <FiSend className="w-4 h-4" />
             </div>
-            <h2 className="text-base font-bold text-gray-800">Trigger Email Otomatis</h2>
+            <h2 className="text-sm font-bold text-gray-800">Trigger Email Otomatis</h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-3">
+          <div className="grid md:grid-cols-2 gap-2">
             {[
               { key: 'sendOnRegistration', label: 'Pendaftaran Baru', icon: '📝' },
               { key: 'sendOnPaymentVerified', label: 'Pembayaran Diverifikasi', icon: '✅' },
@@ -330,29 +330,29 @@ Panitia PPDB SMK Nusantara`
             ))}
           </div>
 
-          <div className="mt-5">
+          <div className="mt-4">
             <button
               onClick={handleSaveSettings}
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-xl transition-all font-semibold shadow-lg hover:shadow-xl hover:scale-[1.02] flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all font-semibold text-sm shadow-md flex items-center justify-center gap-2"
             >
-              <FiCheck className="w-5 h-5" />
+              <FiCheck className="w-4 h-4" />
               Simpan Pengaturan
             </button>
           </div>
         </div>
 
         {/* Test Email */}
-        <div className="bg-white rounded-2xl shadow-lg p-5 border border-white/50">
-          <div className="flex items-center gap-2 mb-4">
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center text-white">
               <FiSettings className="w-4 h-4" />
             </div>
-            <h2 className="text-base font-bold text-gray-800">Test Email</h2>
+            <h2 className="text-sm font-bold text-gray-800">Test Email</h2>
           </div>
 
-          <form onSubmit={handleSendTestEmail} className="space-y-4">
+          <form onSubmit={handleSendTestEmail} className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+              <label className="block text-xs font-medium text-gray-700 mb-1">
                 Email Tujuan Test
               </label>
               <input
@@ -360,7 +360,7 @@ Panitia PPDB SMK Nusantara`
                 value={testEmail}
                 onChange={(e) => setTestEmail(e.target.value)}
                 placeholder="admin@example.com"
-                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                 required
               />
             </div>
@@ -368,16 +368,16 @@ Panitia PPDB SMK Nusantara`
             <button
               type="submit"
               disabled={sending || !testEmail}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 py-2 rounded-xl transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-lg transition-all font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
             >
               {sending ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   Mengirim...
                 </>
               ) : (
                 <>
-                  <FiSend className="w-5 h-5" />
+                  <FiSend className="w-4 h-4" />
                   Kirim Test Email
                 </>
               )}
@@ -386,28 +386,28 @@ Panitia PPDB SMK Nusantara`
         </div>
 
         {/* Email Templates */}
-        <div className="bg-white rounded-2xl shadow-lg p-5 border border-white/50">
-          <div className="flex items-center gap-2 mb-4">
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <div className="flex items-center gap-2 mb-3">
             <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center text-white">
               <FiAlertCircle className="w-4 h-4" />
             </div>
-            <h2 className="text-base font-bold text-gray-800">Template Email</h2>
+            <h2 className="text-sm font-bold text-gray-800">Template Email</h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-3">
+          <div className="grid md:grid-cols-2 gap-2">
             {emailTemplates.map((template) => (
-              <div 
-                key={template.name} 
-                className="flex items-center justify-between p-4 bg-gradient-to-br from-slate-50 to-gray-50 rounded-xl border-2 border-gray-100 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer"
+              <div
+                key={template.name}
+                className="flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-gray-50 rounded-lg border border-gray-100 hover:border-blue-300 hover:shadow-sm transition-all cursor-pointer"
                 onClick={() => handlePreviewTemplate(template.name)}
               >
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${template.color} flex items-center justify-center text-white shadow-md`}>
-                    <span className="text-lg">{template.icon}</span>
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${template.color} flex items-center justify-center text-white shadow-sm`}>
+                    <span className="text-base">{template.icon}</span>
                   </div>
-                  <span className="text-sm font-bold text-gray-700">{template.name}</span>
+                  <span className="text-xs font-bold text-gray-700">{template.name}</span>
                 </div>
-                <button className="text-blue-600 hover:text-blue-800 text-xs font-bold flex items-center gap-1">
+                <button className="text-blue-600 hover:text-blue-800 text-xs font-bold flex items-center gap-0.5">
                   Preview <FiChevronRight className="w-3 h-3" />
                 </button>
               </div>
@@ -498,27 +498,27 @@ Panitia PPDB SMK Nusantara`
 
 // Compact Components
 const ToggleRow = ({ label, desc, checked, onChange }) => (
-  <div className="flex items-center justify-between py-2 border-b last:border-0">
-    <div>
-      <p className="text-sm font-semibold text-gray-800">{label}</p>
+  <div className="flex items-center justify-between py-2.5">
+    <div className="flex-1">
+      <p className="text-xs font-semibold text-gray-800">{label}</p>
       <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
     </div>
-    <label className="relative inline-flex items-center cursor-pointer">
+    <label className="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-3">
       <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="sr-only peer" />
-      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
     </label>
   </div>
 );
 
 const ToggleCard = ({ icon, label, checked, onChange }) => (
-  <div className="flex items-center justify-between p-3 bg-gradient-to-br from-slate-50 to-gray-50 rounded-xl border border-gray-100 hover:border-blue-300 transition-all">
-    <div className="flex items-center gap-2.5">
-      <span className="text-xl">{icon}</span>
-      <span className="text-sm font-semibold text-gray-700">{label}</span>
+  <div className="flex items-center justify-between p-2.5 bg-gradient-to-br from-slate-50 to-gray-50 rounded-lg border border-gray-100 hover:border-blue-300 transition-all">
+    <div className="flex items-center gap-2">
+      <span className="text-lg">{icon}</span>
+      <span className="text-xs font-semibold text-gray-700">{label}</span>
     </div>
     <label className="relative inline-flex items-center cursor-pointer">
       <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} className="sr-only peer" />
-      <div className="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+      <div className="w-8 h-4 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-600"></div>
     </label>
   </div>
 );

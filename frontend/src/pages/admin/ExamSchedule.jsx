@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiCalendar, FiClock, FiMapPin, FiUsers, FiPlus, FiDownload, FiTrash2, FiCheck, FiSearch, FiX } from 'react-icons/fi';
+import { FiCalendar, FiClock, FiMapPin, FiUsers, FiPlus, FiDownload, FiTrash2, FiCheck, FiSearch, FiX, FiChevronDown, FiFilter } from 'react-icons/fi';
 import examApi from '@/services/examApi';
 import { studentApi } from '@/services/api';
 import ExamCardGenerator from '@/components/admin/ExamCardGenerator';
@@ -15,6 +15,7 @@ const AdminExamSchedule = () => {
   const [selectedExam, setSelectedExam] = useState(null);
   const [filter, setFilter] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
   const [formData, setFormData] = useState({
     studentId: '',
@@ -135,35 +136,70 @@ const AdminExamSchedule = () => {
         <div className="container mx-auto px-4 pb-3">
           <div className="bg-white rounded-lg shadow-sm border p-2">
             <div className="flex gap-2">
-              <div className="flex gap-1 overflow-x-auto flex-1">
-                {[
-                  { key: 'all', label: 'Semua', count: stats.total },
-                  { key: 'scheduled', label: 'Terjadwal', count: stats.scheduled },
-                  { key: 'completed', label: 'Selesai', count: stats.completed }
-                ].map(({ key, label, count }) => (
-                  <button
-                    key={key}
-                    onClick={() => setFilter(key)}
-                    className={`px-3 py-1.5 rounded-md text-xs font-semibold whitespace-nowrap transition-all ${
-                      filter === key
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    {label} ({count})
-                  </button>
-                ))}
+              {/* Filter Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-md text-xs font-semibold hover:shadow-md transition-all"
+                >
+                  <FiFilter className="w-3.5 h-3.5" />
+                  <span>{filter === 'all' ? 'Semua' : filter === 'scheduled' ? 'Terjadwal' : 'Selesai'}</span>
+                  <FiChevronDown className={`w-3.5 h-3.5 transition-transform ${showFilterDropdown ? 'rotate-180' : ''}`} />
+                </button>
+
+                {showFilterDropdown && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setShowFilterDropdown(false)} />
+                    <div className="absolute top-full left-0 mt-1 bg-white border rounded-lg shadow-lg z-20 min-w-[140px] overflow-hidden">
+                      {[
+                        { key: 'all', label: 'Semua', count: stats.total },
+                        { key: 'scheduled', label: 'Terjadwal', count: stats.scheduled },
+                        { key: 'completed', label: 'Selesai', count: stats.completed }
+                      ].map(({ key, label, count }) => (
+                        <button
+                          key={key}
+                          onClick={() => {
+                            setFilter(key);
+                            setShowFilterDropdown(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 text-xs font-medium transition-colors ${
+                            filter === key
+                              ? 'bg-purple-50 text-purple-600'
+                              : 'text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-4">
+                            <span>{label}</span>
+                            <span className={`px-1.5 py-0.5 rounded ${
+                              filter === key ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-500'
+                            }`}>
+                              {count}
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
 
-              <div className="relative w-40 md:w-56">
+              {/* Search */}
+              <div className="relative flex-1">
                 <FiSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Cari..."
+                  placeholder="Cari nama, no. peserta..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-8 pr-3 py-1.5 border border-gray-200 rounded-md focus:ring-2 focus:ring-purple-500 outline-none text-xs"
                 />
+              </div>
+
+              {/* Results Count */}
+              <div className="hidden md:flex items-center px-2.5 py-1.5 bg-gray-50 rounded-md">
+                <span className="text-xs text-gray-500">
+                  <strong className="text-gray-700">{filteredExams.length}</strong> hasil
+                </span>
               </div>
             </div>
           </div>

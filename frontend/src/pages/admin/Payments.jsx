@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { FiDollarSign, FiCheck, FiX, FiClock } from 'react-icons/fi';
+import { FiDollarSign, FiCheck, FiX, FiClock, FiSearch } from 'react-icons/fi';
 import { paymentAPI, studentAPI } from '@/services/api';
 import PaymentTable from '@/components/admin/PaymentTable';
 import PaymentDetailModal from '@/components/admin/PaymentDetailModal';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LoadingState } from '@/components/ui';
 import StatCard from '@/components/ui/StatCard';
-import SearchFilter from '@/components/ui/SearchFilter';
 import Modal from '@/components/ui/Modal';
 import StatusBadge from '@/components/ui/StatusBadge';
 import AdminLayout from '@/components/layout/AdminLayout';
@@ -125,13 +124,52 @@ const AdminPayments = () => {
 
       {/* Search & Filter */}
       <div className="container mx-auto px-4 mt-4">
-        <SearchFilter
-          onSearch={setSearchTerm}
-          onFilterChange={setFilter}
-          filters={filters}
-          defaultFilter="all"
-          placeholder="Cari no. pendaftaran, nama, atau email..."
-        />
+        <div className="space-y-3">
+          {/* Filter Tabs */}
+          <div className="flex gap-1.5">
+            {[
+              { value: 'all', label: 'Semua', count: stats.total },
+              { value: 'pending', label: 'Pending', count: stats.pending },
+              { value: 'paid', label: 'Lunas', count: stats.paid },
+              { value: 'rejected', label: 'Ditolak', count: stats.rejected }
+            ].map(tab => (
+              <button
+                key={tab.value}
+                onClick={() => setFilter(tab.value)}
+                className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-all ${
+                  filter === tab.value
+                    ? tab.value === 'pending' ? 'bg-yellow-500 text-white' :
+                      tab.value === 'paid' ? 'bg-green-500 text-white' :
+                      tab.value === 'rejected' ? 'bg-red-500 text-white' :
+                      'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {tab.label} ({tab.count})
+              </button>
+            ))}
+          </div>
+
+          {/* Search Input */}
+          <div className="relative">
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Cari no. pendaftaran, nama, atau email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-10 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+              >
+                <FiX className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Payment Table */}
