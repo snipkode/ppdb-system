@@ -221,24 +221,31 @@ export const STATIC_KECAMATAN = {
 };
 
 export const STATIC_KELURAHAN = {
-  // Sumatera Barat - Agam - Tanjung Mutiara (1307010)
+  // =====================================================================
+  // SUMATERA BARAT - KABUPATEN AGAM
+  // =====================================================================
+  
+  // Kecamatan Tanjung Mutiara (1307010)
   '1307010': [
     { id: '1307010001', name: 'PADANG BARAT', postal_code: '26161' },
     { id: '1307010002', name: 'PADANG TIMUR', postal_code: '26161' },
     { id: '1307010003', name: 'SUNGAI BATANG', postal_code: '26161' },
     { id: '1307010004', name: 'KAMPUNG BARU', postal_code: '26161' },
   ],
-  
-  // Sumatera Barat - Agam - Lubuk Basung (1307020)
+
+  // Kecamatan Lubuk Basung (1307020)
   '1307020': [
     { id: '1307020001', name: 'LUBUK BASUNG', postal_code: '26411' },
     { id: '1307020002', name: 'AUR KUNING', postal_code: '26411' },
     { id: '1307020003', name: 'PASA LUBUK BASUNG', postal_code: '26411' },
     { id: '1307020004', name: 'KAMPUNG OLO', postal_code: '26411' },
     { id: '1307020005', name: 'BALAI TANGAH', postal_code: '26411' },
+    { id: '1307020006', name: 'KUBANG PUTIH', postal_code: '26411' },
+    { id: '1307020007', name: 'LAMPO', postal_code: '26411' },
+    { id: '1307020008', name: 'SEI PINANG', postal_code: '26411' },
   ],
-  
-  // Sumatera Barat - Agam - Malalak (1307051)
+
+  // Kecamatan Malalak (1307051)
   '1307051': [
     { id: '1307051001', name: 'MALALAK SELATAN', postal_code: '26166' },
     { id: '1307051002', name: 'MALALAK BARAT', postal_code: '26166' },
@@ -249,8 +256,28 @@ export const STATIC_KELURAHAN = {
     { id: '1307051007', name: 'KAMPUNG BARU', postal_code: '26166' },
     { id: '1307051008', name: 'SUNGAI ASAM', postal_code: '26166' },
   ],
+
+  // Kecamatan Ampek Angkek (1307030)
+  '1307030': [
+    { id: '1307030001', name: 'AMPEK ANGKEK', postal_code: '26163' },
+    { id: '1307030002', name: 'BATANG TABIK', postal_code: '26163' },
+    { id: '1307030003', name: 'SUNGAI LANDIA', postal_code: '26163' },
+    { id: '1307030004', name: 'PANTAI', postal_code: '26163' },
+  ],
+
+  // Kecamatan Tilatang Kamang (1307040)
+  '1307040': [
+    { id: '1307040001', name: 'KAMANG MUKO', postal_code: '26162' },
+    { id: '1307040002', name: 'KAMANG HILIR', postal_code: '26162' },
+    { id: '1307040003', name: 'SIANOK', postal_code: '26162' },
+    { id: '1307040004', name: 'KOTO TANGAH', postal_code: '26162' },
+  ],
+
+  // =====================================================================
+  // DKI JAKARTA - JAKARTA SELATAN
+  // =====================================================================
   
-  // DKI Jakarta - Jaksel - Jagakarsa (3171010)
+  // Kecamatan Jagakarsa (3171010)
   '3171010': [
     { id: '3171010001', name: 'LENTENG AGUNG', postal_code: '12610' },
     { id: '3171010002', name: 'TANJUNG BARAT', postal_code: '12530' },
@@ -258,9 +285,10 @@ export const STATIC_KELURAHAN = {
     { id: '3171010004', name: 'CIPEDAK', postal_code: '12630' },
     { id: '3171010005', name: 'GEDONG', postal_code: '12540' },
     { id: '3171010006', name: 'TANJUNG TIMUR', postal_code: '12540' },
+    { id: '3171010007', name: 'DEPOK', postal_code: '12640' },
   ],
-  
-  // DKI Jakarta - Jaksel - Kebayoran Baru (3171060)
+
+  // Kecamatan Kebayoran Baru (3171060)
   '3171060': [
     { id: '3171060001', name: 'KRAMAT PELA', postal_code: '12130' },
     { id: '3171060002', name: 'GANDARIA UTARA', postal_code: '12140' },
@@ -269,9 +297,33 @@ export const STATIC_KELURAHAN = {
     { id: '3171060005', name: 'MELAWAI', postal_code: '12160' },
     { id: '3171060006', name: 'GUNUNG', postal_code: '12120' },
     { id: '3171060007', name: 'PETOGOGAN', postal_code: '12170' },
+    { id: '3171060008', name: 'SENAYAN', postal_code: '12190' },
   ],
+
+  // Kecamatan Tebet (3171020)
+  '3171020': [
+    { id: '3171020001', name: 'TEBET BARAT', postal_code: '12810' },
+    { id: '3171020002', name: 'TEBET TIMUR', postal_code: '12820' },
+    { id: '3171020003', name: 'KEBAYORAN LAMA UTARA', postal_code: '12830' },
+    { id: '3171020004', name: 'KEBAYORAN LAMA SELATAN', postal_code: '12840' },
+    { id: '3171020005', name: 'CIKANG', postal_code: '12850' },
+    { id: '3171020006', name: 'RAWA BARAT', postal_code: '12860' },
+    { id: '3171020007', name: 'MANGGARAI', postal_code: '12870' },
+  ],
+
+  // Kecamatan Pasar Minggu (3171030)
+  '3171030': [
+    { id: '3171030001', name: 'PEJATEN BARAT', postal_code: '12510' },
+    { id: '3171030002', name: 'PEJATEN TIMUR', postal_code: '12520' },
+    { id: '3171030003', name: 'KEBAYORAN LAMA', postal_code: '12530' },
+    { id: '3171030004', name: 'PONDOK PINANG', postal_code: '12540' },
+  ],
+
+  // =====================================================================
+  // DKI JAKARTA - JAKARTA PUSAT
+  // =====================================================================
   
-  // DKI Jakarta - Jakpus - Gambir (3173080)
+  // Kecamatan Gambir (3173080)
   '3173080': [
     { id: '3173080001', name: 'GAMBIR', postal_code: '10110' },
     { id: '3173080002', name: 'KEBON KELAPA', postal_code: '10120' },
@@ -280,21 +332,98 @@ export const STATIC_KELURAHAN = {
     { id: '3173080005', name: 'CIDENG', postal_code: '10150' },
     { id: '3173080006', name: 'DURI PULO', postal_code: '10140' },
   ],
+
+  // Kecamatan Menteng (3173060)
+  '3173060': [
+    { id: '3173060001', name: 'MENTENG', postal_code: '10310' },
+    { id: '3173060002', name: 'PEGANGSAAN', postal_code: '10320' },
+    { id: '3173060003', name: 'CIKINI', postal_code: '10330' },
+    { id: '3173060004', name: 'KEBON SIRIH', postal_code: '10340' },
+    { id: '3173060005', name: 'GONDANGDIA', postal_code: '10350' },
+  ],
+
+  // Kecamatan Tanah Abang (3173050)
+  '3173050': [
+    { id: '3173050001', name: 'GELORA', postal_code: '10270' },
+    { id: '3173050002', name: 'BENDUNGAN HILIR', postal_code: '10210' },
+    { id: '3173050003', name: 'KARET TENGSIN', postal_code: '10220' },
+    { id: '3173050004', name: 'KAMPUNG BALI', postal_code: '10230' },
+    { id: '3173050005', name: 'PETAMBURAN', postal_code: '10260' },
+    { id: '3173050006', name: 'KEBON MELATI', postal_code: '10230' },
+  ],
+
+  // =====================================================================
+  // JAWA BARAT - BANDUNG
+  // =====================================================================
   
-  // Jawa Barat - Bandung - Bandung Wetan (3273010)
+  // Kecamatan Bandung Wetan (3273010)
   '3273010': [
     { id: '3273010001', name: 'CITARUM', postal_code: '40115' },
     { id: '3273010002', name: 'TAMANSARI', postal_code: '40116' },
     { id: '3273010003', name: 'CIHAPIT', postal_code: '40114' },
+    { id: '3273010004', name: 'CIBEUNING', postal_code: '40121' },
   ],
+
+  // Kecamatan Sumur Bandung (3273020)
+  '3273020': [
+    { id: '3273020001', name: 'BRAGA', postal_code: '40111' },
+    { id: '3273020002', name: 'KEBON PISANG', postal_code: '40112' },
+    { id: '3273020003', name: 'MERDEKA', postal_code: '40117' },
+    { id: '3273020004', name: 'SUMUR BANDUNG', postal_code: '40113' },
+  ],
+
+  // Kecamatan Cicendo (3273090)
+  '3273090': [
+    { id: '3273090001', name: 'ARJUNA', postal_code: '40172' },
+    { id: '3273090002', name: 'CIHAPIT', postal_code: '40171' },
+    { id: '3273090003', name: 'CIROYOM', postal_code: '40176' },
+    { id: '3273090004', name: 'PASIR KALIKI', postal_code: '40173' },
+    { id: '3273090005', name: 'SUKARAJA', postal_code: '40175' },
+  ],
+
+  // =====================================================================
+  // JAWA TENGAH - SEMARANG
+  // =====================================================================
   
-  // Jawa Tengah - Semarang - Semarang Selatan (3374010)
+  // Kecamatan Semarang Selatan (3374010)
   '3374010': [
     { id: '3374010001', name: 'LAMPER KIDUL', postal_code: '50249' },
     { id: '3374010002', name: 'SEMARANG SELATAN', postal_code: '50241' },
     { id: '3374010003', name: 'PLEBURAN', postal_code: '50242' },
     { id: '3374010004', name: 'NGESREP', postal_code: '50244' },
     { id: '3374010005', name: 'BUGANGAN', postal_code: '50252' },
+    { id: '3374010006', name: 'MUGASSARI', postal_code: '50243' },
+  ],
+
+  // Kecamatan Semarang Tengah (3374050)
+  '3374050': [
+    { id: '3374050001', name: 'KAUMAN', postal_code: '50211' },
+    { id: '3374050002', name: 'KRAJAN', postal_code: '50212' },
+    { id: '3374050003', name: 'PINDRIKAN', postal_code: '50213' },
+    { id: '3374050004', name: 'SARIREJO', postal_code: '50214' },
+    { id: '3374050005', name: 'PEKUNDEN', postal_code: '50215' },
+  ],
+
+  // Kecamatan Semarang Utara (3374040)
+  '3374040': [
+    { id: '3374040001', name: 'TANJUNG MAS', postal_code: '50174' },
+    { id: '3374040002', name: 'BANDARHARJO', postal_code: '50171' },
+    { id: '3374040003', name: 'KUNJANG', postal_code: '50172' },
+    { id: '3374040004', name: 'GABAH', postal_code: '50173' },
+  ],
+
+  // =====================================================================
+  // DEFAULT KELURAHAN (untuk initialize)
+  // =====================================================================
+  // Default yang akan digunakan saat initialize
+  'default': [
+    { id: '1307020001', name: 'LUBUK BASUNG', postal_code: '26411' },
+    { id: '1307020002', name: 'AUR KUNING', postal_code: '26411' },
+    { id: '1307020003', name: 'PASA LUBUK BASUNG', postal_code: '26411' },
+    { id: '3171010001', name: 'LENTENG AGUNG', postal_code: '12610' },
+    { id: '3171010003', name: 'JAGAKARSA', postal_code: '12620' },
+    { id: '3273010001', name: 'CITARUM', postal_code: '40115' },
+    { id: '3374010001', name: 'LAMPER KIDUL', postal_code: '50249' },
   ],
 };
 

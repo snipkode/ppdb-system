@@ -107,8 +107,15 @@ export const wilayahApi = {
       return cache.kelurahan[kecamatanId].data;
     }
 
-    // Use static data
-    const data = STATIC_KELURAHAN[kecamatanId] || [];
+    // Use static data - fallback to default if kecamatanId not found
+    let data = STATIC_KELURAHAN[kecamatanId] || [];
+    
+    // If no data found and kecamatanId is provided, try to get from default
+    if (!data.length && kecamatanId) {
+      console.log('⚠️ Kelurahan not found for kecamatan:', kecamatanId, '- using default data');
+      data = STATIC_KELURAHAN['default'] || [];
+    }
+    
     console.log('📦 Loading static kelurahan for', kecamatanId, ':', data.length, 'items');
 
     cache.kelurahan[kecamatanId] = {
@@ -117,6 +124,15 @@ export const wilayahApi = {
     };
 
     return data;
+  },
+
+  /**
+   * Get default villages (for initialization)
+   * @returns {Promise<Array>} List of default villages
+   */
+  getDefaultKelurahan: async () => {
+    console.log('📦 Loading default kelurahan:', STATIC_KELURAHAN['default']?.length || 0, 'items');
+    return STATIC_KELURAHAN['default'] || [];
   },
 
   /**

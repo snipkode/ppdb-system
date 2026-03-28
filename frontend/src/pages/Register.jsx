@@ -50,7 +50,23 @@ const Register = () => {
     { number: 5, title: 'Dokumen', icon: '📄' },
   ];
 
-  useEffect(() => { loadProvinsi(); }, []);
+  useEffect(() => { 
+    loadProvinsi();
+    loadDefaultKelurahan();
+  }, []);
+
+  const loadDefaultKelurahan = async () => {
+    try {
+      const defaultKelurahan = await wilayahApi.getDefaultKelurahan();
+      console.log('✅ Default kelurahan loaded:', defaultKelurahan.length, 'items');
+      // Set as initial kelurahan list for testing
+      if (defaultKelurahan.length > 0) {
+        setKelurahanList(defaultKelurahan);
+      }
+    } catch (err) {
+      console.error('❌ Failed to load default kelurahan:', err);
+    }
+  };
 
   const loadProvinsi = async () => {
     setLoadingWilayah(true);
