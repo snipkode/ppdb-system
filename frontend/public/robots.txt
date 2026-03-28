@@ -1,0 +1,32 @@
+# robots.txt for PPDB Online
+# https://ppdb-online.com/robots.txt
+
+User-agent: *
+Allow: /
+
+# Public pages
+Allow: /
+Allow: /ppdb
+Allow: /register
+Allow: /status
+Allow: /about
+Allow: /contact
+Allow: /news
+Allow: /gallery
+
+# Admin pages - block all crawlers
+Disallow: /admin/
+Disallow: /admin/*
+
+# API endpoints - block
+Disallow: /api/
+Disallow: /api/*
+
+# Firebase config - block
+Disallow: /firebase-config.js
+
+# Sitemap
+Sitemap: https://ppdb-online.com/sitemap.xml
+
+# Crawl-delay (optional)
+Crawl-delay: 1

@@ -7,18 +7,16 @@ const Footer = () => {
   const quickLinks = [
     { name: 'Beranda', href: '/' },
     { name: 'PPDB', href: '/ppdb' },
-    { name: 'Profil', href: '/about' },
-    { name: 'Jurusan', href: '/majors' },
-    { name: 'Berita', href: '/news' },
-    { name: 'Kontak', href: '/contact' },
+    { name: 'Daftar', href: '/register' },
+    { name: 'Cek Status', href: '/status' },
   ];
 
   const majors = [
-    { name: 'RPL', href: '/majors/rpl' },
-    { name: 'TKJ', href: '/majors/tkj' },
-    { name: 'AKL', href: '/majors/akl' },
-    { name: 'MM', href: '/majors/mm' },
-    { name: 'TBSM', href: '/majors/tbsm' },
+    { name: 'RPL', href: '#' },
+    { name: 'TKJ', href: '#' },
+    { name: 'AKL', href: '#' },
+    { name: 'MM', href: '#' },
+    { name: 'TBSM', href: '#' },
   ];
 
   const socialLinks = [
@@ -142,11 +140,11 @@ const Footer = () => {
               © {currentYear} SMK Nusantara. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm text-gray-400">
-              <Link to="/privacy" className="hover:text-white transition-colors">
-                Privacy Policy
+              <Link to="/ppdb" className="hover:text-white transition-colors">
+                PPDB Info
               </Link>
-              <Link to="/terms" className="hover:text-white transition-colors">
-                Terms of Service
+              <Link to="/status" className="hover:text-white transition-colors">
+                Cek Status
               </Link>
             </div>
           </div>

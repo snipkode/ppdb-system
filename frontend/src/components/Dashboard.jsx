@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { FiUsers, FiUserCheck, FiUserX, FiClock, FiAward } from 'react-icons/fi';
-import { statsApi, studentApi } from '@/services/api';
+import { studentApi } from '@/services/api';
 import { useStatsStore, useUIStore } from '@/stores/useStore';
 
 const Dashboard = () => {
@@ -16,10 +16,13 @@ const Dashboard = () => {
   const fetchStats = async () => {
     setLoading(true);
     try {
-      const result = await statsApi.getStats();
-      if (result.success) {
-        setStats(result.data);
-      }
+      // TODO: Implement stats API
+      // const result = await statsApi.getStats();
+      // if (result.success) {
+      //   setStats(result.data);
+      // }
+      // Placeholder stats
+      setStats({ total: 0, pending: 0, accepted: 0, rejected: 0 });
     } catch (error) {
       showNotification('Gagal memuat statistik', 'error');
     } finally {

@@ -1,10 +1,10 @@
-import { 
-  collection, 
-  getDocs, 
-  getDoc, 
-  doc, 
-  addDoc, 
-  updateDoc, 
+import {
+  collection,
+  getDocs,
+  getDoc,
+  doc,
+  addDoc,
+  updateDoc,
   deleteDoc,
   query,
   where,
@@ -15,6 +15,7 @@ import { db, storage } from './firebase';
 
 const COLLECTION_NAME = 'students';
 
+// Firebase-based Student API
 export const studentApi = {
   getAll: async () => {
     try {
@@ -33,7 +34,7 @@ export const studentApi = {
     try {
       const docRef = doc(db, COLLECTION_NAME, id);
       const docSnap = await getDoc(docRef);
-      
+
       if (docSnap.exists()) {
         return { success: true, data: { id: docSnap.id, ...docSnap.data() } };
       } else {
@@ -48,136 +49,58 @@ export const studentApi = {
     try {
       const q = query(
         collection(db, COLLECTION_NAME),
-        where("nomor_pendaftaran", "==", nomor)
+        where('nomor_pendaftaran', '==', nomor)
       );
       const querySnapshot = await getDocs(q);
-      
+
       if (!querySnapshot.empty) {
         const doc = querySnapshot.docs[0];
         return { success: true, data: { id: doc.id, ...doc.data() } };
       } else {
-        return { success: false, error: 'Student not found' };
+        return { success: false, error: 'Nomor pendaftaran tidak ditemukan' };
       }
     } catch (error) {
       return { success: false, error: error.message };
     }
   },
 
-  create: async (studentData) => {
+  create: async (data) => {
     try {
       // Generate nomor pendaftaran
       const timestamp = Date.now();
       const nomorPendaftaran = `PPDB-${timestamp}`;
-      
-      // Prepare data for Firestore
+
       const dataToSave = {
+        ...data,
         nomor_pendaftaran: nomorPendaftaran,
-        data_siswa: {
-          nama_lengkap: studentData.nama_lengkap || '',
-          nisn: studentData.nisn || '',
-          nik: studentData.nik || '',
-          tempat_lahir: studentData.tempat_lahir || '',
-          tanggal_lahir: studentData.tanggal_lahir || '',
-          jenis_kelamin: studentData.jenis_kelamin || 'L',
-          agama: studentData.agama || '',
-          alamat: studentData.alamat || '',
-          rt_rw: studentData.rt_rw || '',
-          kelurahan: studentData.kelurahan || '',
-          kecamatan: studentData.kecamatan || '',
-          kota: studentData.kota || '',
-          provinsi: studentData.provinsi || '',
-          kode_pos: studentData.kode_pos || '',
-          telepon: studentData.telepon || '',
-          email: studentData.email || ''
-        },
-        data_ortu: {
-          nama_ayah: studentData.nama_ayah || '',
-          pendidikan_ayah: studentData.pendidikan_ayah || '',
-          pekerjaan_ayah: studentData.pekerjaan_ayah || '',
-          penghasilan_ayah: studentData.penghasilan_ayah || '',
-          nama_ibu: studentData.nama_ibu || '',
-          pendidikan_ibu: studentData.pendidikan_ibu || '',
-          pekerjaan_ibu: studentData.pekerjaan_ibu || '',
-          penghasilan_ibu: studentData.penghasilan_ibu || '',
-          telepon_ortu: studentData.telepon_ortu || '',
-          email_ortu: studentData.email_ortu || ''
-        },
-        data_sekolah: {
-          npsn: studentData.npsn || '',
-          nama_sekolah: studentData.nama_sekolah || '',
-          alamat_sekolah: studentData.alamat_sekolah || '',
-          tahun_lulus: studentData.tahun_lulus || new Date().getFullYear()
-        },
-        pilihan_jurusan: {
-          pilihan_1: studentData.pilihan_1 || '',
-          pilihan_2: studentData.pilihan_2 || '',
-          diterima_di: null
-        },
-        dokumen: {},
-        status: 'pending',
-        status_detail: {
-          submitted_at: serverTimestamp(),
-          verified_at: null,
-          verified_by: null,
-          ujian_at: null,
-          pengumuman_at: null,
-          notes: ''
-        },
-        pembayaran: {
-          status: 'unpaid',
-          amount: 0,
-          bukti_transfer: null,
-          verified_at: null,
-          verified_by: null,
-          notes: null
-        },
+        status: 'submitted',
         created_at: serverTimestamp(),
         updated_at: serverTimestamp()
       };
 
-      // Add to Firestore
       const docRef = await addDoc(collection(db, COLLECTION_NAME), dataToSave);
-      
+
       return { 
         success: true, 
-        data: { 
-          id: docRef.id,
-          nomor_pendaftaran: nomorPendaftaran,
-          message: 'Pendaftaran berhasil!' 
-        } 
+        data: { id: docRef.id, ...dataToSave, nomor_pendaftaran: nomorPendaftaran },
+        message: 'Pendaftaran berhasil'
       };
     } catch (error) {
-      console.error('Error creating student:', error);
       return { success: false, error: error.message };
     }
   },
 
-  uploadFile: async (file, studentId, fieldName) => {
+  update: async (id, data) => {
     try {
-      // Create file reference
-      const fileRef = ref(storage, `students/${studentId}/${fieldName}_${file.name}`);
-      
-      // Upload file
-      await uploadBytes(fileRef, file);
-      
-      // Get download URL
-      const downloadURL = await getDownloadURL(fileRef);
-      
-      return { success: true, url: downloadURL };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  },
-
-  update: async (studentId, studentData) => {
-    try {
-      const docRef = doc(db, COLLECTION_NAME, studentId);
-      await updateDoc(docRef, {
-        ...studentData,
+      const docRef = doc(db, COLLECTION_NAME, id);
+      const dataToUpdate = {
+        ...data,
         updated_at: serverTimestamp()
-      });
-      
-      return { success: true, message: 'Data updated successfully' };
+      };
+
+      await updateDoc(docRef, dataToUpdate);
+
+      return { success: true, message: 'Data berhasil diupdate' };
     } catch (error) {
       return { success: false, error: error.message };
     }
@@ -186,57 +109,149 @@ export const studentApi = {
   delete: async (id) => {
     try {
       await deleteDoc(doc(db, COLLECTION_NAME, id));
-      
-      return { success: true, message: 'Student deleted successfully' };
+      return { success: true, message: 'Data berhasil dihapus' };
     } catch (error) {
       return { success: false, error: error.message };
     }
   },
+
+  uploadDocument: async (file, studentId, docType) => {
+    try {
+      const storageRef = ref(storage, `students/${studentId}/${docType}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+
+      return { success: true, url: downloadURL };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
 };
 
+// Alias for backwards compatibility
+export const studentAPI = studentApi;
+
+// Payment API (Firebase version)
+export const paymentAPI = {
+  uploadProof: async (formData, studentId) => {
+    try {
+      const file = formData.get('bukti_transfer');
+      if (!file) {
+        return { success: false, error: 'File bukti transfer tidak ditemukan' };
+      }
+
+      const storageRef = ref(storage, `payments/${studentId}/bukti_${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+
+      const studentRef = doc(db, COLLECTION_NAME, studentId);
+      await updateDoc(studentRef, {
+        'pembayaran.bukti_url': downloadURL,
+        'pembayaran.status': 'pending',
+        'pembayaran.uploaded_at': serverTimestamp(),
+        updated_at: serverTimestamp()
+      });
+
+      return { success: true, url: downloadURL };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
+
+  verifyPayment: async (studentId, status, rejected_reason = '') => {
+    try {
+      const studentRef = doc(db, COLLECTION_NAME, studentId);
+      const updateData = {
+        'pembayaran.status': status,
+        'pembayaran.verified_at': serverTimestamp(),
+        updated_at: serverTimestamp()
+      };
+
+      if (status === 'rejected') {
+        updateData['pembayaran.rejected_reason'] = rejected_reason;
+      }
+
+      await updateDoc(studentRef, updateData);
+
+      return { success: true, message: 'Pembayaran berhasil diverifikasi' };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+};
+
+// Notification API (Firebase version)
+export const notificationAPI = {
+  create: async (data) => {
+    try {
+      const notificationRef = collection(db, 'notifications');
+      const docRef = await addDoc(notificationRef, {
+        ...data,
+        created_at: serverTimestamp(),
+        read: false
+      });
+
+      return { success: true, id: docRef.id };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  },
+
+  getByUserId: async (userId) => {
+    try {
+      const q = query(
+        collection(db, 'notifications'),
+        where('user_id', '==', userId),
+        where('read', '==', false)
+      );
+      const querySnapshot = await getDocs(q);
+      const notifications = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      return { success: true, data: notifications };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+};
+
+// Document API (Firebase version)
+export const documentAPI = {
+  upload: async (file, studentId, docType) => {
+    try {
+      const storageRef = ref(storage, `students/${studentId}/${docType}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+
+      return { success: true, url: downloadURL };
+    } catch (error) {
+      return { success: false, error: error.message };
+    }
+  }
+};
+
+// Stats API
 export const statsApi = {
   getStats: async () => {
     try {
       const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
-      
+      const students = querySnapshot.docs.map(doc => doc.data());
+
       const stats = {
-        total: 0,
-        pending: 0,
-        verified: 0,
-        ujian: 0,
-        accepted: 0,
-        rejected: 0,
-        byGender: { L: 0, P: 0 },
-        byMajor: {}
+        total: students.length,
+        pending: students.filter(s => s.status === 'submitted' || s.status === 'pending').length,
+        accepted: students.filter(s => s.status === 'accepted').length,
+        rejected: students.filter(s => s.status === 'rejected').length,
+        exam: students.filter(s => s.status === 'exam').length
       };
-
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        stats.total++;
-        
-        const status = data.status;
-        const gender = data.data_siswa?.jenis_kelamin;
-        const major = data.pilihan_jurusan?.pilihan_1;
-
-        if (status === 'pending') stats.pending++;
-        else if (status === 'verified') stats.verified++;
-        else if (status === 'ujian') stats.ujian++;
-        else if (status === 'accepted') stats.accepted++;
-        else if (status === 'rejected') stats.rejected++;
-
-        if (gender === 'L') stats.byGender.L++;
-        else if (gender === 'P') stats.byGender.P++;
-
-        if (major) {
-          stats.byMajor[major] = (stats.byMajor[major] || 0) + 1;
-        }
-      });
 
       return { success: true, data: stats };
     } catch (error) {
       return { success: false, error: error.message };
     }
-  },
+  }
 };
 
-export default { db, storage };
+export default { studentApi, paymentAPI, notificationAPI, documentAPI, statsApi };
