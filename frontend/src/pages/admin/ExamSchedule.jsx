@@ -127,122 +127,74 @@ const AdminExamSchedule = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 py-6">
+      {/* Compact Header */}
+      <div className="bg-white/90 backdrop-blur-xl border-b sticky top-16 z-40 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                <FiCalendar className="w-7 h-7 text-blue-600" />
-                Manajemen Jadwal Ujian
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Kelola jadwal ujian seleksi PPDB
-              </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                <FiCalendar className="w-5 h-5" />
+              </div>
+              <div>
+                <h1 className="text-lg font-black text-gray-800">Jadwal Ujian</h1>
+                <p className="text-xs text-gray-600">Kelola jadwal ujian seleksi PPDB</p>
+              </div>
             </div>
             <button
               onClick={() => setShowForm(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium flex items-center gap-2"
+              className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 text-xs font-bold shadow-lg hover:shadow-xl hover:scale-105"
             >
-              <FiPlus className="w-5 h-5" />
-              Tambah Jadwal
+              <FiPlus className="w-4 h-4" />
+              <span className="hidden sm:inline">Tambah Jadwal</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Ujian</p>
-                <p className="text-2xl font-bold text-gray-800">{exams.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <FiCalendar className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Terjadwal</p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {exams.filter(e => e.status === 'scheduled').length}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <FiClock className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Selesai</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {exams.filter(e => e.status === 'completed').length}
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <FiCheck className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Peserta</p>
-                <p className="text-2xl font-bold text-purple-600">{students.length}</p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <FiUsers className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
+        {/* Stats - Compact */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <StatCard 
+            title="Total Ujian" 
+            value={exams.length} 
+            icon={<FiCalendar className="w-5 h-5" />}
+            color="from-blue-500 via-cyan-500 to-blue-600"
+          />
+          <StatCard 
+            title="Terjadwal" 
+            value={exams.filter(e => e.status === 'scheduled').length} 
+            icon={<FiClock className="w-5 h-5" />}
+            color="from-blue-500 via-purple-500 to-blue-600"
+          />
+          <StatCard 
+            title="Selesai" 
+            value={exams.filter(e => e.status === 'completed').length} 
+            icon={<FiCheck className="w-5 h-5" />}
+            color="from-green-500 via-emerald-500 to-green-600"
+          />
+          <StatCard 
+            title="Peserta" 
+            value={students.length} 
+            icon={<FiUsers className="w-5 h-5" />}
+            color="from-purple-500 via-pink-500 to-purple-600"
+          />
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg shadow-md p-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        {/* Filters - Compact */}
+        <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-white/50">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
             <div className="flex gap-2">
-              <button
-                onClick={() => setFilter('all')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
+              <FilterButton active={filter === 'all'} onClick={() => setFilter('all')}>
                 Semua ({exams.length})
-              </button>
-              <button
-                onClick={() => setFilter('scheduled')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === 'scheduled'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
+              </FilterButton>
+              <FilterButton active={filter === 'scheduled'} onClick={() => setFilter('scheduled')}>
                 Terjadwal
-              </button>
-              <button
-                onClick={() => setFilter('completed')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  filter === 'completed'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
+              </FilterButton>
+              <FilterButton active={filter === 'completed'} onClick={() => setFilter('completed')}>
                 Selesai
-              </button>
+              </FilterButton>
             </div>
 
             <div className="relative">
@@ -452,5 +404,33 @@ const AdminExamSchedule = () => {
     </div>
   );
 };
+
+// Compact Components
+const StatCard = ({ title, value, icon, color }) => (
+  <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-white/50">
+    <div className="flex items-center justify-between">
+      <div className="flex-1 min-w-0">
+        <p className="text-xs text-gray-500 font-semibold truncate">{title}</p>
+        <p className="text-2xl font-black text-gray-800 mt-1">{value}</p>
+      </div>
+      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-white shadow-lg flex-shrink-0`}>
+        {icon}
+      </div>
+    </div>
+  </div>
+);
+
+const FilterButton = ({ active, onClick, children }) => (
+  <button
+    onClick={onClick}
+    className={`px-4 py-2.5 rounded-xl font-bold text-xs transition-all shadow-md hover:shadow-lg ${
+      active
+        ? 'bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white scale-105'
+        : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200'
+    }`}
+  >
+    {children}
+  </button>
+);
 
 export default AdminExamSchedule;
