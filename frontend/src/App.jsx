@@ -1,19 +1,23 @@
-import { Suspense, lazy, useEffect } from 'react';
+import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import LoadingPage from '@/components/ui/LoadingPage';
-import { useAuthStore } from '@/stores/useAuthStore';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import PublicRoute from '@/components/auth/ProtectedRoute';
 
 // Lazy load pages for code splitting
 const Home = lazy(() => import('@/pages/Home'));
 const PPDB = lazy(() => import('@/pages/PPDB'));
+const Login = lazy(() => import('@/pages/Login'));
 const Register = lazy(() => import('@/pages/Register'));
 const Status = lazy(() => import('@/pages/Status'));
 const Success = lazy(() => import('@/pages/Success'));
 const PaymentStatus = lazy(() => import('@/pages/PaymentStatus'));
 const StudentExam = lazy(() => import('@/pages/StudentExam'));
-const Profile = lazy(() => import('@/pages/Profile'));
+const News = lazy(() => import('@/pages/News'));
+const Majors = lazy(() => import('@/pages/Majors'));
+const About = lazy(() => import('@/pages/About'));
 
 // Admin pages - lazy loaded
 const AdminPayments = lazy(() => import('@/pages/admin/Payments'));
@@ -23,14 +27,6 @@ const AdminExamResults = lazy(() => import('@/pages/admin/ExamResults'));
 const AdminReports = lazy(() => import('@/pages/admin/Reports'));
 
 function App() {
-  const initAuth = useAuthStore((state) => state.initAuth);
-
-  useEffect(() => {
-    // Initialize Firebase Auth listener
-    const unsubscribe = initAuth();
-    return () => unsubscribe();
-  }, [initAuth]);
-
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
@@ -41,12 +37,39 @@ function App() {
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/ppdb" element={<PPDB />} />
-              <Route path="/register" element={<Register />} />
+              <Route path="/news" element={<News />} />
+              <Route path="/majors" element={<Majors />} />
+              <Route path="/about" element={<About />} />
               <Route path="/status" element={<Status />} />
-              <Route path="/success" element={<Success />} />
-              <Route path="/payment/:id" element={<PaymentStatus />} />
-              <Route path="/exam/:id" element={<StudentExam />} />
-              <Route path="/profile" element={<Profile />} />
+              
+              {/* Login Route - Redirect if already logged in */}
+              <Route path="/login" element={
+                <PublicRoute redirect="/register">
+                  <Login />
+                </PublicRoute>
+              } />
+              
+              {/* Protected Routes - Require login */}
+              <Route path="/register" element={
+                <ProtectedRoute>
+                  <Register />
+                </ProtectedRoute>
+              } />
+              <Route path="/success" element={
+                <ProtectedRoute>
+                  <Success />
+                </ProtectedRoute>
+              } />
+              <Route path="/payment/:id" element={
+                <ProtectedRoute>
+                  <PaymentStatus />
+                </ProtectedRoute>
+              } />
+              <Route path="/exam/:id" element={
+                <ProtectedRoute>
+                  <StudentExam />
+                </ProtectedRoute>
+              } />
 
               {/* Admin Routes */}
               <Route path="/admin/payments" element={<AdminPayments />} />
