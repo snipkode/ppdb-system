@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { FiChevronLeft, FiChevronRight, FiLoader, FiAlertCircle, FiCheck } from 'react-icons/fi';
 import { studentApi } from '@/services/api';
 import { wilayahApi } from '@/services/wilayah';
+import { db, storage } from '@/services/firebase';
+import { doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // Import form components
 import StudentForm from '@/components/ppdb/StudentForm';
@@ -16,7 +19,7 @@ const Register = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   // Wilayah state
   const [provinsiList, setProvinsiList] = useState([]);
@@ -25,19 +28,37 @@ const Register = () => {
   const [kelurahanList, setKelurahanList] = useState([]);
   const [loadingWilayah, setLoadingWilayah] = useState(false);
 
-  const [formData, setFormData] = useState({
-    nama_lengkap: '', nisn: '', nik: '', tempat_lahir: '', tanggal_lahir: '',
-    jenis_kelamin: 'L', agama: 'Islam', alamat: '', rt_rw: '', kelurahan: '',
-    kecamatan: '', kota: '', provinsi: '', kode_pos: '', telepon: '', email: '',
-    nama_ayah: '', pendidikan_ayah: '', pekerjaan_ayah: '', penghasilan_ayah: '',
-    nama_ibu: '', pendidikan_ibu: '', pekerjaan_ibu: '', penghasilan_ibu: '',
-    telepon_ortu: '', email_ortu: '', nama_wali: '', telepon_wali: '',
-    npsn: '', nama_sekolah: '', alamat_sekolah: '', tahun_lulus: new Date().getFullYear(),
-    nilai_bahasa_indonesia: '', nilai_matematika: '', nilai_ipa: '', nilai_bahasa_inggris: '',
-    nama_prestasi: '', tingkat_prestasi: '', tahun_prestasi: '',
-    pilihan_1: '', pilihan_2: '',
-    foto_3x4: null, kk_file: null, akta_kelahiran: null, ktp_ortu: null,
-    ijazah_skl: null, transkrip_nilai: null, surat_prestasi: null,
+  // Load saved data from localStorage
+  const loadSavedData = () => {
+    try {
+      const saved = localStorage.getItem('ppdb_draft');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        console.log('✅ Restored data from localStorage');
+        return parsed;
+      }
+    } catch (err) {
+      console.error('Failed to load saved data:', err);
+    }
+    return null;
+  };
+
+  const [formData, setFormData] = useState(() => {
+    const saved = loadSavedData();
+    return saved || {
+      nama_lengkap: '', nisn: '', nik: '', tempat_lahir: '', tanggal_lahir: '',
+      jenis_kelamin: 'L', agama: 'Islam', alamat: '', rt_rw: '', kelurahan: '',
+      kecamatan: '', kota: '', provinsi: '', kode_pos: '', telepon: '', email: '',
+      nama_ayah: '', pendidikan_ayah: '', pekerjaan_ayah: '', penghasilan_ayah: '',
+      nama_ibu: '', pendidikan_ibu: '', pekerjaan_ibu: '', penghasilan_ibu: '',
+      telepon_ortu: '', email_ortu: '', nama_wali: '', telepon_wali: '',
+      npsn: '', nama_sekolah: '', alamat_sekolah: '', tahun_lulus: new Date().getFullYear(),
+      nilai_bahasa_indonesia: '', nilai_matematika: '', nilai_ipa: '', nilai_bahasa_inggris: '',
+      nama_prestasi: '', tingkat_prestasi: '', tahun_prestasi: '',
+      pilihan_1: '', pilihan_2: '',
+      foto_3x4: null, kk_file: null, akta_kelahiran: null, ktp_ortu: null,
+      ijazah_skl: null, transkrip_nilai: null, surat_prestasi: null,
+    };
   });
 
   const [errors, setErrors] = useState({});
@@ -137,7 +158,18 @@ const Register = () => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: undefined }));
+    
+    // Auto-save to localStorage
+    setTimeout(() => {
+      const newData = { ...formData, [name]: value };
+      localStorage.setItem('ppdb_draft', JSON.stringify(newData));
+    }, 300);
   };
+
+  // Auto-save on step change
+  useEffect(() => {
+    localStorage.setItem('ppdb_draft', JSON.stringify(formData));
+  }, [currentStep]);
 
   const validateStep = (step) => {
     const newErrors = {};
@@ -206,25 +238,275 @@ const Register = () => {
     return true;
   };
 
-  const handleNext = () => { if (validateStep(currentStep)) { setCurrentStep(prev => prev + 1); window.scrollTo(0, 0); } };
   const handleBack = () => { setCurrentStep(prev => prev - 1); window.scrollTo(0, 0); };
+
+  const handleNext = () => {
+    if (validateStep(currentStep)) {
+      setCurrentStep(prev => prev + 1);
+      window.scrollTo(0, 0);
+    }
+  };
+
+  // Clear saved draft
+  const handleClearDraft = () => {
+    if (confirm('Hapus data yang tersimpan? Anda harus mengisi form dari awal.')) {
+      localStorage.removeItem('ppdb_draft');
+      setFormData({
+        nama_lengkap: '', nisn: '', nik: '', tempat_lahir: '', tanggal_lahir: '',
+        jenis_kelamin: 'L', agama: 'Islam', alamat: '', rt_rw: '', kelurahan: '',
+        kecamatan: '', kota: '', provinsi: '', kode_pos: '', telepon: '', email: '',
+        nama_ayah: '', pendidikan_ayah: '', pekerjaan_ayah: '', penghasilan_ayah: '',
+        nama_ibu: '', pendidikan_ibu: '', pekerjaan_ibu: '', penghasilan_ibu: '',
+        telepon_ortu: '', email_ortu: '', nama_wali: '', telepon_wali: '',
+        npsn: '', nama_sekolah: '', alamat_sekolah: '', tahun_lulus: new Date().getFullYear(),
+        nilai_bahasa_indonesia: '', nilai_matematika: '', nilai_ipa: '', nilai_bahasa_inggris: '',
+        nama_prestasi: '', tingkat_prestasi: '', tahun_prestasi: '',
+        pilihan_1: '', pilihan_2: '',
+        foto_3x4: null, kk_file: null, akta_kelahiran: null, ktp_ortu: null,
+        ijazah_skl: null, transkrip_nilai: null, surat_prestasi: null,
+      });
+      setCurrentStep(1);
+      setError(null);
+      setSubmitAttempted(false);
+      window.scrollTo(0, 0);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!validateStep(5)) return;
+    
+    // Set loading state - button will show loading spinner
     setLoading(true);
     setError(null);
+    setSubmitAttempted(true);
+    
+    console.log('🔥 Starting submission to Firestore...');
+    
     try {
-      const submissionData = { ...formData, foto_3x4: formData.foto_3x4?.name || null, kk_file: formData.kk_file?.name || null, akta_kelahiran: formData.akta_kelahiran?.name || null, ktp_ortu: formData.ktp_ortu?.name || null, ijazah_skl: formData.ijazah_skl?.name || null, transkrip_nilai: formData.transkrip_nilai?.name || null, surat_prestasi: formData.surat_prestasi?.name || null };
+      // Step 1: Create student record with basic data
+      const submissionData = {
+        // Data Siswa
+        data_siswa: {
+          nama_lengkap: formData.nama_lengkap,
+          nisn: formData.nisn,
+          nik: formData.nik,
+          tempat_lahir: formData.tempat_lahir,
+          tanggal_lahir: formData.tanggal_lahir,
+          jenis_kelamin: formData.jenis_kelamin,
+          agama: formData.agama,
+          alamat: formData.alamat,
+          rt_rw: formData.rt_rw,
+          kelurahan: formData.kelurahan,
+          kecamatan: formData.kecamatan,
+          kota: formData.kota,
+          provinsi: formData.provinsi,
+          kode_pos: formData.kode_pos,
+          telepon: formData.telepon,
+          email: formData.email
+        },
+        
+        // Data Ortu
+        data_ortu: {
+          nama_ayah: formData.nama_ayah,
+          pendidikan_ayah: formData.pendidikan_ayah,
+          pekerjaan_ayah: formData.pekerjaan_ayah,
+          penghasilan_ayah: formData.penghasilan_ayah,
+          nama_ibu: formData.nama_ibu,
+          pendidikan_ibu: formData.pendidikan_ibu,
+          pekerjaan_ibu: formData.pekerjaan_ibu,
+          penghasilan_ibu: formData.penghasilan_ibu,
+          nama_wali: formData.nama_wali,
+          telepon_ortu: formData.telepon_ortu,
+          email_ortu: formData.email_ortu
+        },
+        
+        // Data Sekolah
+        data_sekolah: {
+          npsn: formData.npsn,
+          nama_sekolah: formData.nama_sekolah,
+          alamat_sekolah: formData.alamat_sekolah,
+          tahun_lulus: formData.tahun_lulus,
+          nilai_rapor: [
+            {
+              semester: 5,
+              rata_rata: (
+                Number(formData.nilai_bahasa_indonesia || 0) +
+                Number(formData.nilai_matematika || 0) +
+                Number(formData.nilai_ipa || 0) +
+                Number(formData.nilai_bahasa_inggris || 0)
+              ) / 4
+            }
+          ]
+        },
+        
+        // Pilihan Jurusan
+        pilihan_jurusan: {
+          pilihan_1: formData.pilihan_1,
+          pilihan_2: formData.pilihan_2,
+          diterima_di: null
+        },
+        
+        // Dokumen (will be updated after upload)
+        dokumen: {
+          foto_3x4: null,
+          kk_file: null,
+          akta_kelahiran: null,
+          ktp_ortu: null,
+          ijazah_skl: null,
+          transkrip_nilai: null,
+          surat_prestasi: null
+        },
+        
+        // Status
+        status: 'pending',
+        status_detail: {
+          submitted_at: serverTimestamp(),
+          verified_at: null,
+          verified_by: null,
+          ujian_at: null,
+          pengumuman_at: null,
+          notes: null
+        },
+        
+        // Pembayaran
+        pembayaran: {
+          status: 'unpaid',
+          amount: 150000,
+          bank_name: null,
+          transfer_date: null,
+          bukti_transfer: null,
+          verified_at: null,
+          verified_by: null,
+          notes: null
+        },
+        
+        created_at: serverTimestamp(),
+        updated_at: serverTimestamp()
+      };
+
+      console.log('📝 Submitting data to Firestore:', submissionData);
+
+      // Create student record
       const result = await studentApi.create(submissionData);
-      if (result.success) {
-        navigate('/success', { state: { studentId: result.data?.id || 'PPDB-2024-0001', nomorPendaftaran: result.data?.nomor_pendaftaran || 'PPDB-2024-0001', studentName: formData.nama_lengkap } });
-      } else { setError(result.error || 'Terjadi kesalahan'); }
-    } catch (err) { setError('Gagal menyimpan data'); console.error(err); }
-    finally { setLoading(false); }
+      
+      console.log('📦 Firestore result:', result);
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Gagal menyimpan data');
+      }
+
+      const studentId = result.data.id;
+      const nomorPendaftaran = result.data.nomor_pendaftaran;
+      
+      console.log('✅ Student created:', { studentId, nomorPendaftaran });
+      
+      // Step 2: Upload documents to Firebase Storage
+      const uploadPromises = [];
+      const documentMap = {
+        foto_3x4: formData.foto_3x4,
+        kk_file: formData.kk_file,
+        akta_kelahiran: formData.akta_kelahiran,
+        ktp_ortu: formData.ktp_ortu,
+        ijazah_skl: formData.ijazah_skl,
+        transkrip_nilai: formData.transkrip_nilai,
+        surat_prestasi: formData.surat_prestasi
+      };
+
+      console.log('📤 Starting document upload...', Object.keys(documentMap).length, 'files');
+
+      // Upload each document
+      for (const [docType, file] of Object.entries(documentMap)) {
+        if (file) {
+          console.log(`⬆️ Uploading ${docType}...`);
+          const promise = uploadDocument(file, studentId, docType);
+          uploadPromises.push(promise.then(url => ({ docType, url })));
+        }
+      }
+
+      // Wait for all uploads
+      const uploadResults = await Promise.all(uploadPromises);
+      console.log('✅ Documents uploaded:', uploadResults.length, 'files');
+      
+      // Update student record with document URLs
+      const dokumenUpdate = {};
+      uploadResults.forEach(({ docType, url }) => {
+        dokumenUpdate[docType] = url;
+      });
+
+      if (Object.keys(dokumenUpdate).length > 0) {
+        console.log('🔄 Updating Firestore with document URLs...');
+        const studentRef = doc(db, 'students', studentId);
+        await updateDoc(studentRef, {
+          dokumen: dokumenUpdate,
+          updated_at: serverTimestamp()
+        });
+        console.log('✅ Firestore updated with document URLs');
+      }
+
+      console.log('🎉 Registration complete!');
+      
+      // Clear localStorage on success
+      localStorage.removeItem('ppdb_draft');
+      
+      // Navigate to success page
+      navigate('/success', { 
+        state: { 
+          studentId: studentId,
+          nomorPendaftaran: nomorPendaftaran,
+          studentName: formData.nama_lengkap 
+        } 
+      });
+      
+    } catch (err) {
+      console.error('❌ Registration error:', err);
+      setError(err.message || 'Gagal menyimpan data. Silakan coba lagi.');
+      // Keep loading false so user can retry
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper function to upload document
+  const uploadDocument = async (file, studentId, docType) => {
+    try {
+      const timestamp = Date.now();
+      const storageRef = ref(storage, `students/${studentId}/${docType}_${timestamp}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
+    } catch (error) {
+      console.error(`Upload error (${docType}):`, error);
+      throw new Error(`Gagal upload ${docType}: ${error.message}`);
+    }
   };
 
   const handleConfirm = () => { setShowConfirmation(true); window.scrollTo(0, 0); };
   const handleFinalSubmit = () => { handleSubmit(); };
+
+  // Clear saved draft
+  const handleClearDraft = () => {
+    if (confirm('Hapus data yang tersimpan? Anda harus mengisi form dari awal.')) {
+      localStorage.removeItem('ppdb_draft');
+      setFormData({
+        nama_lengkap: '', nisn: '', nik: '', tempat_lahir: '', tanggal_lahir: '',
+        jenis_kelamin: 'L', agama: 'Islam', alamat: '', rt_rw: '', kelurahan: '',
+        kecamatan: '', kota: '', provinsi: '', kode_pos: '', telepon: '', email: '',
+        nama_ayah: '', pendidikan_ayah: '', pekerjaan_ayah: '', penghasilan_ayah: '',
+        nama_ibu: '', pendidikan_ibu: '', pekerjaan_ibu: '', penghasilan_ibu: '',
+        telepon_ortu: '', email_ortu: '', nama_wali: '', telepon_wali: '',
+        npsn: '', nama_sekolah: '', alamat_sekolah: '', tahun_lulus: new Date().getFullYear(),
+        nilai_bahasa_indonesia: '', nilai_matematika: '', nilai_ipa: '', nilai_bahasa_inggris: '',
+        nama_prestasi: '', tingkat_prestasi: '', tahun_prestasi: '',
+        pilihan_1: '', pilihan_2: '',
+        foto_3x4: null, kk_file: null, akta_kelahiran: null, ktp_ortu: null,
+        ijazah_skl: null, transkrip_nilai: null, surat_prestasi: null,
+      });
+      setCurrentStep(1);
+      setError(null);
+      setSubmitAttempted(false);
+      window.scrollTo(0, 0);
+    }
+  };
 
   const wilayahData = { provinsiList, kabupatenList, kecamatanList, kelurahanList, handleProvinsiChange, handleKabupatenChange, handleKecamatanChange, handleKelurahanChange };
 
@@ -235,7 +517,6 @@ const Register = () => {
       case 3: return <SchoolForm formData={formData} handleChange={handleChange} errors={errors} />;
       case 4: return <MajorForm formData={formData} handleChange={handleChange} errors={errors} />;
       case 5: return <DocumentUpload formData={formData} setFormData={setFormData} errors={errors} />;
-      case 6: return <ConfirmationPage formData={formData} onConfirm={handleFinalSubmit} onBack={() => { setShowConfirmation(false); setCurrentStep(5); }} />;
       default: return null;
     }
   };
@@ -247,6 +528,14 @@ const Register = () => {
         <div className="text-center mb-6">
           <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">Pendaftaran PPDB Online</h1>
           <p className="text-gray-600 text-sm">SMK Nusantara - Tahun Ajaran 2024/2025</p>
+          
+          {/* Clear Draft Button */}
+          <button
+            onClick={handleClearDraft}
+            className="mt-2 text-xs text-red-600 hover:text-red-700 hover:underline"
+          >
+            🗑️ Hapus Data Tersimpan
+          </button>
         </div>
 
         {/* Error Alert */}
@@ -303,20 +592,26 @@ const Register = () => {
                   Lanjut <FiChevronRight className="w-4 h-4" />
                 </button>
               ) : (
-                <button type="button" onClick={handleConfirm} disabled={loading} className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold px-6 py-2.5 rounded-xl hover:shadow-lg hover:shadow-green-500/30 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm">
-                  Periksa & Kirim <FiCheck className="w-4 h-4" />
+                <button 
+                  type="button" 
+                  onClick={handleSubmit} 
+                  disabled={loading} 
+                  className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold px-6 py-2.5 rounded-xl hover:shadow-lg hover:shadow-green-500/30 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm w-full md:w-auto justify-center"
+                  title={loading ? 'Sedang mengirim data...' : 'Submit pendaftaran ke Firestore'}
+                >
+                  {loading ? (
+                    <>
+                      <FiLoader className="w-4 h-4 animate-spin" />
+                      <span>Mengirim ke Firestore...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🚀 Periksa & Kirim Pendaftaran</span>
+                      <FiCheck className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
               )}
-            </div>
-          )}
-
-          {/* Loading Overlay */}
-          {loading && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-xl p-5 flex items-center gap-4 shadow-2xl">
-                <FiLoader className="w-7 h-7 text-blue-600 animate-spin" />
-                <p className="text-gray-700 font-medium text-sm">Memproses data...</p>
-              </div>
             </div>
           )}
         </div>
@@ -326,28 +621,31 @@ const Register = () => {
           <p>Butuh bantuan? <span className="font-medium text-gray-800">📞 (021) 1234-5678 | 📧 ppdb@smknusantara.sch.id</span></p>
         </div>
       </div>
-    </div>
-  );
-};
 
-// Inline Confirmation Page Component
-const ConfirmationPage = ({ formData, onConfirm, onBack }) => {
-  const majors = { RPL: 'Rekayasa Perangkat Lunak', TKJ: 'Teknik Komputer Jaringan', AKL: 'Akuntansi', MM: 'Multimedia', TBSM: 'Teknik Bisnis Sepeda Motor' };
-  return (
-    <div className="space-y-4">
-      <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
-        <h3 className="font-bold text-green-800 mb-2">Konfirmasi Pendaftaran</h3>
-        <p className="text-sm text-green-700">Pastikan semua data sudah benar sebelum mengirim.</p>
-      </div>
-      <div className="bg-white border rounded-xl p-4 space-y-3 max-h-96 overflow-y-auto">
-        <div><p className="text-xs text-gray-500">Nama Lengkap</p><p className="font-medium text-sm">{formData.nama_lengkap}</p></div>
-        <div><p className="text-xs text-gray-500">NISN/NIK</p><p className="font-medium text-sm">{formData.nisn} / {formData.nik}</p></div>
-        <div><p className="text-xs text-gray-500">Sekolah Asal</p><p className="font-medium text-sm">{formData.nama_sekolah}</p></div>
-        <div className="grid grid-cols-2 gap-3"><div><p className="text-xs text-gray-500">Pilihan 1</p><p className="font-medium text-sm">{majors[formData.pilihan_1]}</p></div><div><p className="text-xs text-gray-500">Pilihan 2</p><p className="font-medium text-sm">{majors[formData.pilihan_2]}</p></div></div>
-      </div>
-      <div className="flex gap-3 pt-4 border-t">
-        <button onClick={onBack} className="flex-1 px-4 py-2.5 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-all text-sm">Periksa Kembali</button>
-        <button onClick={onConfirm} className="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all text-sm">Ya, Kirim Pendaftaran</button>
+      {/* Progress Bar (saat loading) */}
+      {loading && (
+        <div className="fixed top-0 left-0 right-0 z-50">
+          <div className="h-1 bg-gray-200">
+            <div className="h-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 animate-progress"></div>
+          </div>
+          <div className="bg-black/70 backdrop-blur-sm text-white px-4 py-3 text-center">
+            <div className="flex items-center justify-center gap-2">
+              <FiLoader className="w-4 h-4 animate-spin" />
+              <span className="text-sm font-medium">Sedang mengirim data ke Firestore...</span>
+            </div>
+            <p className="text-xs text-white/70 mt-1">Mohon tunggu, jangan tutup halaman ini</p>
+          </div>
+        </div>
+      )}
+
+      {/* Auto-save indicator */}
+      <div className="fixed bottom-4 right-4 z-40">
+        <div className="bg-white shadow-lg rounded-lg px-3 py-2 text-xs text-gray-600 border border-gray-200">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${submitAttempted ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+            <span>Data tersimpan otomatis</span>
+          </div>
+        </div>
       </div>
     </div>
   );

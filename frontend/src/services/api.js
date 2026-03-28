@@ -66,6 +66,8 @@ export const studentApi = {
 
   create: async (data) => {
     try {
+      console.log('📦 [studentApi.create] Received data:', data);
+      
       // Generate nomor pendaftaran
       const timestamp = Date.now();
       const nomorPendaftaran = `PPDB-${timestamp}`;
@@ -73,19 +75,24 @@ export const studentApi = {
       const dataToSave = {
         ...data,
         nomor_pendaftaran: nomorPendaftaran,
-        status: 'submitted',
+        status: 'pending',
         created_at: serverTimestamp(),
         updated_at: serverTimestamp()
       };
 
+      console.log('📦 [studentApi.create] Saving to Firestore:', dataToSave);
+
       const docRef = await addDoc(collection(db, COLLECTION_NAME), dataToSave);
 
-      return { 
-        success: true, 
+      console.log('✅ [studentApi.create] Successfully saved with ID:', docRef.id);
+
+      return {
+        success: true,
         data: { id: docRef.id, ...dataToSave, nomor_pendaftaran: nomorPendaftaran },
-        message: 'Pendaftaran berhasil'
+        message: 'Pendaftaran berhasil disimpan ke Firestore'
       };
     } catch (error) {
+      console.error('❌ [studentApi.create] Error:', error);
       return { success: false, error: error.message };
     }
   },
