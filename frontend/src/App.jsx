@@ -1,8 +1,9 @@
-import { Suspense, lazy } from 'react';
+import { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import LoadingPage from '@/components/ui/LoadingPage';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 // Lazy load pages for code splitting
 const Home = lazy(() => import('@/pages/Home'));
@@ -12,6 +13,7 @@ const Status = lazy(() => import('@/pages/Status'));
 const Success = lazy(() => import('@/pages/Success'));
 const PaymentStatus = lazy(() => import('@/pages/PaymentStatus'));
 const StudentExam = lazy(() => import('@/pages/StudentExam'));
+const Profile = lazy(() => import('@/pages/Profile'));
 
 // Admin pages - lazy loaded
 const AdminPayments = lazy(() => import('@/pages/admin/Payments'));
@@ -21,6 +23,14 @@ const AdminExamResults = lazy(() => import('@/pages/admin/ExamResults'));
 const AdminReports = lazy(() => import('@/pages/admin/Reports'));
 
 function App() {
+  const initAuth = useAuthStore((state) => state.initAuth);
+
+  useEffect(() => {
+    // Initialize Firebase Auth listener
+    const unsubscribe = initAuth();
+    return () => unsubscribe();
+  }, [initAuth]);
+
   return (
     <Router>
       <div className="min-h-screen bg-gray-50">
@@ -36,7 +46,8 @@ function App() {
               <Route path="/success" element={<Success />} />
               <Route path="/payment/:id" element={<PaymentStatus />} />
               <Route path="/exam/:id" element={<StudentExam />} />
-              
+              <Route path="/profile" element={<Profile />} />
+
               {/* Admin Routes */}
               <Route path="/admin/payments" element={<AdminPayments />} />
               <Route path="/admin/notifications" element={<AdminNotifications />} />

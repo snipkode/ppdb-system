@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiMenu, FiX, FiChevronRight } from 'react-icons/fi';
+import { FiMenu, FiX, FiChevronRight, FiUser } from 'react-icons/fi';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,15 +64,33 @@ const Header = () => {
             ))}
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
-            <Link
-              to="/register"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold px-6 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-200"
-            >
-              <span>Daftar PPDB</span>
-              <FiChevronRight />
-            </Link>
+          {/* Right Side Actions */}
+          <div className="flex items-center gap-3">
+            {/* Profile Link (if logged in) */}
+            {user && (
+              <Link
+                to="/profile"
+                className={`hidden md:flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                  isScrolled
+                    ? 'text-gray-700 hover:bg-gray-100'
+                    : 'text-gray-800 hover:bg-white/50'
+                }`}
+              >
+                <FiUser className="w-5 h-5" />
+                <span className="text-sm">Profile</span>
+              </Link>
+            )}
+
+            {/* CTA Button */}
+            <div className="hidden md:block">
+              <Link
+                to="/register"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold px-6 py-2.5 rounded-lg hover:shadow-lg hover:scale-105 transition-all duration-200"
+              >
+                <span>Daftar PPDB</span>
+                <FiChevronRight />
+              </Link>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
@@ -104,6 +124,19 @@ const Header = () => {
                   <FiChevronRight className="w-4 h-4" />
                 </Link>
               ))}
+              
+              {/* Profile Link (if logged in) */}
+              {user && (
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <FiUser className="w-5 h-5" />
+                  <span>Profile Saya</span>
+                </Link>
+              )}
+              
               <Link
                 to="/register"
                 className="flex items-center justify-center gap-2 mt-4 bg-gradient-to-r from-primary-600 to-primary-700 text-white font-semibold px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200"

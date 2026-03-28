@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { studentApi } from '@/services/api';
-import { FiSearch, FiCheck, FiClipboard, FiCalendar, FiUser } from 'react-icons/fi';
+import { 
+  FiSearch, FiCheck, FiClipboard, FiCalendar, FiUser, 
+  FiAward, FiX, FiClock, FiChevronRight, FiFileText 
+} from 'react-icons/fi';
 
 const Status = () => {
-  const [searchType, setSearchType] = useState('nomor'); // 'nomor' or 'nisn'
+  const [searchType, setSearchType] = useState('nomor');
   const [nomorPendaftaran, setNomorPendaftaran] = useState('');
   const [nisn, setNisn] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,7 +21,7 @@ const Status = () => {
 
     try {
       let result;
-      
+
       if (searchType === 'nomor') {
         if (!nomorPendaftaran.trim()) {
           setError('Masukkan nomor pendaftaran');
@@ -32,7 +35,6 @@ const Status = () => {
           setLoading(false);
           return;
         }
-        // Fallback: search all and filter (since Firestore doesn't support multiple where on different fields)
         const allStudents = await studentApi.getAll();
         if (allStudents.success) {
           const found = allStudents.data.find(s => s.data_siswa?.nisn === nisn.trim());
@@ -49,114 +51,111 @@ const Status = () => {
       }
     } catch (err) {
       setError('Terjadi kesalahan. Silakan coba lagi.');
-      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const getStatusBadge = (status) => {
-    const badges = {
+  const getStatusConfig = (status) => {
+    const configs = {
       pending: {
-        color: 'bg-yellow-100 text-yellow-800 border-yellow-300',
+        gradient: 'from-yellow-500 to-orange-500',
+        bg: 'bg-yellow-50',
+        border: 'border-yellow-200',
+        text: 'text-yellow-700',
         label: 'Pending',
-        icon: '⏳'
+        icon: '⏳',
+        message: 'Pendaftaran sedang diproses'
       },
       verified: {
-        color: 'bg-blue-100 text-blue-800 border-blue-300',
+        gradient: 'from-blue-500 to-cyan-500',
+        bg: 'bg-blue-50',
+        border: 'border-blue-200',
+        text: 'text-blue-700',
         label: 'Terverifikasi',
-        icon: '✓'
+        icon: '✓',
+        message: 'Berkas telah diverifikasi'
       },
       ujian: {
-        color: 'bg-purple-100 text-purple-800 border-purple-300',
+        gradient: 'from-purple-500 to-pink-500',
+        bg: 'bg-purple-50',
+        border: 'border-purple-200',
+        text: 'text-purple-700',
         label: 'Jadwal Ujian',
-        icon: '📝'
+        icon: '📝',
+        message: 'Siap mengikuti ujian'
       },
       accepted: {
-        color: 'bg-green-100 text-green-800 border-green-300',
+        gradient: 'from-green-500 to-emerald-500',
+        bg: 'bg-green-50',
+        border: 'border-green-200',
+        text: 'text-green-700',
         label: 'Diterima',
-        icon: '🎉'
+        icon: '🎉',
+        message: 'Selamat! Anda telah diterima'
       },
       rejected: {
-        color: 'bg-red-100 text-red-800 border-red-300',
+        gradient: 'from-red-500 to-rose-500',
+        bg: 'bg-red-50',
+        border: 'border-red-200',
+        text: 'text-red-700',
         label: 'Ditolak',
-        icon: '✗'
+        icon: '✗',
+        message: 'Maaf, pendaftaran ditolak'
       }
     };
-    return badges[status] || badges.pending;
+    return configs[status] || configs.pending;
   };
 
   const timelineSteps = [
-    { 
-      status: 'pending', 
-      label: 'Pendaftaran Diterima', 
-      desc: 'Pendaftaran berhasil dikirim',
-      icon: FiClipboard
-    },
-    { 
-      status: 'verified', 
-      label: 'Verifikasi Berkas', 
-      desc: 'Berkas sedang diverifikasi',
-      icon: FiCheck
-    },
-    { 
-      status: 'ujian', 
-      label: 'Ujian Seleksi', 
-      desc: 'Jadwal ujian akan diumumkan',
-      icon: FiCalendar
-    },
-    { 
-      status: 'accepted', 
-      label: 'Hasil Seleksi', 
-      desc: 'Pengumuman kelulusan',
-      icon: FiUser
-    }
+    { status: 'pending', label: 'Pendaftaran', desc: 'Dokumen submitted', icon: FiClipboard },
+    { status: 'verified', label: 'Verifikasi', desc: 'Berkas diverifikasi', icon: FiCheck },
+    { status: 'ujian', label: 'Ujian', desc: 'Mengikuti seleksi', icon: FiAward },
+    { status: 'accepted', label: 'Hasil', desc: 'Pengumuman', icon: FiUser }
   ];
 
   const getCurrentStep = (status) => {
-    const steps = {
-      pending: 0,
-      verified: 1,
-      ujian: 2,
-      accepted: 3,
-      rejected: 3
-    };
+    const steps = { pending: 0, verified: 1, ujian: 2, accepted: 3, rejected: 3 };
     return steps[status] || 0;
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 py-8 md:py-12">
+      <div className="container mx-auto px-4 max-w-5xl">
+        {/* Header - Compact */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Cek Status Pendaftaran
+          <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xl px-4 py-2 rounded-full mb-4 shadow-lg">
+            <FiSearch className="w-4 h-4 text-blue-600" />
+            <span className="text-sm font-semibold text-gray-700">Cek Status Pendaftaran</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-2">
+            Lacak Progress Pendaftaran
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 text-sm md:text-base">
             Masukkan nomor pendaftaran atau NISN untuk melihat status
           </p>
         </div>
 
-        {/* Search Form */}
-        <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-8">
+        {/* Search Form - Modern Glassmorphism */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl mb-8">
           {/* Tab Switcher */}
-          <div className="flex gap-2 mb-6">
+          <div className="flex gap-2 mb-6 p-1 bg-gray-100 rounded-2xl">
             <button
               onClick={() => setSearchType('nomor')}
-              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+              className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${
                 searchType === 'nomor'
-                  ? 'bg-primary-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-white text-blue-600 shadow-md'
+                  : 'text-gray-600 hover:bg-white/50'
               }`}
             >
               Nomor Pendaftaran
             </button>
             <button
               onClick={() => setSearchType('nisn')}
-              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+              className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 ${
                 searchType === 'nisn'
-                  ? 'bg-primary-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-white text-blue-600 shadow-md'
+                  : 'text-gray-600 hover:bg-white/50'
               }`}
             >
               NISN
@@ -165,36 +164,32 @@ const Status = () => {
 
           {/* Search Input */}
           <form onSubmit={handleSearch} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {searchType === 'nomor' ? 'Nomor Pendaftaran' : 'NISN'}
-              </label>
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={searchType === 'nomor' ? nomorPendaftaran : nisn}
-                  onChange={(e) => searchType === 'nomor' ? setNomorPendaftaran(e.target.value) : setNisn(e.target.value)}
-                  className="input-field flex-1"
-                  placeholder={searchType === 'nomor' ? 'PPDB-xxxxxxxxxx' : '10 digit NISN'}
-                />
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-200 ${
-                    loading
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-primary-600 hover:bg-primary-700 text-white shadow-md hover:shadow-lg'
-                  }`}
-                >
-                  <FiSearch />
-                  <span>{loading ? 'Mencari...' : 'Cari'}</span>
-                </button>
-              </div>
+            <div className="relative">
+              <input
+                type="text"
+                value={searchType === 'nomor' ? nomorPendaftaran : nisn}
+                onChange={(e) => searchType === 'nomor' ? setNomorPendaftaran(e.target.value) : setNisn(e.target.value)}
+                className="w-full pl-12 pr-32 py-4 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                placeholder={searchType === 'nomor' ? 'PPDB-xxxxxxxxxx' : '10 digit NISN'}
+              />
+              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <button
+                type="submit"
+                disabled={loading}
+                className={`absolute right-2 top-1/2 -translate-y-1/2 px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
+                  loading
+                    ? 'bg-gray-300 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-xl'
+                }`}
+              >
+                {loading ? 'Mencari...' : 'Cari'}
+              </button>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                {error}
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-2">
+                <FiX className="w-5 h-5 flex-shrink-0" />
+                <span>{error}</span>
               </div>
             )}
           </form>
@@ -203,167 +198,56 @@ const Status = () => {
         {/* Result */}
         {student && (
           <div className="space-y-6 animate-fade-in-up">
-            {/* Student Info Card */}
-            <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
-              <div className="flex items-start justify-between mb-6 pb-6 border-b">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                    {student.data_siswa?.nama_lengkap}
-                  </h2>
-                  <p className="text-gray-600">
-                    {student.nomor_pendaftaran}
-                  </p>
-                </div>
-                {student.status && (
-                  <div className={`px-4 py-2 rounded-full font-semibold border-2 ${getStatusBadge(student.status).color}`}>
-                    <span className="mr-2">{getStatusBadge(student.status).icon}</span>
-                    {getStatusBadge(student.status).label}
-                  </div>
-                )}
-              </div>
+            {/* Status Card - Hero */}
+            <StatusHero student={student} getConfig={getStatusConfig} />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
-                    <FiUser className="w-4 h-4" />
-                    <span>NISN</span>
-                  </div>
-                  <p className="font-semibold text-gray-800">{student.data_siswa?.nisn || '-'}</p>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
-                    <FiClipboard className="w-4 h-4" />
-                    <span>Jurusan Dipilih</span>
-                  </div>
-                  <p className="font-semibold text-gray-800">
-                    {student.pilihan_jurusan?.pilihan_1 || '-'}
-                  </p>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
-                    <FiCalendar className="w-4 h-4" />
-                    <span>Tanggal Daftar</span>
-                  </div>
-                  <p className="font-semibold text-gray-800">
-                    {student.status_detail?.submitted_at 
-                      ? new Date(student.status_detail.submitted_at.seconds * 1000).toLocaleDateString('id-ID')
-                      : '-'}
-                  </p>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
-                    <FiCheck className="w-4 h-4" />
-                    <span>Status Berkas</span>
-                  </div>
-                  <p className="font-semibold text-gray-800">
-                    {student.status_detail?.verified_at ? '✓ Terverifikasi' : '⏳ Belum diverifikasi'}
-                  </p>
-                </div>
-              </div>
-
-              {student.status_detail?.notes && (
-                <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-blue-800 mb-2">Catatan dari Admin:</h4>
-                  <p className="text-blue-700 text-sm">{student.status_detail.notes}</p>
-                </div>
-              )}
+            {/* Info Grid - Compact */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <InfoCard
+                icon={<FiUser />}
+                label="Nama"
+                value={student.data_siswa?.nama_lengkap || '-'}
+                truncate
+              />
+              <InfoCard
+                icon={<FiClipboard />}
+                label="No. Pendaftaran"
+                value={student.nomor_pendaftaran}
+              />
+              <InfoCard
+                icon={<FiAward />}
+                label="Jurusan"
+                value={student.pilihan_jurusan?.pilihan_1 || '-'}
+                truncate
+              />
+              <InfoCard
+                icon={<FiCalendar />}
+                label="Tanggal Daftar"
+                value={formatDate(student.created_at)}
+              />
             </div>
 
-            {/* Timeline */}
-            <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
-              <h3 className="text-xl font-bold text-gray-800 mb-6">
-                Timeline Pendaftaran
-              </h3>
-              
-              <div className="relative">
-                {/* Progress Line */}
-                <div className="absolute left-4 md:left-8 top-4 bottom-4 w-0.5 bg-gray-200">
-                  <div 
-                    className="w-full bg-primary-600 transition-all duration-500"
-                    style={{ 
-                      height: `${((getCurrentStep(student.status) + 1) / 4) * 100}%` 
-                    }}
-                  />
-                </div>
+            {/* Timeline - Compact Vertical */}
+            <Timeline steps={timelineSteps} currentStep={getCurrentStep(student.status)} status={student.status} />
 
-                {/* Steps */}
-                <div className="space-y-6">
-                  {timelineSteps.map((step, index) => {
-                    const currentStep = getCurrentStep(student.status);
-                    const isCompleted = index <= currentStep;
-                    const isCurrent = index === currentStep;
-                    const Icon = step.icon;
+            {/* Payment Info */}
+            {student.pembayaran && (
+              <PaymentInfo pembayaran={student.pembayaran} />
+            )}
 
-                    return (
-                      <div key={step.status} className="relative flex items-start gap-4">
-                        {/* Icon */}
-                        <div
-                          className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-                            isCompleted
-                              ? 'bg-primary-600 border-primary-600 text-white'
-                              : 'bg-white border-gray-300 text-gray-400'
-                          } ${isCurrent ? 'ring-4 ring-primary-200 scale-110' : ''}`}
-                        >
-                          <Icon className="w-4 h-4" />
-                        </div>
-
-                        {/* Content */}
-                        <div className="flex-1 pt-1">
-                          <h4 className={`font-semibold ${isCurrent ? 'text-primary-600' : 'text-gray-800'}`}>
-                            {step.label}
-                          </h4>
-                          <p className="text-sm text-gray-500">{step.desc}</p>
-                          
-                          {isCurrent && student.status === 'accepted' && (
-                            <div className="mt-2 text-green-600 text-sm font-medium">
-                              🎉 Selamat! Anda telah diterima
-                            </div>
-                          )}
-                          
-                          {isCurrent && student.status === 'rejected' && (
-                            <div className="mt-2 text-red-600 text-sm font-medium">
-                              Maaf, Anda belum diterima
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Info Card */}
-            <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-              <h4 className="font-semibold text-green-800 mb-3">
-                ℹ️ Informasi Selanjutnya
-              </h4>
-              <ul className="space-y-2 text-sm text-green-700">
-                <li className="flex items-start gap-2">
-                  <span className="font-bold">•</span>
-                  <span>Pantau status pendaftaran Anda secara berkala</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold">•</span>
-                  <span>Periksa email/SMS untuk informasi verifikasi dan ujian</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="font-bold">•</span>
-                  <span>Hubungi admin jika ada pertanyaan: (021) 1234-5678</span>
-                </li>
-              </ul>
-            </div>
+            {/* Next Steps */}
+            <NextSteps status={student.status} />
           </div>
         )}
 
-        {/* Empty State (when no result yet) */}
+        {/* Empty State */}
         {!student && !error && (
-          <div className="text-center py-12">
-            <div className="text-6xl mb-4">🔍</div>
-            <p className="text-gray-500">
+          <div className="text-center py-16 bg-white/50 backdrop-blur-xl rounded-3xl border border-white/60">
+            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
+              <FiSearch className="w-10 h-10 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">Belum Ada Hasil</h3>
+            <p className="text-gray-600">
               Masukkan nomor pendaftaran atau NISN untuk melihat status
             </p>
           </div>
@@ -371,6 +255,210 @@ const Status = () => {
       </div>
     </div>
   );
+};
+
+const StatusHero = ({ student, getConfig }) => {
+  const config = getConfig(student.status);
+  
+  return (
+    <div className={`relative overflow-hidden rounded-3xl p-8 ${config.bg} border-2 ${config.border} shadow-xl`}>
+      {/* Background Decoration */}
+      <div className={`absolute -top-20 -right-20 w-64 h-64 bg-gradient-to-br ${config.gradient} opacity-10 rounded-full blur-3xl`}></div>
+      
+      <div className="relative z-10">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div>
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-800 mb-1">
+              {student.data_siswa?.nama_lengkap}
+            </h2>
+            <p className="text-gray-600">{student.nomor_pendaftaran}</p>
+          </div>
+          
+          <div className={`inline-flex items-center gap-2 px-6 py-3 rounded-2xl font-bold text-white bg-gradient-to-r ${config.gradient} shadow-lg`}>
+            <span className="text-2xl">{config.icon}</span>
+            <div className="text-left">
+              <div className="text-xs opacity-80">Status</div>
+              <div className="text-lg">{config.label}</div>
+            </div>
+          </div>
+        </div>
+        
+        <p className={`text-sm ${config.text} bg-white/60 backdrop-blur-sm rounded-xl px-4 py-3 inline-block`}>
+          {config.message}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const InfoCard = ({ icon, label, value, truncate }) => (
+  <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 border border-white/60 shadow-md hover:shadow-lg transition-all duration-300">
+    <div className="flex items-center gap-2 text-gray-400 mb-2">
+      {icon}
+      <span className="text-xs font-medium">{label}</span>
+    </div>
+    <p className={`font-bold text-slate-800 ${truncate ? 'truncate' : ''}`}>{value}</p>
+  </div>
+);
+
+const Timeline = ({ steps, currentStep, status }) => (
+  <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl">
+    <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+      <FiClock className="w-5 h-5 text-blue-600" />
+      Timeline Pendaftaran
+    </h3>
+
+    <div className="relative">
+      {/* Progress Line */}
+      <div className="absolute left-6 md:left-8 top-6 bottom-6 w-0.5 bg-gray-200">
+        <div
+          className="w-full bg-gradient-to-b from-blue-500 to-purple-500 rounded-full transition-all duration-500"
+          style={{ height: `${((currentStep + 1) / (steps.length - 1)) * 100}%` }}
+        />
+      </div>
+
+      {/* Steps */}
+      <div className="space-y-6">
+        {steps.map((step, index) => {
+          const isCompleted = index <= currentStep;
+          const isCurrent = index === currentStep;
+          const Icon = step.icon;
+
+          return (
+            <div key={step.status} className="relative flex items-start gap-4">
+              {/* Icon */}
+              <div
+                className={`relative z-10 w-12 h-12 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 ${
+                  isCompleted
+                    ? 'bg-gradient-to-br from-blue-500 to-purple-500 border-transparent text-white shadow-lg'
+                    : 'bg-white border-gray-200 text-gray-400'
+                } ${isCurrent ? 'ring-4 ring-blue-200 scale-110' : ''}`}
+              >
+                <Icon className="w-5 h-5" />
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 pt-2">
+                <div className="flex items-center gap-2">
+                  <h4 className={`font-bold ${isCurrent ? 'text-blue-600' : 'text-gray-800'}`}>
+                    {step.label}
+                  </h4>
+                  {isCompleted && <FiCheck className="w-4 h-4 text-green-500" />}
+                </div>
+                <p className="text-sm text-gray-500">{step.desc}</p>
+                
+                {isCurrent && status === 'accepted' && (
+                  <div className="mt-2 text-green-600 text-sm font-semibold flex items-center gap-1">
+                    🎉 Selamat! Anda telah diterima
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+);
+
+const PaymentInfo = ({ pembayaran }) => (
+  <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/60 shadow-xl">
+    <h3 className="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+      <FiFileText className="w-5 h-5 text-green-600" />
+      Status Pembayaran
+    </h3>
+    
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="flex items-center gap-4">
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+          pembayaran.status === 'paid' ? 'bg-green-100 text-green-600' :
+          pembayaran.status === 'pending' ? 'bg-yellow-100 text-yellow-600' :
+          'bg-red-100 text-red-600'
+        }`}>
+          {pembayaran.status === 'paid' ? <FiCheck className="w-6 h-6" /> :
+           pembayaran.status === 'pending' ? <FiClock className="w-6 h-6" /> :
+           <FiX className="w-6 h-6" />}
+        </div>
+        <div>
+          <p className="font-bold text-slate-800 capitalize">{pembayaran.status}</p>
+          <p className="text-sm text-gray-500">
+            {pembayaran.uploaded_at ? formatDate(pembayaran.uploaded_at) : 'Belum upload bukti'}
+          </p>
+        </div>
+      </div>
+      
+      {pembayaran.bukti_url && (
+        <a
+          href={pembayaran.bukti_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl font-semibold hover:bg-blue-100 transition-all"
+        >
+          <FiFileText className="w-4 h-4" />
+          Lihat Bukti
+        </a>
+      )}
+    </div>
+  </div>
+);
+
+const NextSteps = ({ status }) => {
+  const steps = {
+    pending: [
+      'Tunggu verifikasi dari admin',
+      'Periksa email/SMS secara berkala',
+      'Upload bukti pembayaran jika sudah diverifikasi'
+    ],
+    verified: [
+      'Tunggu jadwal ujian seleksi',
+      'Persiapkan dokumen asli untuk verifikasi',
+      'Periksa email/SMS untuk informasi ujian'
+    ],
+    ujian: [
+      'Ikuti ujian seleksi sesuai jadwal',
+      'Bawa dokumen asli saat ujian',
+      'Tunggu pengumuman hasil seleksi'
+    ],
+    accepted: [
+      'Lakukan daftar ulang sesuai jadwal',
+      'Bayar biaya pendaftaran ulang',
+      'Ikuti Masa Orientasi Siswa (MOS)'
+    ],
+    rejected: [
+      'Hubungi admin untuk informasi lebih lanjut',
+      'Pertimbangkan untuk mendaftar tahun depan',
+      'Cari alternatif sekolah lain'
+    ]
+  };
+
+  return (
+    <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-3xl p-6 md:p-8">
+      <h4 className="font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <FiChevronRight className="w-5 h-5 text-blue-600" />
+        Langkah Selanjutnya
+      </h4>
+      <ul className="space-y-3">
+        {steps[status]?.map((step, idx) => (
+          <li key={idx} className="flex items-start gap-3">
+            <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+              <span className="text-xs font-bold text-blue-600">{idx + 1}</span>
+            </div>
+            <span className="text-gray-700">{step}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+const formatDate = (date) => {
+  if (!date) return '-';
+  const d = new Date(date);
+  return d.toLocaleDateString('id-ID', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
 };
 
 export default Status;

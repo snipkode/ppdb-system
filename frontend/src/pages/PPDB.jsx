@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { 
-  FiChevronRight, FiCheckCircle, FiClock, FiFileText, FiDollarSign, 
-  FiCalendar, FiUsers, FiAward, FiTrendingUp, FiBookOpen, FiStar 
+import {
+  FiChevronRight, FiCheckCircle, FiClock, FiFileText, FiDollarSign,
+  FiCalendar, FiUsers, FiAward, FiTrendingUp, FiBookOpen, FiStar,
+  FiUpload, FiPrinter, FiMail, FiCreditCard, FiSmartphone, FiRefreshCw
 } from 'react-icons/fi';
 
 const PPDB = () => {
@@ -91,59 +92,262 @@ const PPDB = () => {
         </div>
       </section>
 
-      {/* Timeline Section - Compact Modern */}
+      {/* Timeline Section - University Style */}
       <section className="py-12 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <span className="inline-block px-4 py-1.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold rounded-full mb-4 shadow-lg shadow-blue-500/30">
-              TIMELINE PPDB
+              PROSES SELEKSI
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4">
               Alur Pendaftaran
             </h2>
             <p className="text-gray-600 text-base md:text-lg max-w-2xl mx-auto">
-              5 langkah mudah untuk menjadi bagian dari SMK Nusantara
+              6 tahap seleksi untuk menjadi bagian dari SMK Nusantara
             </p>
           </div>
 
-          <div className="max-w-5xl mx-auto">
-            <div className="grid md:grid-cols-5 gap-4">
-              <TimelineStep
-                step="01"
-                title="Registrasi"
-                desc="Isi formulir online"
-                icon={<FiUsers />}
-                color="from-blue-500 to-cyan-500"
+          {/* Horizontal Timeline - University Style */}
+          <div className="max-w-6xl mx-auto">
+            <div className="relative">
+              {/* Progress Line */}
+              <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full -translate-y-1/2"></div>
+              
+              <div className="grid md:grid-cols-6 gap-4">
+                <TimelineStepVertical
+                  step="01"
+                  title="Registrasi Online"
+                  desc="Isi formulir & upload berkas"
+                  icon={<FiUsers />}
+                  color="from-blue-500 to-cyan-500"
+                  delay="0"
+                />
+                <TimelineStepVertical
+                  step="02"
+                  title="Verifikasi Berkas"
+                  desc="Admin memverifikasi data"
+                  icon={<FiCheckCircle />}
+                  color="from-indigo-500 to-blue-500"
+                  delay="100"
+                />
+                <TimelineStepVertical
+                  step="03"
+                  title="Pembayaran"
+                  desc="Bayar biaya pendaftaran"
+                  icon={<FiDollarSign />}
+                  color="from-purple-500 to-indigo-500"
+                  delay="200"
+                />
+                <TimelineStepVertical
+                  step="04"
+                  title="Ujian Seleksi"
+                  desc="Tes akademik & psikotes"
+                  icon={<FiAward />}
+                  color="from-pink-500 to-purple-500"
+                  delay="300"
+                />
+                <TimelineStepVertical
+                  step="05"
+                  title="Pengumuman"
+                  desc="Cek hasil seleksi"
+                  icon={<FiStar />}
+                  color="from-orange-500 to-pink-500"
+                  delay="400"
+                />
+                <TimelineStepVertical
+                  step="06"
+                  title="Daftar Ulang"
+                  desc="Lengkapi administrasi"
+                  icon={<FiFileText />}
+                  color="from-green-500 to-emerald-500"
+                  delay="500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Detailed Steps */}
+          <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <DetailStep
+              number="1"
+              title="Isi Formulir Online"
+              description="Lengkapi data diri, data orang tua, dan pilih jurusan yang diinginkan"
+              icon={<FiUsers />}
+              color="from-blue-500 to-cyan-500"
+            />
+            <DetailStep
+              number="2"
+              title="Upload Dokumen"
+              description="Scan dan upload KK, Akta Kelahiran, Ijazah/SKL, Nilai Rapor, dan Pas Foto"
+              icon={<FiUpload />}
+              color="from-purple-500 to-pink-500"
+            />
+            <DetailStep
+              number="3"
+              title="Pembayaran Online"
+              description="Transfer biaya pendaftaran ke rekening yang tersedia dan upload bukti"
+              icon={<FiDollarSign />}
+              color="from-green-500 to-emerald-500"
+            />
+            <DetailStep
+              number="4"
+              title="Cetak Kartu Ujian"
+              description="Download dan cetak kartu ujian seleksi setelah pembayaran diverifikasi"
+              icon={<FiPrinter />}
+              color="from-orange-500 to-red-500"
+            />
+            <DetailStep
+              number="5"
+              title="Ikuti Ujian Seleksi"
+              description="Datang ke lokasi ujian dengan membawa kartu ujian dan alat tulis"
+              icon={<FiAward />}
+              color="from-indigo-500 to-purple-500"
+            />
+            <DetailStep
+              number="6"
+              title="Lihat Pengumuman"
+              description="Cek hasil seleksi melalui website atau SMS notifikasi"
+              icon={<FiMail />}
+              color="from-pink-500 to-rose-500"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Biaya Pendidikan - University Style */}
+      <section className="py-12 md:py-20 bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <span className="inline-block px-4 py-1.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white text-xs font-bold rounded-full mb-4 shadow-lg shadow-green-500/30">
+              INVESTASI PENDIDIKAN
+            </span>
+            <h2 className="text-3xl md:text-5xl font-bold bg-gradient-to-r from-slate-800 via-green-800 to-emerald-800 bg-clip-text text-transparent mb-4">
+              Biaya Pendidikan
+            </h2>
+            <p className="text-gray-600 text-base md:text-lg max-w-2xl mx-auto">
+              Transparan dan terjangkau dengan berbagai kemudahan pembayaran
+            </p>
+          </div>
+
+          {/* Main Pricing Cards */}
+          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
+            <PricingCard
+              title="Biaya Pendaftaran"
+              price="150.000"
+              currency="Rp"
+              period="sekali bayar"
+              description="Termasuk biaya administrasi dan ujian seleksi"
+              features={[
+                'Formulir pendaftaran online',
+                'Biaya administrasi',
+                'Ujian seleksi',
+                'Seragam tes'
+              ]}
+              gradient="from-blue-500 to-cyan-500"
+              popular={false}
+            />
+            <PricingCard
+              title="Uang Pangkal"
+              price="0"
+              currency="Rp"
+              period="GRATIS"
+              description="Kebijakan sekolah untuk meringankan beban orang tua"
+              features={[
+                'Gratis uang pangkal',
+                'Bebas uang gedung',
+                'Tidak ada biaya tersembunyi',
+                'Transparan'
+              ]}
+              gradient="from-green-500 to-emerald-500"
+              popular={true}
+            />
+            <PricingCard
+              title="SPP Bulanan"
+              price="150.000"
+              currency="Rp"
+              period="per bulan"
+              description="Biaya operasional pendidikan per bulan"
+              features={[
+                'Kegiatan belajar mengajar',
+                'Fasilitas sekolah',
+                'Asuransi siswa',
+                'Kegiatan ekstrakurikuler'
+              ]}
+              gradient="from-purple-500 to-pink-500"
+              popular={false}
+            />
+          </div>
+
+          {/* Detailed Cost Breakdown */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/60 shadow-xl p-6 md:p-10 max-w-5xl mx-auto">
+            <h3 className="text-2xl font-bold text-slate-800 mb-6 text-center">Rincian Biaya Lainnya</h3>
+            
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <CostItem
+                category="Seragam Sekolah"
+                items={[
+                  { name: 'Seragam Putih Abu (2 stel)', price: '300.000' },
+                  { name: 'Seragam Batik (2 stel)', price: '250.000' },
+                  { name: 'Seragam Praktek (2 stel)', price: '200.000' },
+                  { name: 'Topi & Dasi', price: '75.000' }
+                ]}
+                total="825.000"
+                gradient="from-blue-500 to-cyan-500"
               />
-              <TimelineStep
-                step="02"
-                title="Pembayaran"
-                desc="Bayar biaya pendaftaran"
-                icon={<FiDollarSign />}
-                color="from-green-500 to-emerald-500"
-              />
-              <TimelineStep
-                step="03"
-                title="Verifikasi"
-                desc="Verifikasi berkas"
-                icon={<FiCheckCircle />}
-                color="from-purple-500 to-pink-500"
-              />
-              <TimelineStep
-                step="04"
-                title="Ujian"
-                desc="Ikuti seleksi"
-                icon={<FiAward />}
-                color="from-orange-500 to-red-500"
-              />
-              <TimelineStep
-                step="05"
-                title="Pengumuman"
-                desc="Cek hasil seleksi"
-                icon={<FiStar />}
-                color="from-pink-500 to-rose-500"
+              <CostItem
+                category="Buku & LKS"
+                items={[
+                  { name: 'Buku Paket (1 semester)', price: '400.000' },
+                  { name: 'Lembar Kerja Siswa', price: '200.000' },
+                  { name: 'Alat Tulis & Praktikum', price: '200.000' }
+                ]}
+                total="800.000"
+                gradient="from-purple-500 to-pink-500"
               />
             </div>
+
+            {/* Total Summary */}
+            <div className="bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 rounded-2xl p-6 text-white">
+              <div className="grid md:grid-cols-3 gap-6 text-center">
+                <div>
+                  <p className="text-white/70 text-sm mb-1">Total Estimasi Tahun Pertama</p>
+                  <p className="text-3xl font-bold">Rp 2.575.000</p>
+                  <p className="text-xs text-white/60 mt-1">(termasuk SPP 12 bulan)</p>
+                </div>
+                <div className="border-l border-r border-white/20">
+                  <p className="text-white/70 text-sm mb-1">Per Semester</p>
+                  <p className="text-3xl font-bold">Rp 1.287.500</p>
+                  <p className="text-xs text-white/60 mt-1">(estimasi rata-rata)</p>
+                </div>
+                <div>
+                  <p className="text-white/70 text-sm mb-1">Per Bulan (rata-rata)</p>
+                  <p className="text-3xl font-bold">Rp 214.583</p>
+                  <p className="text-xs text-white/60 mt-1">(sudah termasuk SPP)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Methods */}
+          <div className="mt-12 grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <PaymentMethod
+              icon={<FiCreditCard />}
+              title="Transfer Bank"
+              description="BCA, BRI, BNI, Mandiri"
+              color="from-blue-500 to-cyan-500"
+            />
+            <PaymentMethod
+              icon={<FiSmartphone />}
+              title="E-Wallet"
+              description="GoPay, OVO, Dana, ShopeePay"
+              color="from-purple-500 to-pink-500"
+            />
+            <PaymentMethod
+              icon={<FiRefreshCw />}
+              title="Cicilan 0%"
+              description="Kerjasama dengan multifinance"
+              color="from-green-500 to-emerald-500"
+            />
           </div>
         </div>
       </section>
@@ -387,6 +591,135 @@ const ProgramCard = ({ name, full, emoji, color }) => (
       {name}
     </div>
     <div className="text-xs text-gray-600">{full}</div>
+  </div>
+);
+
+// Vertical Timeline Step with Progress Line
+const TimelineStepVertical = ({ step, title, desc, icon, color, delay }) => (
+  <div className="relative group" style={{ animationDelay: `${delay}ms` }}>
+    <div className="bg-white/90 backdrop-blur-xl rounded-2xl p-4 md:p-6 border-2 border-white/60 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 text-center relative z-10">
+      {/* Step Number Badge */}
+      <div className={`absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-gradient-to-br ${color} flex items-center justify-center text-white text-xs font-bold shadow-lg border-4 border-white`}>
+        {step}
+      </div>
+      
+      {/* Icon */}
+      <div className={`w-12 h-12 md:w-14 md:h-14 mx-auto rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-white mb-3 md:mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg`}>
+        {icon}
+      </div>
+      
+      <h3 className="font-bold text-slate-800 text-sm md:text-base mb-1">{title}</h3>
+      <p className="text-xs text-gray-600 hidden md:block">{desc}</p>
+    </div>
+    
+    {/* Mobile Description */}
+    <p className="text-xs text-gray-600 text-center mt-2 md:hidden">{desc}</p>
+  </div>
+);
+
+// Detailed Step Card
+const DetailStep = ({ number, title, description, icon, color }) => (
+  <div className="group relative p-6 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/60 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden">
+    <div className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
+    
+    <div className="flex items-start gap-4 relative z-10">
+      <div className={`flex-shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-white font-bold text-lg shadow-lg group-hover:scale-110 group-hover:rotate-6 transition-all duration-500`}>
+        {number}
+      </div>
+      <div className="flex-1">
+        <div className="flex items-center gap-2 mb-2">
+          <div className={`text-xl ${color.includes('blue') ? 'text-blue-600' : color.includes('purple') ? 'text-purple-600' : color.includes('green') ? 'text-green-600' : color.includes('orange') ? 'text-orange-600' : 'text-pink-600'}`}>
+            {icon}
+          </div>
+          <h3 className="font-bold text-slate-800 text-lg">{title}</h3>
+        </div>
+        <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+      </div>
+    </div>
+  </div>
+);
+
+// University-Style Pricing Card
+const PricingCard = ({ title, price, currency, period, description, features, gradient, popular }) => (
+  <div className={`relative group p-6 md:p-8 rounded-3xl bg-white/90 backdrop-blur-xl border-2 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden ${popular ? 'border-green-500 scale-105' : 'border-white/60'}`}>
+    {/* Popular Badge */}
+    {popular && (
+      <div className="absolute top-0 right-0 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-bl-2xl">
+        ⭐ POPULER
+      </div>
+    )}
+    
+    {/* Gradient Background on Hover */}
+    <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+    
+    {/* Header */}
+    <div className="text-center mb-6 relative z-10">
+      <h3 className="text-xl font-bold text-slate-800 mb-2">{title}</h3>
+      <div className="flex items-baseline justify-center gap-1 mb-2">
+        <span className="text-2xl font-bold text-gray-600">{currency}</span>
+        <span className="text-5xl font-black bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent">
+          {price}
+        </span>
+      </div>
+      <p className="text-sm font-semibold text-green-600 mb-2">{period}</p>
+      <p className="text-xs text-gray-600">{description}</p>
+    </div>
+    
+    {/* Features */}
+    <ul className="space-y-3 mb-6 relative z-10">
+      {features.map((feature, idx) => (
+        <li key={idx} className="flex items-start gap-2 text-sm">
+          <FiCheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+          <span className="text-gray-700">{feature}</span>
+        </li>
+      ))}
+    </ul>
+    
+    {/* Button */}
+    <button className={`w-full py-3 rounded-xl font-bold transition-all duration-300 ${popular ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-lg hover:shadow-green-500/30' : 'bg-gradient-to-r from-slate-800 to-blue-800 text-white hover:shadow-lg hover:shadow-blue-500/30'}`}>
+      Pilih Paket
+    </button>
+  </div>
+);
+
+// Cost Breakdown Item
+const CostItem = ({ category, items, total, gradient }) => (
+  <div className="bg-white rounded-2xl border-2 border-slate-200 overflow-hidden hover:border-slate-300 transition-colors">
+    {/* Category Header */}
+    <div className={`bg-gradient-to-r ${gradient} p-4`}>
+      <h4 className="text-lg font-bold text-white">{category}</h4>
+    </div>
+    
+    {/* Items List */}
+    <div className="p-4 space-y-3">
+      {items.map((item, idx) => (
+        <div key={idx} className="flex items-center justify-between text-sm">
+          <span className="text-gray-700">{item.name}</span>
+          <span className="font-semibold text-slate-800">Rp {item.price}</span>
+        </div>
+      ))}
+      
+      {/* Total */}
+      <div className="pt-3 mt-3 border-t-2 border-slate-200">
+        <div className="flex items-center justify-between">
+          <span className="font-bold text-slate-800">Total</span>
+          <span className="text-xl font-black bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 bg-clip-text text-transparent">
+            Rp {total}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// Payment Method Card
+const PaymentMethod = ({ icon, title, description, color }) => (
+  <div className="group p-6 rounded-2xl bg-white/80 backdrop-blur-xl border border-white/60 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 text-center">
+    <div className={`w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center text-white mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 shadow-lg`}>
+      {icon}
+    </div>
+    <h3 className="font-bold text-slate-800 mb-2">{title}</h3>
+    <p className="text-sm text-gray-600">{description}</p>
   </div>
 );
 
