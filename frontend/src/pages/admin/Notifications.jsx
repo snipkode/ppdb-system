@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
-import { FiMail, FiBell, FiSend, FiCheck, FiX, FiSettings, FiAlertCircle } from 'react-icons/fi';
+import { FiMail, FiBell, FiSend, FiCheck, FiX, FiSettings, FiAlertCircle, FiChevronRight } from 'react-icons/fi';
 import { notificationAPI } from '@services/api';
 
 const AdminNotifications = () => {
   const [testEmail, setTestEmail] = useState('');
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [settings, setSettings] = useState({
     emailEnabled: true,
     notificationsEnabled: true,
@@ -58,6 +60,163 @@ const AdminNotifications = () => {
       setResult({ success: false, message: 'Failed to save: ' + error.message });
     }
   };
+
+  const handlePreviewTemplate = (templateName) => {
+    const templates = {
+      'Pendaftaran Berhasil': {
+        subject: 'Konfirmasi Pendaftaran Berhasil - PPDB SMK Nusantara',
+        body: `Yth. Calon Siswa SMK Nusantara,
+
+Terima kasih telah mendaftar di SMK Nusantara. Kami telah menerima pendaftaran Anda dengan data sebagai berikut:
+
+No. Pendaftaran: PPDB-2024-0001
+Nama: [Nama Siswa]
+Jurusan Pilihan 1: [Jurusan 1]
+Jurusan Pilihan 2: [Jurusan 2]
+Tanggal Daftar: [Tanggal]
+
+Langkah selanjutnya:
+1. Tunggu email konfirmasi pembayaran
+2. Lakukan pembayaran sesuai nominal yang ditentukan
+3. Ikuti ujian seleksi sesuai jadwal yang akan diinformasikan
+
+Untuk informasi lebih lanjut, silakan hubungi:
+📞 WA: 0812-3456-7890
+📧 Email: info@smknusantara.sch.id
+
+Hormat kami,
+Panitia PPDB SMK Nusantara`
+      },
+      'Pembayaran Diverifikasi': {
+        subject: 'Pembayaran Terverifikasi - PPDB SMK Nusantara',
+        body: `Yth. Calon Siswa SMK Nusantara,
+
+Pembayaran Anda telah terverifikasi:
+
+No. Pendaftaran: PPDB-2024-0001
+Nama: [Nama Siswa]
+Jenis Pembayaran: [Jenis]
+Nominal: Rp [Nominal]
+Status: ✅ LUNAS
+Tanggal Verifikasi: [Tanggal]
+
+Selamat! Anda sekarang berhak mengikuti ujian seleksi. Jadwal ujian akan dikirimkan melalui email terpisah.
+
+Hormat kami,
+Panitia PPDB SMK Nusantara`
+      },
+      'Pembayaran Ditolak': {
+        subject: 'Pembayaran Ditolak - PPDB SMK Nusantara',
+        body: `Yth. Calon Siswa SMK Nusantara,
+
+Mohon maaf, pembayaran Anda tidak dapat diverifikasi:
+
+No. Pendaftaran: PPDB-2024-0001
+Nama: [Nama Siswa]
+Jenis Pembayaran: [Jenis]
+Nominal: Rp [Nominal]
+Status: ❌ DITOLAK
+Alasan: [Alasan penolakan]
+
+Silakan lakukan pembayaran ulang dan konfirmasi kembali ke panitia.
+
+Untuk informasi lebih lanjut:
+📞 WA: 0812-3456-7890
+📧 Email: info@smknusantara.sch.id
+
+Hormat kami,
+Panitia PPDB SMK Nusantara`
+      },
+      'Jadwal Ujian': {
+        subject: 'Jadwal Ujian Seleksi - PPDB SMK Nusantara',
+        body: `Yth. Peserta Ujian Seleksi SMK Nusantara,
+
+Berikut adalah jadwal ujian seleksi Anda:
+
+No. Peserta: UJIAN-2024-0001
+Nama: [Nama Siswa]
+Tanggal: [Tanggal Ujian]
+Waktu: [Waktu Ujian]
+Lokasi: [Tempat Ujian]
+Ruangan: [Nomor Ruangan]
+
+Mata Ujian:
+📖 TPQ (Tahsin Al-Qur'an)
+✏️ Akademik (Matematika, IPA, Bahasa)
+🎤 Wawancara
+
+Hal yang perlu dibawa:
+1. Kartu tanda peserta ujian
+2. Alat tulis sendiri (pensil, pulpen, penghapus)
+3. Berpakaian rapi dan sopan
+
+Hadir 30 menit sebelum ujian dimulai.
+
+Hormat kami,
+Panitia PPDB SMK Nusantara`
+      },
+      'Diterima': {
+        subject: '🎉 SELAMAT! Anda Diterima - PPDB SMK Nusantara',
+        body: `Yth. Calon Siswa Baru SMK Nusantara,
+
+Alhamdulillah, SELAMAT! Anda dinyatakan LULUS seleksi PPDB SMK Nusantara Tahun Ajaran 2024/2025.
+
+No. Pendaftaran: PPDB-2024-0001
+Nama: [Nama Siswa]
+Jurusan: [Jurusan yang diterima]
+Status: ✅ LULUS
+
+Langkah selanjutnya (Daftar Ulang):
+1. Datang ke sekolah membawa dokumen asli
+2. Mengisi formulir daftar ulang
+3. Membayar biaya daftar ulang
+4. Menyerahkan pas foto 3x4 (3 lembar)
+
+Jadwal Daftar Ulang:
+📅 Tanggal: [Tanggal]
+⏰ Waktu: [Waktu]
+📍 Tempat: Sekretariat PPDB
+
+Selamat bergabung dengan keluarga besar SMK Nusantara!
+
+Hormat kami,
+Kepala Sekolah & Panitia PPDB`
+      },
+      'Ditolak': {
+        subject: 'Hasil Seleksi PPDB - SMK Nusantara',
+        body: `Yth. Calon Siswa SMK Nusantara,
+
+Terima kasih telah mendaftar di SMK Nusantara.
+
+Setelah melalui proses seleksi, dengan ini kami informasikan hasil seleksi Anda:
+
+No. Pendaftaran: PPDB-2024-0001
+Nama: [Nama Siswa]
+Status: ❌ BELUM LULUS
+
+Meskipun belum lulus seleksi di SMK Nusantara, kami tetap menghargai usaha Anda dan berharap sukses di jalur lainnya.
+
+Untuk informasi lebih lanjut atau keberatan hasil seleksi, silakan hubungi:
+📞 WA: 0812-3456-7890
+📧 Email: info@smknusantara.sch.id
+
+Hormat kami,
+Panitia PPDB SMK Nusantara`
+      }
+    };
+
+    setSelectedTemplate(templates[templateName] || templates['Pendaftaran Berhasil']);
+    setShowPreview(true);
+  };
+
+  const emailTemplates = [
+    { name: 'Pendaftaran Berhasil', icon: '📧', color: 'from-blue-500 to-cyan-500' },
+    { name: 'Pembayaran Diverifikasi', icon: '✅', color: 'from-green-500 to-emerald-500' },
+    { name: 'Pembayaran Ditolak', icon: '❌', color: 'from-red-500 to-pink-500' },
+    { name: 'Jadwal Ujian', icon: '📅', color: 'from-purple-500 to-pink-500' },
+    { name: 'Diterima', icon: '🎉', color: 'from-yellow-500 to-orange-500' },
+    { name: 'Ditolak', icon: '😞', color: 'from-gray-500 to-slate-500' }
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 py-6">
@@ -234,24 +393,95 @@ const AdminNotifications = () => {
             <h2 className="text-base font-bold text-gray-800">Template Email</h2>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-2">
-            {[
-              'Pendaftaran Berhasil',
-              'Pembayaran Diverifikasi',
-              'Pembayaran Ditolak',
-              'Jadwal Ujian',
-              'Diterima',
-              'Ditolak'
-            ].map((template, index) => (
-              <div key={index} className="flex items-center justify-between py-2.5 px-4 bg-gradient-to-br from-slate-50 to-gray-50 rounded-xl border border-gray-100 hover:border-blue-300 transition-all">
-                <span className="text-sm font-medium text-gray-700">{template}</span>
-                <button className="text-blue-600 hover:text-blue-800 text-xs font-semibold">
-                  Preview →
+          <div className="grid md:grid-cols-2 gap-3">
+            {emailTemplates.map((template) => (
+              <div 
+                key={template.name} 
+                className="flex items-center justify-between p-4 bg-gradient-to-br from-slate-50 to-gray-50 rounded-xl border-2 border-gray-100 hover:border-blue-300 hover:shadow-md transition-all cursor-pointer"
+                onClick={() => handlePreviewTemplate(template.name)}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${template.color} flex items-center justify-center text-white shadow-md`}>
+                    <span className="text-lg">{template.icon}</span>
+                  </div>
+                  <span className="text-sm font-bold text-gray-700">{template.name}</span>
+                </div>
+                <button className="text-blue-600 hover:text-blue-800 text-xs font-bold flex items-center gap-1">
+                  Preview <FiChevronRight className="w-3 h-3" />
                 </button>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Preview Modal */}
+        {showPreview && selectedTemplate && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowPreview(false)}>
+            <div 
+              className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-5 text-white">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                      <FiMail className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black">Preview Email Template</h3>
+                      <p className="text-xs text-white/80">Preview tampilan email</p>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setShowPreview(false)}
+                    className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center hover:bg-white/30 transition-all"
+                  >
+                    <FiX className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-5 overflow-y-auto max-h-[60vh]">
+                {/* Subject */}
+                <div className="mb-4">
+                  <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Subject Email</label>
+                  <div className="p-3 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl border-2 border-blue-200">
+                    <p className="text-sm font-bold text-gray-800">{selectedTemplate.subject}</p>
+                  </div>
+                </div>
+
+                {/* Email Body */}
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase mb-1.5 block">Isi Email</label>
+                  <div className="p-4 bg-white rounded-xl border-2 border-gray-200">
+                    <pre className="text-sm text-gray-700 whitespace-pre-wrap font-sans leading-relaxed">
+                      {selectedTemplate.body}
+                    </pre>
+                  </div>
+                </div>
+
+                {/* Note */}
+                <div className="mt-4 p-3 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
+                  <p className="text-xs text-yellow-800 font-medium">
+                    ℹ️ <strong>Catatan:</strong> Teks dalam kurung siku [ ] akan diganti dengan data otomatis saat email dikirim.
+                  </p>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-5 border-t bg-gray-50">
+                <button
+                  onClick={() => setShowPreview(false)}
+                  className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white px-6 py-3 rounded-xl transition-all font-bold shadow-lg hover:shadow-xl"
+                >
+                  Tutup Preview
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Setup Instructions */}
         <div className="bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 rounded-2xl p-5">
