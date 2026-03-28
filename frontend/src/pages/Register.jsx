@@ -829,7 +829,10 @@ const Register = () => {
         <div className="bg-white rounded-xl shadow-lg p-6 md:p-8 mb-6">
           <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
             {steps[currentStep - 1].icon && (
-              <steps[currentStep - 1].icon className="text-primary-600" />
+              (() => {
+                const IconComponent = steps[currentStep - 1].icon;
+                return <IconComponent className="text-primary-600" />;
+              })()
             )}
             {steps[currentStep - 1].title}
           </h2>
