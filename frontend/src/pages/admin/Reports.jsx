@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { FiBarChart2, FiUsers, FiDollarSign, FiAward, FiDownload, FiCalendar, FiTrendingUp } from 'react-icons/fi';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/services/firebase';
-import { 
+import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 
 const AdminReports = () => {
   const [loading, setLoading] = useState(true);
@@ -237,6 +237,7 @@ const AdminReports = () => {
       headers = ['Keterangan', 'Jumlah'];
     }
 
+    doc.autoTable = autoTable;
     doc.autoTable({
       head: [headers],
       body: tableData,
@@ -260,25 +261,25 @@ const AdminReports = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 py-6">
+      {/* Compact Header */}
+      <div className="bg-white/90 backdrop-blur-xl border-b sticky top-16 z-40 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                <FiBarChart2 className="w-7 h-7 text-blue-600" />
-                Laporan & Analytics
-              </h1>
-              <p className="text-gray-600 mt-1">
-                Dashboard laporan dan statistik PPDB
-              </p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                <FiBarChart2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h1 className="text-lg font-black text-gray-800">Laporan & Analytics</h1>
+                <p className="text-xs text-gray-600">Dashboard laporan dan statistik PPDB</p>
+              </div>
             </div>
             <div className="flex gap-2">
               <select
                 value={dateRange}
                 onChange={(e) => setDateRange(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded-xl px-3 py-2 focus:ring-2 focus:ring-blue-500 text-xs font-semibold"
               >
                 <option value="all">Semua Waktu</option>
                 <option value="today">Hari Ini</option>
@@ -287,14 +288,14 @@ const AdminReports = () => {
               </select>
               <button
                 onClick={() => exportToPDF('summary')}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                className="bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white px-4 py-2 rounded-xl transition-all flex items-center gap-2 text-xs font-bold shadow-lg hover:shadow-xl"
               >
                 <FiDownload className="w-4 h-4" />
                 PDF
               </button>
               <button
                 onClick={() => exportToExcel('students')}
-                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-4 py-2 rounded-xl transition-all flex items-center gap-2 text-xs font-bold shadow-lg hover:shadow-xl"
               >
                 <FiDownload className="w-4 h-4" />
                 Excel
@@ -305,77 +306,46 @@ const AdminReports = () => {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-        {/* Overview Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Pendaftaran</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.totalRegistrations}</p>
-                <p className="text-xs text-green-600 mt-1">
-                  +{stats.registrationsToday} hari ini
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                <FiUsers className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Pembayaran</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.totalPayments}</p>
-                <p className="text-xs text-green-600 mt-1">
-                  Rp {stats.paidAmount.toLocaleString('id-ID')} lunas
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <FiDollarSign className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Ujian</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.totalExams}</p>
-                <p className="text-xs text-green-600 mt-1">
-                  {stats.passedExams} lulus
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                <FiAward className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Minggu Ini</p>
-                <p className="text-2xl font-bold text-gray-800">{stats.registrationsThisWeek}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  Pendaftaran baru
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                <FiTrendingUp className="w-6 h-6 text-yellow-600" />
-              </div>
-            </div>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 py-4 space-y-4">
+        {/* Overview Stats - Compact */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+          <StatCard 
+            title="Total Pendaftaran" 
+            value={stats.totalRegistrations} 
+            sub={`+${stats.registrationsToday} hari ini`}
+            icon={<FiUsers className="w-5 h-5" />}
+            color="from-blue-500 via-cyan-500 to-blue-600"
+          />
+          <StatCard 
+            title="Total Pembayaran" 
+            value={stats.totalPayments} 
+            sub={`Rp ${stats.paidAmount.toLocaleString('id-ID')} lunas`}
+            icon={<FiDollarSign className="w-5 h-5" />}
+            color="from-green-500 via-emerald-500 to-green-600"
+          />
+          <StatCard 
+            title="Total Ujian" 
+            value={stats.totalExams} 
+            sub={`${stats.passedExams} lulus`}
+            icon={<FiAward className="w-5 h-5" />}
+            color="from-purple-500 via-pink-500 to-purple-600"
+          />
+          <StatCard 
+            title="Minggu Ini" 
+            value={stats.registrationsThisWeek} 
+            sub="Pendaftaran baru"
+            icon={<FiCalendar className="w-5 h-5" />}
+            color="from-orange-500 via-red-500 to-orange-600"
+          />
         </div>
 
-        {/* Tabs */}
-        <div className="bg-white rounded-lg shadow-md">
+        {/* Tabs - Compact */}
+        <div className="bg-white rounded-2xl shadow-xl border-2 border-white/50">
           <div className="border-b">
-            <nav className="flex gap-4 px-4">
+            <nav className="flex gap-2 px-4">
               <button
                 onClick={() => setActiveTab('overview')}
-                className={`py-3 px-4 border-b-2 font-medium transition-colors ${
+                className={`py-3 px-4 border-b-2 font-bold text-sm transition-all ${
                   activeTab === 'overview'
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-600 hover:text-gray-800'
@@ -385,7 +355,7 @@ const AdminReports = () => {
               </button>
               <button
                 onClick={() => setActiveTab('registrations')}
-                className={`py-3 px-4 border-b-2 font-medium transition-colors ${
+                className={`py-3 px-4 border-b-2 font-bold text-sm transition-all ${
                   activeTab === 'registrations'
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-600 hover:text-gray-800'
@@ -395,7 +365,7 @@ const AdminReports = () => {
               </button>
               <button
                 onClick={() => setActiveTab('payments')}
-                className={`py-3 px-4 border-b-2 font-medium transition-colors ${
+                className={`py-3 px-4 border-b-2 font-bold text-sm transition-all ${
                   activeTab === 'payments'
                     ? 'border-blue-600 text-blue-600'
                     : 'border-transparent text-gray-600 hover:text-gray-800'
@@ -607,5 +577,21 @@ const AdminReports = () => {
     </div>
   );
 };
+
+// Compact Stat Card Component
+const StatCard = ({ title, value, sub, icon, color }) => (
+  <div className="bg-white rounded-2xl shadow-xl p-4 border-2 border-white/50">
+    <div className="flex items-center justify-between">
+      <div className="flex-1 min-w-0">
+        <p className="text-xs text-gray-500 font-semibold truncate">{title}</p>
+        <p className="text-2xl font-black text-gray-800 mt-1">{value}</p>
+        <p className="text-xs text-green-600 font-bold mt-1 truncate">{sub}</p>
+      </div>
+      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center text-white shadow-lg flex-shrink-0`}>
+        {icon}
+      </div>
+    </div>
+  </div>
+);
 
 export default AdminReports;

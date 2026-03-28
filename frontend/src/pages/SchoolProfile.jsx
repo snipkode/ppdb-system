@@ -1,15 +1,124 @@
-import { useState } from 'react';
-import { 
-  FiMapPin, FiPhone, FiMail, FiClock, FiAward, FiUsers, FiBookOpen, 
-  FiStar, FiCheckCircle, FiDownload, FiPlay, FiChevronDown, FiFacebook, 
-  FiInstagram, FiTwitter, FiYoutube, FiLinkedin, FiHelpCircle, FiFileText, 
-  FiBook, FiImage, FiVideo, FiGlobe
+import { useState, useEffect } from 'react';
+import {
+  FiMapPin, FiPhone, FiMail, FiClock, FiAward, FiUsers, FiBookOpen,
+  FiStar, FiCheckCircle, FiDownload, FiPlay, FiChevronDown, FiFacebook,
+  FiInstagram, FiTwitter, FiYoutube, FiLinkedin, FiHelpCircle, FiFileText,
+  FiBook, FiImage, FiVideo, FiGlobe, FiEdit, FiSave, FiX
 } from 'react-icons/fi';
 import { FaTiktok } from 'react-icons/fa';
 
 const SchoolProfile = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [activeFaq, setActiveFaq] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [schoolData, setSchoolData] = useState(null);
+
+  // Load data from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('schoolProfile');
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      setSchoolData(parsed);
+      setFormData({
+        schoolName: parsed.schoolName || 'SMK Nusantara',
+        accreditation: parsed.accreditation || 'A',
+        motto: parsed.motto || 'Pusat Keunggulan • Unggul • Kompeten • Berkarakter',
+        phone: parsed.phone || '(021) 1234-5678',
+        email: parsed.email || 'info@smknusantara.sch.id',
+        address: parsed.address || 'Jl. Pendidikan No. 123, Jakarta',
+        vision: parsed.vision || 'Menjadikan SMK Nusantara sebagai pusat keunggulan pendidikan vokasi yang menghasilkan lulusan berkarakter, kompeten, dan siap bersaing di era global.',
+        mission: parsed.mission || 'Pendidikan standar industri\nKarakter unggul & berakhlak\nKompetensi level global\nKemitraan strategis',
+        principalName: parsed.principalName || 'Dr. Budi Santoso, M.Pd',
+        principalQuote: parsed.principalQuote || 'Kami berkomitmen memberikan pendidikan vokasi terbaik dengan fasilitas modern dan kurikulum berbasis industri.',
+        facebook: parsed.facebook || '',
+        instagram: parsed.instagram || '',
+        twitter: parsed.twitter || '',
+        youtube: parsed.youtube || '',
+        linkedin: parsed.linkedin || '',
+        tiktok: parsed.tiktok || ''
+      });
+    }
+  }, []);
+
+  // Save data to localStorage
+  const saveSchoolData = (data) => {
+    const updatedData = { ...schoolData, ...data };
+    setSchoolData(updatedData);
+    localStorage.setItem('schoolProfile', JSON.stringify(updatedData));
+  };
+
+  const [formData, setFormData] = useState({
+    schoolName: schoolData?.schoolName || 'SMK Nusantara',
+    accreditation: schoolData?.accreditation || 'A',
+    motto: schoolData?.motto || 'Pusat Keunggulan • Unggul • Kompeten • Berkarakter',
+    phone: schoolData?.phone || '(021) 1234-5678',
+    email: schoolData?.email || 'info@smknusantara.sch.id',
+    address: schoolData?.address || 'Jl. Pendidikan No. 123, Jakarta',
+    vision: schoolData?.vision || 'Menjadikan SMK Nusantara sebagai pusat keunggulan pendidikan vokasi yang menghasilkan lulusan berkarakter, kompeten, dan siap bersaing di era global.',
+    mission: schoolData?.mission || 'Pendidikan standar industri\nKarakter unggul & berakhlak\nKompetensi level global\nKemitraan strategis',
+    principalName: schoolData?.principalName || 'Dr. Budi Santoso, M.Pd',
+    principalQuote: schoolData?.principalQuote || 'Kami berkomitmen memberikan pendidikan vokasi terbaik dengan fasilitas modern dan kurikulum berbasis industri.',
+    facebook: schoolData?.facebook || '',
+    instagram: schoolData?.instagram || '',
+    twitter: schoolData?.twitter || '',
+    youtube: schoolData?.youtube || '',
+    linkedin: schoolData?.linkedin || '',
+    tiktok: schoolData?.tiktok || ''
+  });
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = () => {
+    saveSchoolData(formData);
+    setIsEditMode(false);
+    alert('Data profil sekolah berhasil disimpan!');
+  };
+
+  const handleCancel = () => {
+    if (schoolData) {
+      setFormData({
+        schoolName: schoolData.schoolName,
+        accreditation: schoolData.accreditation,
+        motto: schoolData.motto,
+        phone: schoolData.phone,
+        email: schoolData.email,
+        address: schoolData.address,
+        vision: schoolData.vision,
+        mission: schoolData.mission,
+        principalName: schoolData.principalName,
+        principalQuote: schoolData.principalQuote,
+        facebook: schoolData.facebook,
+        instagram: schoolData.instagram,
+        twitter: schoolData.twitter,
+        youtube: schoolData.youtube,
+        linkedin: schoolData.linkedin,
+        tiktok: schoolData.tiktok
+      });
+    } else {
+      setFormData({
+        schoolName: 'SMK Nusantara',
+        accreditation: 'A',
+        motto: 'Pusat Keunggulan • Unggul • Kompeten • Berkarakter',
+        phone: '(021) 1234-5678',
+        email: 'info@smknusantara.sch.id',
+        address: 'Jl. Pendidikan No. 123, Jakarta',
+        vision: 'Menjadikan SMK Nusantara sebagai pusat keunggulan pendidikan vokasi yang menghasilkan lulusan berkarakter, kompeten, dan siap bersaing di era global.',
+        mission: 'Pendidikan standar industri\nKarakter unggul & berakhlak\nKompetensi level global\nKemitraan strategis',
+        principalName: 'Dr. Budi Santoso, M.Pd',
+        principalQuote: 'Kami berkomitmen memberikan pendidikan vokasi terbaik dengan fasilitas modern dan kurikulum berbasis industri.',
+        facebook: '',
+        instagram: '',
+        twitter: '',
+        youtube: '',
+        linkedin: '',
+        tiktok: ''
+      });
+    }
+    setIsEditMode(false);
+  };
 
   const stats = [
     { icon: <FiUsers />, number: '1,200+', label: 'Siswa', color: 'from-blue-500 to-cyan-500' },
@@ -42,6 +151,8 @@ const SchoolProfile = () => {
     { q: 'Bagaimana prospek kerja?', a: '95% lulusan bekerja, kuliah, atau wirausaha.' }
   ];
 
+  const missionList = formData.mission.split('\n');
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 pb-12">
       {/* Hero - Ultra Compact */}
@@ -57,16 +168,94 @@ const SchoolProfile = () => {
               <FiAward className="w-10 h-10 md:w-12 md:h-12 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-full text-xs font-bold">AKREDITASI A</span>
+              <div className="flex items-center justify-between gap-2 mb-1">
+                <span className="px-2 py-0.5 bg-white/20 backdrop-blur-sm rounded-full text-xs font-bold">{formData.accreditation}</span>
+                <button
+                  onClick={() => setIsEditMode(!isEditMode)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-xl text-xs font-semibold hover:bg-white/30 transition-all"
+                >
+                  {isEditMode ? <FiX className="w-3.5 h-3.5" /> : <FiEdit className="w-3.5 h-3.5" />}
+                  {isEditMode ? 'Batal' : 'Edit Profil'}
+                </button>
               </div>
-              <h1 className="text-2xl md:text-4xl font-black mb-1">SMK Nusantara</h1>
-              <p className="text-sm md:text-base text-white/90 mb-2">Pusat Keunggulan • Unggul • Kompeten • Berkarakter</p>
+              {isEditMode ? (
+                <div className="space-y-2 mt-2">
+                  <input
+                    type="text"
+                    name="schoolName"
+                    value={formData.schoolName}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-sm text-white placeholder-white/60 outline-none focus:border-white/50"
+                    placeholder="Nama Sekolah"
+                  />
+                  <input
+                    type="text"
+                    name="motto"
+                    value={formData.motto}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-xs text-white placeholder-white/60 outline-none focus:border-white/50"
+                    placeholder="Motto"
+                  />
+                </div>
+              ) : (
+                <>
+                  <h1 className="text-2xl md:text-4xl font-black mb-1">{formData.schoolName}</h1>
+                  <p className="text-sm md:text-base text-white/90 mb-2">{formData.motto}</p>
+                </>
+              )}
               <div className="flex flex-wrap gap-2">
-                <QuickInfo icon={<FiPhone />} text="(021) 1234-5678" />
-                <QuickInfo icon={<FiMail />} text="info@smknusantara.sch.id" />
-                <QuickInfo icon={<FiMapPin />} text="Jakarta" />
+                {isEditMode ? (
+                  <>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="flex-1 min-w-[120px] px-3 py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-xs text-white placeholder-white/60 outline-none focus:border-white/50"
+                      placeholder="Telepon"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck="false"
+                    />
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="flex-1 min-w-[150px] px-3 py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-xs text-white placeholder-white/60 outline-none focus:border-white/50"
+                      placeholder="Email"
+                      autoComplete="off"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck="false"
+                    />
+                    <button
+                      onClick={handleSave}
+                      className="flex items-center gap-1.5 px-4 py-1.5 bg-white text-purple-600 rounded-lg text-xs font-bold hover:bg-white/90 transition-all"
+                    >
+                      <FiSave className="w-3.5 h-3.5" /> Simpan
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <QuickInfo icon={<FiPhone />} text={formData.phone} />
+                    <QuickInfo icon={<FiMail />} text={formData.email} />
+                    <QuickInfo icon={<FiMapPin />} text={formData.address} />
+                  </>
+                )}
               </div>
+              {isEditMode && (
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  className="w-full mt-2 px-3 py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-xs text-white placeholder-white/60 outline-none focus:border-white/50"
+                  placeholder="Alamat Lengkap"
+                  autoComplete="off"
+                />
+              )}
             </div>
           </div>
         </div>
@@ -122,10 +311,26 @@ const SchoolProfile = () => {
                         <FiStar className="w-4 h-4" />
                       </div>
                       <h2 className="font-bold">Visi</h2>
+                      {isEditMode && (
+                        <button className="ml-auto p-1.5 hover:bg-white/20 rounded-lg transition-colors">
+                          <FiEdit className="w-3.5 h-3.5" />
+                        </button>
+                      )}
                     </div>
-                    <p className="text-sm text-white/90 leading-relaxed">
-                      Menjadikan SMK Nusantara sebagai pusat keunggulan pendidikan vokasi yang menghasilkan lulusan berkarakter, kompeten, dan siap bersaing di era global.
-                    </p>
+                    {isEditMode ? (
+                      <textarea
+                        name="vision"
+                        value={formData.vision}
+                        onChange={handleInputChange}
+                        rows="4"
+                        className="w-full px-3 py-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-sm text-white placeholder-white/60 outline-none focus:border-white/50 resize-none"
+                        placeholder="Visi Sekolah"
+                      />
+                    ) : (
+                      <p className="text-sm text-white/90 leading-relaxed">
+                        {formData.vision}
+                      </p>
+                    )}
                   </div>
 
                   <div className="bg-white rounded-2xl p-5 shadow-xl border border-slate-100">
@@ -134,13 +339,31 @@ const SchoolProfile = () => {
                         <FiCheckCircle className="w-4 h-4" />
                       </div>
                       <h2 className="font-bold text-slate-800">Misi</h2>
+                      {isEditMode && (
+                        <button className="ml-auto p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+                          <FiEdit className="w-3.5 h-3.5 text-gray-600" />
+                        </button>
+                      )}
                     </div>
-                    <ul className="space-y-2 text-sm">
-                      <li className="flex items-start gap-2"><span>📚</span> Pendidikan standar industri</li>
-                      <li className="flex items-start gap-2"><span>🎯</span> Karakter unggul & berakhlak</li>
-                      <li className="flex items-start gap-2"><span>🌍</span> Kompetensi level global</li>
-                      <li className="flex items-start gap-2"><span>🤝</span> Kemitraan strategis</li>
-                    </ul>
+                    {isEditMode ? (
+                      <textarea
+                        name="mission"
+                        value={formData.mission}
+                        onChange={handleInputChange}
+                        rows="6"
+                        className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none"
+                        placeholder="Misi (pisahkan dengan baris baru)"
+                      />
+                    ) : (
+                      <ul className="space-y-2 text-sm">
+                        {missionList.map((item, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <span>{['📚', '🎯', '🌍', '🤝'][idx] || '✓'}</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
 
@@ -151,12 +374,35 @@ const SchoolProfile = () => {
                       <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
                         KS
                       </div>
-                      <div>
-                        <h3 className="font-bold text-slate-800 mb-1">Sambutan Kepala Sekolah</h3>
-                        <p className="text-xs text-gray-600 mb-2 leading-relaxed">
-                          "Kami berkomitmen memberikan pendidikan vokasi terbaik dengan fasilitas modern dan kurikulum berbasis industri."
-                        </p>
-                        <p className="text-xs font-semibold text-slate-800">Dr. Budi Santoso, M.Pd</p>
+                      <div className="flex-1">
+                        {isEditMode ? (
+                          <>
+                            <input
+                              type="text"
+                              name="principalName"
+                              value={formData.principalName}
+                              onChange={handleInputChange}
+                              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm font-bold text-slate-800 outline-none focus:border-blue-500 mb-2"
+                              placeholder="Nama Kepala Sekolah"
+                            />
+                            <textarea
+                              name="principalQuote"
+                              value={formData.principalQuote}
+                              onChange={handleInputChange}
+                              rows="2"
+                              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs text-gray-600 outline-none focus:border-blue-500 resize-none"
+                              placeholder="Sambutan"
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <h3 className="font-bold text-slate-800 mb-1">Sambutan Kepala Sekolah</h3>
+                            <p className="text-xs text-gray-600 mb-2 leading-relaxed">
+                              {formData.principalQuote}
+                            </p>
+                            <p className="text-xs font-semibold text-slate-800">{formData.principalName}</p>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -306,31 +552,86 @@ const SchoolProfile = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto bg-gradient-to-r from-slate-800 via-blue-800 to-purple-800 rounded-2xl shadow-xl p-5 text-white">
             <div className="text-center mb-4">
-              <h3 className="font-bold mb-3">Ikuti Kami</h3>
+              <div className="flex items-center justify-center gap-3 mb-3">
+                <h3 className="font-bold">Ikuti Kami</h3>
+                {isEditMode && (
+                  <button
+                    onClick={handleSave}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-purple-600 rounded-lg text-xs font-bold hover:bg-white/90 transition-all"
+                  >
+                    <FiSave className="w-3.5 h-3.5" /> Simpan
+                  </button>
+                )}
+              </div>
               <div className="flex justify-center gap-2">
-                <SocialBtn icon={<FiFacebook />} />
-                <SocialBtn icon={<FiInstagram />} />
-                <SocialBtn icon={<FiTwitter />} />
-                <SocialBtn icon={<FiYoutube />} />
-                <SocialBtn icon={<FiLinkedin />} />
-                <SocialBtn icon={<FaTiktok />} />
+                {isEditMode ? (
+                  <>
+                    <input name="facebook" value={formData.facebook} onChange={handleInputChange} placeholder="Facebook URL" className="w-24 px-2 py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-xs text-white placeholder-white/60 outline-none focus:border-white/50" autoComplete="off" />
+                    <input name="instagram" value={formData.instagram} onChange={handleInputChange} placeholder="Instagram URL" className="w-24 px-2 py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-xs text-white placeholder-white/60 outline-none focus:border-white/50" autoComplete="off" />
+                    <input name="twitter" value={formData.twitter} onChange={handleInputChange} placeholder="Twitter URL" className="w-24 px-2 py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-xs text-white placeholder-white/60 outline-none focus:border-white/50" autoComplete="off" />
+                    <input name="youtube" value={formData.youtube} onChange={handleInputChange} placeholder="YouTube URL" className="w-24 px-2 py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-xs text-white placeholder-white/60 outline-none focus:border-white/50" autoComplete="off" />
+                    <input name="linkedin" value={formData.linkedin} onChange={handleInputChange} placeholder="LinkedIn URL" className="w-24 px-2 py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-xs text-white placeholder-white/60 outline-none focus:border-white/50" autoComplete="off" />
+                    <input name="tiktok" value={formData.tiktok} onChange={handleInputChange} placeholder="TikTok URL" className="w-24 px-2 py-1.5 bg-white/20 backdrop-blur-sm border border-white/30 rounded-lg text-xs text-white placeholder-white/60 outline-none focus:border-white/50" autoComplete="off" />
+                  </>
+                ) : (
+                  <>
+                    <SocialBtn icon={<FiFacebook />} link={formData.facebook} />
+                    <SocialBtn icon={<FiInstagram />} link={formData.instagram} />
+                    <SocialBtn icon={<FiTwitter />} link={formData.twitter} />
+                    <SocialBtn icon={<FiYoutube />} link={formData.youtube} />
+                    <SocialBtn icon={<FiLinkedin />} link={formData.linkedin} />
+                    <SocialBtn icon={<FaTiktok />} link={formData.tiktok} />
+                  </>
+                )}
               </div>
             </div>
             <div className="grid md:grid-cols-3 gap-3 text-center">
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
                 <FiMapPin className="w-5 h-5 mx-auto mb-1" />
                 <div className="font-semibold text-sm">Alamat</div>
-                <div className="text-xs text-white/70">Jl. Pendidikan No. 123, Jakarta</div>
+                {isEditMode ? (
+                  <input
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    className="w-full mt-1 px-2 py-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded text-xs text-white placeholder-white/60 outline-none focus:border-white/50"
+                    autoComplete="off"
+                  />
+                ) : (
+                  <div className="text-xs text-white/70">{formData.address}</div>
+                )}
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
                 <FiPhone className="w-5 h-5 mx-auto mb-1" />
                 <div className="font-semibold text-sm">Telepon</div>
-                <div className="text-xs text-white/70">(021) 1234-5678</div>
+                {isEditMode ? (
+                  <input
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    className="w-full mt-1 px-2 py-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded text-xs text-white placeholder-white/60 outline-none focus:border-white/50"
+                    type="tel"
+                    autoComplete="off"
+                  />
+                ) : (
+                  <div className="text-xs text-white/70">{formData.phone}</div>
+                )}
               </div>
               <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
                 <FiMail className="w-5 h-5 mx-auto mb-1" />
                 <div className="font-semibold text-sm">Email</div>
-                <div className="text-xs text-white/70">info@smknusantara.sch.id</div>
+                {isEditMode ? (
+                  <input
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="w-full mt-1 px-2 py-1 bg-white/20 backdrop-blur-sm border border-white/30 rounded text-xs text-white placeholder-white/60 outline-none focus:border-white/50"
+                    type="email"
+                    autoComplete="off"
+                  />
+                ) : (
+                  <div className="text-xs text-white/70">{formData.email}</div>
+                )}
               </div>
             </div>
           </div>
@@ -361,10 +662,16 @@ const TabBtn = ({ active, onClick, icon, label }) => (
   </button>
 );
 
-const SocialBtn = ({ icon }) => (
-  <button className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all">
+const SocialBtn = ({ icon, link }) => (
+  <a
+    href={link || '#'}
+    target="_blank"
+    rel="noopener noreferrer"
+    className={`w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all ${!link ? 'opacity-50 cursor-not-allowed' : ''}`}
+    onClick={(e) => !link && e.preventDefault()}
+  >
     {icon}
-  </button>
+  </a>
 );
 
 export default SchoolProfile;

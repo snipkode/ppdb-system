@@ -4,7 +4,8 @@ import {
   signOut,
   onAuthStateChanged
 } from 'firebase/auth';
-import { auth, googleProvider } from '@/services/firebase';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, googleProvider, db } from '@/services/firebase';
 import { checkIfAdmin, getUserData } from '@/services/adminService';
 
 const AuthContext = createContext(null);
@@ -24,10 +25,48 @@ const AuthProvider = ({ children }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [userData, setUserData] = useState(null);
 
+  // Auto create/update user document on login
+  const createUserDocument = async (currentUser) => {
+    if (!currentUser) return;
+
+    try {
+      const userRef = doc(db, 'users', currentUser.uid);
+      const userSnap = await getDoc(userRef);
+
+      const userData = {
+        uid: currentUser.uid,
+        email: currentUser.email?.toLowerCase(),
+        name: currentUser.displayName,
+        photoURL: currentUser.photoURL,
+        provider: currentUser.providerData[0]?.providerId,
+        role: userSnap.exists() ? userSnap.data().role : 'user', // Preserve existing role
+        permissions: userSnap.exists() ? userSnap.data().permissions : ['read'],
+        active: userSnap.exists() ? userSnap.data().active : true,
+        lastLoginAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
+
+      // Only set createdAt if new user
+      if (!userSnap.exists()) {
+        userData.createdAt = serverTimestamp();
+      }
+
+      await setDoc(userRef, userData, { merge: true });
+
+      return userData;
+    } catch (error) {
+      console.error('Error creating user document:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     // Listen for auth state changes
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
+        // Auto create/update user document
+        await createUserDocument(currentUser);
+
         // Check if user is admin from Firestore (using UID)
         const isAdminUser = await checkIfAdmin(currentUser.uid);
         const userInfo = await getUserData(currentUser.uid);
@@ -57,6 +96,9 @@ const AuthProvider = ({ children }) => {
     try {
       setError(null);
       const result = await signInWithPopup(auth, googleProvider);
+
+      // Auto create user document
+      await createUserDocument(result.user);
 
       // Check admin status after sign in (using UID)
       const isAdminUser = await checkIfAdmin(result.user.uid);

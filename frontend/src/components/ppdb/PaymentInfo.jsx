@@ -1,4 +1,4 @@
-import { FiCreditCard, FiDollarSign, FiCheckCircle, FiAlertCircle, FiTrendingUp } from 'react-icons/fi';
+import { FiCreditCard, FiCheckCircle, FiAlertCircle, FiTrendingUp } from 'react-icons/fi';
 
 const PaymentInfo = ({ onUploadClick, paymentData, studentId }) => {
   // Cicilan configuration
@@ -98,7 +98,7 @@ const PaymentInfo = ({ onUploadClick, paymentData, studentId }) => {
       {/* Header */}
       <div className="border-b pb-4">
         <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <FiDollarSign className="w-6 h-6 text-blue-600" />
+          <FiCreditCard className="w-6 h-6 text-blue-600" />
           Informasi Cicilan Pendaftaran
         </h2>
         <p className="text-gray-600 mt-1">
